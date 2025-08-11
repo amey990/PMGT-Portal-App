@@ -17,10 +17,10 @@ class CustomBottomNavBar extends StatelessWidget {
   static const double fabSize = 65;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   static const _icons = <IconData>[
     Icons.dashboard_outlined,

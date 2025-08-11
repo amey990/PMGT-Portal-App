@@ -9,10 +9,10 @@ class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   const GradientButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,11 +57,11 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     this.isPassword = false,
-  }) : super(key: key);
+  });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -120,7 +120,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
 /// The Login screen with scroll, dividers, and navigation
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +239,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                     );
                 },
-                child: Text("Temp Sinup link"))
+                child: Center(child: Text("Temp Signup link")))
             ],
           ),
         ),

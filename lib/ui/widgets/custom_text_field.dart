@@ -10,7 +10,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.controller,
     this.readOnly = false,
@@ -18,7 +18,7 @@ class CustomTextField extends StatefulWidget {
     this.onActionTap,
     this.actionLabel = '',
     this.keyboardType = TextInputType.text,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();

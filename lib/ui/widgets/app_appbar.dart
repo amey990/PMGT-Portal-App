@@ -6,7 +6,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Optional title; leave null if you don’t want one.
   final String? title;
 
-  const AppAppBar({Key? key, this.title}) : super(key: key);
+  const AppAppBar({super.key, this.title});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

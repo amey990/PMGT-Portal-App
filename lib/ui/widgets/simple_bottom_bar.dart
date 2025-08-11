@@ -74,11 +74,11 @@ class SimpleBottomBar extends StatelessWidget {
   final double height;
 
   const SimpleBottomBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
     this.height = 70,
-  }) : super(key: key);
+  });
 
   // The four icons you wanted:
   static const _icons = <IconData>[
