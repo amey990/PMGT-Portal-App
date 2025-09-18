@@ -1,10 +1,12 @@
-// // lib/ui/widgets/app_drawer.dart
-
 // import 'package:flutter/material.dart';
 // import '../../core/theme.dart';
+// import '../utils/responsive.dart';
+// // add this import near the top
+// import '../screens/activities/Create_activity.dart';
+
 
 // class AppDrawer extends StatefulWidget {
-//   const AppDrawer({Key? key}) : super(key: key);
+//   const AppDrawer({super.key});
 
 //   @override
 //   State<AppDrawer> createState() => _AppDrawerState();
@@ -15,7 +17,7 @@
 //   bool _sitesOpen    = false;
 //   bool _usersOpen    = false;
 
-//   final List<String> _userSubs = [
+//   final List<String> _userSubs = const [
 //     'Add PM +',
 //     'Add BDM +',
 //     'Add NOC +',
@@ -25,208 +27,172 @@
 //     'Add Customer +',
 //   ];
 
+//   Widget _buildMainItem({
+//     required IconData icon,
+//     required String label,
+//     required bool isOpen,
+//     required VoidCallback onTap,
+//   }) {
+//     final cs = Theme.of(context).colorScheme;
+//     return ListTile(
+//       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+//       leading: Icon(icon, color: cs.onSurface),
+//       title: Text(label, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+//       trailing: Icon(isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: cs.onSurfaceVariant),
+//       onTap: onTap,
+//     );
+//   }
+
+//   Widget _buildSubItem(String label, VoidCallback onTap) {
+//     final cs = Theme.of(context).colorScheme;
+//     return InkWell(
+//       onTap: onTap,
+//       child: Padding(
+//         padding: const EdgeInsets.only(left: 16 + 56, top: 8, bottom: 8),
+//         child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
+//       ),
+//     );
+//   }
+
 //   @override
 //   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+
 //     return Drawer(
-//       backgroundColor: AppTheme.backgroundColor,
+//       backgroundColor: cs.surface,
 //       child: SafeArea(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.stretch,
-//           children: [
-//             // Header
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-//               child: Row(
-//                 children: [
-//                   Image.asset(
-//                     'assets/pmgt_logo.png',
-//                     width: 40,
-//                     height: 40,
-//                   ),
-//                   const SizedBox(width: 12),
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: const [
-//                       Text(
-//                         'Atlas',
-//                         style: TextStyle(
-//                           fontFamily: 'Sansation',
-//                           color: Colors.white,
-//                           fontSize: 20,
-//                           fontWeight: FontWeight.bold,
+//         child: Padding(
+//           padding: responsivePadding(context).copyWith(top: 0),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             children: [
+//               // HEADER
+//               Padding(
+//                 padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+//                 child: Row(
+//                   children: [
+//                     Image.asset('assets/pmgt_logo.png', width: 40, height: 40),
+//                     const SizedBox(width: 12),
+//                     Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           'Atlas',
+//                           style: const TextStyle(
+//                             fontFamily: 'Sansation',
+//                             fontSize: 20,
+//                             fontWeight: FontWeight.bold,
+//                           ).copyWith(color: cs.onSurface),
 //                         ),
-//                       ),
-//                       SizedBox(height: 4),
-//                       Text(
-//                         'Project Management Tool',
-//                         style: TextStyle(
-//                           color: Colors.white70,
-//                           fontSize: 12,
+//                         const SizedBox(height: 4),
+//                         Text(
+//                           'Project Management Tool',
+//                           style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
 //                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             // Padded divider
-//             const Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 16),
-//               child: Divider(color: Colors.white24),
-//             ),
-
-//             // Menu
-//             Expanded(
-//               child: ListView(
-//                 padding: EdgeInsets.zero,
-//                 children: [
-//                   // Projects
-//                   ExpansionTile(
-//                     tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-//                     childrenPadding: const EdgeInsets.only(left: 32),
-//                     leading: const Icon(Icons.folder_open, color: Colors.white),
-//                     title: const Text('Projects', style: AppTheme.bodyText),
-//                     trailing: Icon(
-//                       _projectsOpen
-//                           ? Icons.keyboard_arrow_up
-//                           : Icons.keyboard_arrow_down,
-//                       color: Colors.white54,
+//                       ],
 //                     ),
-//                     onExpansionChanged: (open) =>
-//                         setState(() => _projectsOpen = open),
-//                     children: [
-//                       InkWell(
-//                         onTap: () { /* TODO: View All Projects */ },
-//                         child: const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 8),
-//                           child: Text(
-//                             'View All Projects',
-//                             style:
-//                                 TextStyle(fontSize: 14, color: Colors.white70),
-//                           ),
-//                         ),
-//                       ),
-//                       InkWell(
-//                         onTap: () { /* TODO: Add Project */ },
-//                         child: const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 8),
-//                           child: Text(
-//                             'Add Project +',
-//                             style:
-//                                 TextStyle(fontSize: 14, color: Colors.white70),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
+//                   ],
+//                 ),
+//               ),
 
-//                   // Sites
-//                   ExpansionTile(
-//                     tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-//                     childrenPadding: const EdgeInsets.only(left: 32),
-//                     leading: const Icon(Icons.location_on, color: Colors.white),
-//                     title: const Text('Sites', style: AppTheme.bodyText),
-//                     trailing: Icon(
-//                       _sitesOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-//                       color: Colors.white54,
+//               // SINGLE DIVIDER
+//               Divider(color: cs.outlineVariant),
+
+//               // MENU
+//               Expanded(
+//                 child: ListView(
+//                   padding: EdgeInsets.zero,
+//                   children: [
+//                     // Projects
+//                     _buildMainItem(
+//                       icon: Icons.folder_open,
+//                       label: 'Projects',
+//                       isOpen: _projectsOpen,
+//                       onTap: () => setState(() => _projectsOpen = !_projectsOpen),
 //                     ),
-//                     onExpansionChanged: (open) => setState(() => _sitesOpen = open),
-//                     children: [
-//                       InkWell(
-//                         onTap: () { /* TODO: View All Sites */ },
-//                         child: const Padding(
-//                           padding: EdgeInsets.symmetric(vertical: 8),
-//                           child: Text(
-//                             'View All Sites',
-//                             style:
-//                                 TextStyle(fontSize: 14, color: Colors.white70),
-//                           ),
-//                         ),
-//                       ),
+//                     if (_projectsOpen) ...[
+//                       _buildSubItem('View All Projects', () {/*TODO*/}),
+//                       _buildSubItem('Add Project +', () {/*TODO*/}),
 //                     ],
-//                   ),
 
-//                   // Flat items
-//                   ListTile(
-//                     leading: const Icon(Icons.event_note, color: Colors.white),
-//                     title: const Text('Activities', style: AppTheme.bodyText),
-//                     onTap: () { /* TODO */ },
-//                   ),
-//                   ListTile(
-//                     leading: const Icon(Icons.bar_chart, color: Colors.white),
-//                     title: const Text('Analytics', style: AppTheme.bodyText),
-//                     onTap: () { /* TODO */ },
-//                   ),
-//                   ListTile(
-//                     leading: const Icon(Icons.notifications, color: Colors.white),
-//                     title: const Text('Reminders', style: AppTheme.bodyText),
-//                     onTap: () { /* TODO */ },
-//                   ),
-
-//                   // User Management
-//                   ExpansionTile(
-//                     tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-//                     childrenPadding: const EdgeInsets.only(left: 32),
-//                     leading: const Icon(Icons.person, color: Colors.white),
-//                     title:
-//                         const Text('User Management', style: AppTheme.bodyText),
-//                     trailing: Icon(
-//                       _usersOpen
-//                           ? Icons.keyboard_arrow_up
-//                           : Icons.keyboard_arrow_down,
-//                       color: Colors.white54,
+//                     // Sites
+//                     _buildMainItem(
+//                       icon: Icons.location_on,
+//                       label: 'Sites',
+//                       isOpen: _sitesOpen,
+//                       onTap: () => setState(() => _sitesOpen = !_sitesOpen),
 //                     ),
-//                     onExpansionChanged: (open) => setState(() => _usersOpen = open),
-//                     children: _userSubs.map((label) {
-//                       return InkWell(
-//                         onTap: () { /* TODO: $label */ },
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 8),
-//                           child: Text(
-//                             label,
-//                             style: const TextStyle(
-//                               fontSize: 14,
-//                               color: Colors.white70,
-//                             ),
-//                           ),
-//                         ),
-//                       );
-//                     }).toList(),
-//                   ),
-//                 ],
-//               ),
-//             ),
+//                     if (_sitesOpen) _buildSubItem('View All Sites', () {/*TODO*/}),
 
-//             // Sign Out
-//             Padding(
-//               padding: const EdgeInsets.symmetric(vertical: 12),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   IconButton(
-//                     icon: const Icon(Icons.logout, color: Color(0xFFFBDF3B)),
-//                     onPressed: () { /* TODO: Sign Out */ },
-//                   ),
-//                   const SizedBox(width: 8),
-//                   const Text(
-//                     'Sign Out',
-//                     style: TextStyle(fontSize: 16, color: Colors.white70),
-//                   ),
-//                 ],
-//               ),
-//             ),
+                   
 
-//             // Version
-//             const Padding(
-//               padding: EdgeInsets.only(bottom: 16),
-//               child: Text(
-//                 'Version v1.0.0',
-//                 style: TextStyle(color: Colors.white38, fontSize: 12),
-//                 textAlign: TextAlign.center,
+//                     ListTile(
+//   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+//   leading: Icon(Icons.event_note, color: cs.onSurface),
+//   title: Text(
+//     'Activities',
+//     style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface),
+//   ),
+//   onTap: () {
+//     Navigator.pop(context); // close the drawer first
+//     Navigator.of(context).push(
+//       MaterialPageRoute(builder: (_) => const CreateActivityScreen()),
+//     );
+//   },
+// ),
+
+//                     ListTile(
+//                       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+//                       leading: Icon(Icons.bar_chart, color: cs.onSurface),
+//                       title: Text('Analytics', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+//                       onTap: () {/*TODO*/},
+//                     ),
+//                     ListTile(
+//                       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+//                       leading: Icon(Icons.notifications, color: cs.onSurface),
+//                       title: Text('Reminders', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+//                       onTap: () {/*TODO*/},
+//                     ),
+
+//                     // User Management
+//                     _buildMainItem(
+//                       icon: Icons.person,
+//                       label: 'User Management',
+//                       isOpen: _usersOpen,
+//                       onTap: () => setState(() => _usersOpen = !_usersOpen),
+//                     ),
+//                     if (_usersOpen) for (var sub in _userSubs) _buildSubItem(sub, () {/*TODO*/}),
+//                   ],
+//                 ),
 //               ),
-//             ),
-//           ],
+
+//               // SIGN OUT
+//               Padding(
+//                 padding: const EdgeInsets.symmetric(vertical: 12),
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     IconButton(
+//                       icon: Icon(Icons.logout, color: AppTheme.accentColor),
+//                       onPressed: () {/*TODO*/},
+//                     ),
+//                     const SizedBox(width: 8),
+//                     Text('Sign Out', style: TextStyle(fontSize: 16, color: cs.onSurfaceVariant)),
+//                   ],
+//                 ),
+//               ),
+
+//               // VERSION
+//               Padding(
+//                 padding: const EdgeInsets.only(bottom: 16),
+//                 child: Text(
+//                   'Version v1.0.0',
+//                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+//                   textAlign: TextAlign.center,
+//                 ),
+//               ),
+//             ],
+//           ),
 //         ),
 //       ),
 //     );
@@ -234,10 +200,10 @@
 // }
 
 
-// lib/ui/widgets/app_drawer.dart
-
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../utils/responsive.dart';
+import '../screens/activities/Create_activity.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -251,7 +217,7 @@ class _AppDrawerState extends State<AppDrawer> {
   bool _sitesOpen    = false;
   bool _usersOpen    = false;
 
-  final List<String> _userSubs = [
+  final List<String> _userSubs = const [
     'Add PM +',
     'Add BDM +',
     'Add NOC +',
@@ -267,162 +233,152 @@ class _AppDrawerState extends State<AppDrawer> {
     required bool isOpen,
     required VoidCallback onTap,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      leading: Icon(icon, color: Colors.white),
-      title: Text(label, style: AppTheme.bodyText),
-      trailing: Icon(
-        isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-        color: Colors.white54,
-      ),
+      leading: Icon(icon, color: cs.onSurface),
+      title: Text(label, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+      trailing: Icon(isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: cs.onSurfaceVariant),
       onTap: onTap,
     );
   }
 
   Widget _buildSubItem(String label, VoidCallback onTap) {
+    final cs = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.only(left: 16 + 56, top: 8, bottom: 8),
-        child: Text(label, style: const TextStyle(fontSize: 14, color: Colors.white70)),
+        child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Drawer(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: cs.surface,
       child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // HEADER
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Row(
-                children: [
-                  Image.asset('assets/pmgt_logo.png', width: 40, height: 40),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Atlas',
-                        style: TextStyle(
-                          fontFamily: 'Sansation',
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: responsivePadding(context).copyWith(top: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // HEADER
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+                child: Row(
+                  children: [
+                    Image.asset('assets/pmgt_logo.png', width: 40, height: 40),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Atlas',
+                          style: const TextStyle(
+                            fontFamily: 'Sansation',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ).copyWith(color: cs.onSurface),
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Project Management Tool',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // SINGLE DIVIDER
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Divider(color: Colors.white24),
-            ),
-
-            // MENU
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  // Projects
-                  _buildMainItem(
-                    icon: Icons.folder_open,
-                    label: 'Projects',
-                    isOpen: _projectsOpen,
-                    onTap: () => setState(() => _projectsOpen = !_projectsOpen),
-                  ),
-                  if (_projectsOpen) ...[
-                    _buildSubItem('View All Projects', () {/*TODO*/}),
-                    _buildSubItem('Add Project +', () {/*TODO*/}),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Project Management Tool',
+                          style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ],
-
-                  // Sites
-                  _buildMainItem(
-                    icon: Icons.location_on,
-                    label: 'Sites',
-                    isOpen: _sitesOpen,
-                    onTap: () => setState(() => _sitesOpen = !_sitesOpen),
-                  ),
-                  if (_sitesOpen) 
-                    _buildSubItem('View All Sites', () {/*TODO*/}),
-
-                  // Flat items
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: const Icon(Icons.event_note, color: Colors.white),
-                    title: const Text('Activities', style: AppTheme.bodyText),
-                    onTap: () {/*TODO*/},
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: const Icon(Icons.bar_chart, color: Colors.white),
-                    title: const Text('Analytics', style: AppTheme.bodyText),
-                    onTap: () {/*TODO*/},
-                  ),
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: const Icon(Icons.notifications, color: Colors.white),
-                    title: const Text('Reminders', style: AppTheme.bodyText),
-                    onTap: () {/*TODO*/},
-                  ),
-
-                  // User Management
-                  _buildMainItem(
-                    icon: Icons.person,
-                    label: 'User Management',
-                    isOpen: _usersOpen,
-                    onTap: () => setState(() => _usersOpen = !_usersOpen),
-                  ),
-                  if (_usersOpen)
-                    for (var sub in _userSubs)
-                      _buildSubItem(sub, () {/*TODO*/}),
-                ],
+                ),
               ),
-            ),
 
-            // SIGN OUT
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: Color(0xFFFBDF3B)),
-                    onPressed: () {/*TODO*/},
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Sign Out',
-                    style: TextStyle(fontSize: 16, color: Colors.white70),
-                  ),
-                ],
-              ),
-            ),
+              Divider(color: cs.outlineVariant, height: 1),
 
-            // VERSION
-            const Padding(
-              padding: EdgeInsets.only(bottom: 16),
-              child: Text(
-                'Version v1.0.0',
-                style: TextStyle(color: Colors.white38, fontSize: 12),
-                textAlign: TextAlign.center,
+              // MENU
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildMainItem(
+                      icon: Icons.folder_open,
+                      label: 'Projects',
+                      isOpen: _projectsOpen,
+                      onTap: () => setState(() => _projectsOpen = !_projectsOpen),
+                    ),
+                    if (_projectsOpen) ...[
+                      _buildSubItem('View All Projects', () {/* TODO */}),
+                      _buildSubItem('Add Project +', () {/* TODO */}),
+                    ],
+
+                    _buildMainItem(
+                      icon: Icons.location_on,
+                      label: 'Sites',
+                      isOpen: _sitesOpen,
+                      onTap: () => setState(() => _sitesOpen = !_sitesOpen),
+                    ),
+                    if (_sitesOpen) _buildSubItem('View All Sites', () {/* TODO */}),
+
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: Icon(Icons.event_note, color: cs.onSurface),
+                      title: Text('Activities',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+                      onTap: () {
+                        Navigator.pop(context); // close drawer
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CreateActivityScreen()));
+                      },
+                    ),
+
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: Icon(Icons.bar_chart, color: cs.onSurface),
+                      title: Text('Analytics',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+                      onTap: () {/* TODO */},
+                    ),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: Icon(Icons.notifications, color: cs.onSurface),
+                      title: Text('Reminders',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: cs.onSurface)),
+                      onTap: () {/* TODO */},
+                    ),
+
+                    _buildMainItem(
+                      icon: Icons.person,
+                      label: 'User Management',
+                      isOpen: _usersOpen,
+                      onTap: () => setState(() => _usersOpen = !_usersOpen),
+                    ),
+                    if (_usersOpen) for (var sub in _userSubs) _buildSubItem(sub, () {/* TODO */}),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              // SIGN OUT
+              Container(
+                decoration: BoxDecoration(border: Border(top: BorderSide(color: cs.outlineVariant))),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(icon: Icon(Icons.logout, color: AppTheme.accentColor), onPressed: () {/* TODO */}),
+                    const SizedBox(width: 8),
+                    Text('Sign Out', style: TextStyle(fontSize: 16, color: cs.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text('Version v1.0.0',
+                    style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12), textAlign: TextAlign.center),
+              ),
+            ],
+          ),
         ),
       ),
     );
