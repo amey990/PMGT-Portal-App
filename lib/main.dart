@@ -17,8 +17,6 @@
 //   }
 // }
 
-
-
 // import 'package:flutter/material.dart';
 // import 'core/theme.dart';
 // import 'core/theme_controller.dart'; // <-- new (we’ll add this file next)
@@ -69,7 +67,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'core/theme_controller.dart';
@@ -85,8 +82,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final ThemeController _themeController =
-      ThemeController(initialMode: ThemeMode.system);
+  final ThemeController _themeController = ThemeController(
+    initialMode: ThemeMode.system,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +101,10 @@ class _MyAppState extends State<MyApp> {
             themeMode: _themeController.mode,
             builder: (context, child) {
               final media = MediaQuery.of(context);
-              final clamped = media.textScaler.clamp(minScaleFactor: 0.9, maxScaleFactor: 1.2);
+              final clamped = media.textScaler.clamp(
+                minScaleFactor: 0.9,
+                maxScaleFactor: 1.2,
+              );
               return MediaQuery(
                 data: media.copyWith(textScaler: clamped),
                 child: child ?? const SizedBox.shrink(),
@@ -116,4 +117,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-

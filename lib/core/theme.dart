@@ -1,50 +1,174 @@
+// import 'package:flutter/material.dart';
+
+// class AppTheme {
+//   // Brand colors you already had
+//   static const Color backgroundDark = Color(0xFF03020C);
+//   static const Color accentColor     = Color(0xFFFFD700);
+//   static const Color textOnDark      = Colors.white;
+
+//   // Optional explicit text styles that you can use in widgets
+//   static const TextStyle heading1 = TextStyle(
+//     fontFamily: 'Sansation',
+//     fontSize: 28,
+//     fontWeight: FontWeight.bold,
+//     color: textOnDark,
+//   );
+
+//   static const TextStyle heading2 = TextStyle(
+//     fontFamily: 'Sansation',
+//     fontSize: 22,
+//     fontWeight: FontWeight.w600,
+//     color: textOnDark,
+//   );
+
+//   static const TextStyle bodyText = TextStyle(
+//     fontFamily: 'Sansation',
+//     fontSize: 16,
+//     color: textOnDark,
+//   );
+
+//   /// ---- THEME DATA ----
+
+//   // Material 3 ColorSchemes derived from your seed color
+//   static final ColorScheme _lightScheme =
+//       ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.light);
+
+//   static final ColorScheme _darkScheme =
+//       ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.dark);
+
+//   /// Light theme (for users who prefer light or when you toggle to light)
+//   static final ThemeData light = ThemeData(
+//     useMaterial3: true,
+//     brightness: Brightness.light,
+//     colorScheme: _lightScheme,
+//     fontFamily: 'Sansation',
+//     scaffoldBackgroundColor: _lightScheme.surface,
+//     appBarTheme: AppBarTheme(
+//       backgroundColor: _lightScheme.surface,
+//       foregroundColor: _lightScheme.onSurface,
+//       elevation: 0,
+//       titleTextStyle: const TextStyle(
+//         fontFamily: 'Sansation',
+//         fontSize: 20,
+//         fontWeight: FontWeight.w600,
+//       ).copyWith(color: _lightScheme.onSurface),
+//       iconTheme: IconThemeData(color: _lightScheme.onSurface),
+//     ),
+//     inputDecorationTheme: const InputDecorationTheme(
+//       border: OutlineInputBorder(),
+//     ),
+//     visualDensity: VisualDensity.adaptivePlatformDensity,
+//   );
+
+//   /// Dark theme (your current default look)
+//   static final ThemeData dark = ThemeData(
+//     useMaterial3: true,
+//     brightness: Brightness.dark,
+//     colorScheme: _darkScheme,
+//     fontFamily: 'Sansation',
+//     scaffoldBackgroundColor: backgroundDark, // keep your deep background
+//     appBarTheme: const AppBarTheme(
+//       backgroundColor: backgroundDark,
+//       elevation: 0,
+//       iconTheme: IconThemeData(color: textOnDark),
+//       titleTextStyle: TextStyle(
+//         fontFamily: 'Sansation',
+//         fontSize: 20,
+//         fontWeight: FontWeight.w600,
+//         color: textOnDark,
+//       ),
+//     ),
+//     inputDecorationTheme: const InputDecorationTheme(
+//       border: OutlineInputBorder(),
+//     ),
+//     visualDensity: VisualDensity.adaptivePlatformDensity,
+//   );
+// }
+
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Brand colors you already had
+  // Brand
+  static const Color accentColor = Color(0xFFFFD700);
   static const Color backgroundDark = Color(0xFF03020C);
-  static const Color accentColor     = Color(0xFFFFD700);
-  static const Color textOnDark      = Colors.white;
 
-  // Optional explicit text styles that you can use in widgets
+  // Optional text styles
   static const TextStyle heading1 = TextStyle(
     fontFamily: 'Sansation',
     fontSize: 28,
     fontWeight: FontWeight.bold,
-    color: textOnDark,
+    color: Colors.white,
   );
-
   static const TextStyle heading2 = TextStyle(
     fontFamily: 'Sansation',
     fontSize: 22,
     fontWeight: FontWeight.w600,
-    color: textOnDark,
+    color: Colors.white,
   );
-
   static const TextStyle bodyText = TextStyle(
     fontFamily: 'Sansation',
     fontSize: 16,
-    color: textOnDark,
+    color: Colors.white,
   );
 
-  /// ---- THEME DATA ----
+  // ---------- Light roles (white page, sheet-like cards) ----------
+  // Page is pure white; cards & filled fields are a soft neutral so they “lift”
+  static const Color _lightScaffold = Colors.white;
+  static const Color _lightCard = Color(
+    0xFFF7F7F7,
+  ); // card/surfaceContainerHighest
+  static const Color _lightPanel = Color(0xFFFAFAFA); // filled inputs
+  static const Color _lightOutline = Color(0xFFE3E3E3);
+  static const Color _lightOutlineV = Color(0xFFEAEAEA);
 
-  // Material 3 ColorSchemes derived from your seed color
-  static final ColorScheme _lightScheme =
-      ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.light);
+  // ---------- Dark roles ----------
+  static const Color _darkScaffold = backgroundDark;
+  static const Color _darkCard = Color(0xFF1E1E22);
+  static const Color _darkPanel = Color(0xFF151519);
+  static const Color _darkOutline = Color(0xFF3C3C43);
+  static const Color _darkOutlineV = Color(0xFF2D2D33);
 
-  static final ColorScheme _darkScheme =
-      ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.dark);
+  static ColorScheme _hardenLight(ColorScheme cs) => cs.copyWith(
+    surface: _lightPanel,
+    surfaceContainerHigh: _lightPanel,
+    surfaceContainerHighest: _lightCard,
+    outline: _lightOutline,
+    outlineVariant: _lightOutlineV,
+    primary: accentColor,
+    secondary: accentColor,
+    onSurface: const Color(0xFF101010),
+    onSurfaceVariant: const Color(0xFF6A6A6A),
+  );
 
-  /// Light theme (for users who prefer light or when you toggle to light)
+  static ColorScheme _hardenDark(ColorScheme cs) => cs.copyWith(
+    surface: _darkPanel,
+    surfaceContainerHigh: _darkPanel,
+    surfaceContainerHighest: _darkCard,
+    outline: _darkOutline,
+    outlineVariant: _darkOutlineV,
+    primary: accentColor,
+    secondary: accentColor,
+    onSurface: Colors.white,
+    onSurfaceVariant: const Color(0xFFBEBEC6),
+  );
+
+  static final ColorScheme _lightScheme = _hardenLight(
+    ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.light),
+  );
+
+  static final ColorScheme _darkScheme = _hardenDark(
+    ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.dark),
+  );
+
+  // ----------------------- Light theme -----------------------
   static final ThemeData light = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: _lightScheme,
     fontFamily: 'Sansation',
-    scaffoldBackgroundColor: _lightScheme.surface,
+    scaffoldBackgroundColor: _lightScaffold, // 👈 true white page
     appBarTheme: AppBarTheme(
-      backgroundColor: _lightScheme.surface,
+      backgroundColor: _lightScaffold,
       foregroundColor: _lightScheme.onSurface,
       elevation: 0,
       titleTextStyle: const TextStyle(
@@ -54,185 +178,89 @@ class AppTheme {
       ).copyWith(color: _lightScheme.onSurface),
       iconTheme: IconThemeData(color: _lightScheme.onSurface),
     ),
-    inputDecorationTheme: const InputDecorationTheme(
-      border: OutlineInputBorder(),
+    cardColor: _lightCard, // 👈 near-white card
+    cardTheme: const CardThemeData(
+      color: _lightCard,
+      surfaceTintColor: Colors.transparent, // no M3 gray tint
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
     ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: _lightPanel, // 👈 subtle fill for textfields
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _lightOutline),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _lightOutlineV),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: accentColor, width: 1.4),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _lightOutline),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    ),
+    dividerColor: _lightOutlineV,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 
-  /// Dark theme (your current default look)
+  // ----------------------- Dark theme -----------------------
   static final ThemeData dark = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: _darkScheme,
     fontFamily: 'Sansation',
-    scaffoldBackgroundColor: backgroundDark, // keep your deep background
+    scaffoldBackgroundColor: _darkScaffold,
     appBarTheme: const AppBarTheme(
-      backgroundColor: backgroundDark,
+      backgroundColor: _darkScaffold,
       elevation: 0,
-      iconTheme: IconThemeData(color: textOnDark),
+      iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
         fontFamily: 'Sansation',
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: textOnDark,
+        color: Colors.white,
       ),
     ),
-    inputDecorationTheme: const InputDecorationTheme(
-      border: OutlineInputBorder(),
+    cardColor: _darkCard,
+    cardTheme: const CardThemeData(
+      color: _darkCard,
+      surfaceTintColor: Colors.transparent,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
     ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: _darkPanel,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _darkOutline),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _darkOutlineV),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: accentColor, width: 1.4),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: _darkOutline),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    ),
+    dividerColor: _darkOutlineV,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
 }
-
-
-// import 'package:flutter/material.dart';
-
-// class AppTheme {
-//   // Brand
-//   static const Color backgroundDark = Color(0xFF0E0D12); // slightly lighter than 0xFF03020C for better contrast
-//   static const Color accentColor     = Color(0xFFFFD700);
-//   static const Color textOnDark      = Colors.white;
-
-//   // Optional text styles
-//   static const TextStyle heading1 = TextStyle(
-//     fontFamily: 'Sansation', fontSize: 28, fontWeight: FontWeight.bold, color: textOnDark,
-//   );
-
-//   static const TextStyle heading2 = TextStyle(
-//     fontFamily: 'Sansation', fontSize: 22, fontWeight: FontWeight.w600, color: textOnDark,
-//   );
-
-//   static const TextStyle bodyText = TextStyle(
-//     fontFamily: 'Sansation', fontSize: 16, color: textOnDark,
-//   );
-
-//   /// --- BASE COLOR ROLES WE CONTROL EXPLICITLY ---
-//   // Light
-//   static const _lightScaffold = Color(0xFFF7F0E3);
-//   static const _lightCard     = Color(0xFFE6E1D7); // visible against scaffold
-//   static const _lightPanel    = Color(0xFFEBE6DC);
-//   static const _lightOutline  = Color(0xFFBDB5A6);
-//   static const _lightOutlineV = Color(0xFFD8D1C4);
-
-//   // Dark
-//   static const _darkScaffold = backgroundDark;
-//   static const _darkCard     = Color(0xFF2B2A2F); // visible against scaffold
-//   static const _darkPanel    = Color(0xFF232227);
-//   static const _darkOutline  = Color(0xFF4B4B52);
-//   static const _darkOutlineV = Color(0xFF3A3A40);
-
-//   /// Material 3 ColorSchemes from seed, then hardened with our roles.
-//   static ColorScheme _hardenLight(ColorScheme cs) => cs.copyWith(
-//         surface: _lightPanel,
-//         surfaceContainerHigh: _lightPanel,
-//         surfaceContainerHighest: _lightCard,
-//         outline: _lightOutline,
-//         outlineVariant: _lightOutlineV,
-//         primary: accentColor,
-//         secondary: accentColor,
-//       );
-
-//   static ColorScheme _hardenDark(ColorScheme cs) => cs.copyWith(
-//         surface: _darkPanel,
-//         surfaceContainerHigh: _darkPanel,
-//         surfaceContainerHighest: _darkCard,
-//         outline: _darkOutline,
-//         outlineVariant: _darkOutlineV,
-//         primary: accentColor,
-//         secondary: accentColor,
-//         onSurface: Colors.white,
-//         onSurfaceVariant: const Color(0xFFBFBCC7),
-//       );
-
-//   static final ColorScheme _lightScheme = _hardenLight(
-//     ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.light),
-//   );
-
-//   static final ColorScheme _darkScheme = _hardenDark(
-//     ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.dark),
-//   );
-
-//   /// Light theme
-//   static final ThemeData light = ThemeData(
-//     useMaterial3: true,
-//     brightness: Brightness.light,
-//     colorScheme: _lightScheme,
-//     fontFamily: 'Sansation',
-//     scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
-//     appBarTheme: AppBarTheme(
-//       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-//       foregroundColor: _lightScheme.onSurface,
-//       elevation: 0,
-//       titleTextStyle: const TextStyle(
-//         fontFamily: 'Sansation', fontSize: 20, fontWeight: FontWeight.w600,
-//       ).copyWith(color: _lightScheme.onSurface),
-//       iconTheme: IconThemeData(color: _lightScheme.onSurface),
-//     ),
-//     cardColor: const Color.fromARGB(255, 244, 244, 243),
-//     cardTheme: const CardTheme(color: _lightCard),
-//     inputDecorationTheme: InputDecorationTheme(
-//       filled: true,
-//       fillColor: _lightPanel,
-//       enabledBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _lightOutline),
-//       ),
-//       disabledBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _lightOutlineV),
-//       ),
-//       focusedBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: accentColor, width: 1.4),
-//       ),
-//       border: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _lightOutline),
-//       ),
-//       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-//     ),
-//     visualDensity: VisualDensity.adaptivePlatformDensity,
-//   );
-
-//   /// Dark theme
-//   static final ThemeData dark = ThemeData(
-//     useMaterial3: true,
-//     brightness: Brightness.dark,
-//     colorScheme: _darkScheme,
-//     fontFamily: 'Sansation',
-//     scaffoldBackgroundColor: _darkScaffold,
-//     appBarTheme: const AppBarTheme(
-//       backgroundColor: _darkScaffold,
-//       elevation: 0,
-//       iconTheme: IconThemeData(color: textOnDark),
-//       titleTextStyle: TextStyle(
-//         fontFamily: 'Sansation', fontSize: 20, fontWeight: FontWeight.w600, color: textOnDark,
-//       ),
-//     ),
-//     cardColor: _darkCard,
-//     cardTheme: const CardTheme(color: _darkCard),
-//     inputDecorationTheme: InputDecorationTheme(
-//       filled: true,
-//       fillColor: _darkPanel,
-//       enabledBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _darkOutline),
-//       ),
-//       disabledBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _darkOutlineV),
-//       ),
-//       focusedBorder: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: accentColor, width: 1.4),
-//       ),
-//       border: OutlineInputBorder(
-//         borderRadius: BorderRadius.circular(8),
-//         borderSide: BorderSide(color: _darkOutline),
-//       ),
-//       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-//     ),
-//     visualDensity: VisualDensity.adaptivePlatformDensity,
-//   );
-// }

@@ -5,7 +5,15 @@
 
 // class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 //   final String? title;
-//   const AppAppBar({super.key, this.title});
+//   final bool centerTitle;
+//   final List<Widget>? actions;
+
+//   const AppAppBar({
+//     super.key,
+//     this.title,
+//     this.centerTitle = false,
+//     this.actions,
+//   });
 
 //   @override
 //   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -23,15 +31,17 @@
 //           onPressed: () => Scaffold.of(ctx).openDrawer(),
 //         ),
 //       ),
+//       centerTitle: centerTitle,
 //       title: title != null
 //           ? Text(
 //               title!,
-//               // use your custom heading but recolor to match theme
-//               style: AppTheme.heading2.copyWith(color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? cs.onSurface),
+//               style: AppTheme.heading2.copyWith(
+//                 color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? cs.onSurface,
+//               ),
 //             )
 //           : null,
 //       actions: [
-//         // Theme toggle
+//         ...?actions,
 //         IconButton(
 //           tooltip: 'Toggle theme',
 //           onPressed: () => ThemeScope.of(context).toggle(),
@@ -40,20 +50,12 @@
 //             color: Theme.of(context).appBarTheme.iconTheme?.color ?? cs.onSurface,
 //           ),
 //         ),
-//         // Profile avatar
 //         IconButton(
 //           icon: ClipOval(
-//             child: Image.asset(
-//               'assets/User_profile.png',
-//               width: 36,
-//               height: 36,
-//               fit: BoxFit.cover,
-//             ),
+//             child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
 //           ),
 //           onPressed: () {
-//             Navigator.of(context).push(
-//               MaterialPageRoute(builder: (_) => const ProfileScreen()),
-//             );
+//             Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
 //           },
 //         ),
 //         const SizedBox(width: 4),
@@ -62,20 +64,22 @@
 //   }
 // }
 
+// lib/widgets/app_appbar.dart
+// AppBar that supports either a text title or a custom `titleWidget` (e.g., ToggleButtons)
 
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
-import '../../core/theme_controller.dart';
-import '../screens/profile/profile_screen.dart';
 
 class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
+  final Widget? titleWidget; // NEW
   final bool centerTitle;
   final List<Widget>? actions;
 
   const AppAppBar({
     super.key,
     this.title,
+    this.titleWidget,
     this.centerTitle = false,
     this.actions,
   });
@@ -97,32 +101,17 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: centerTitle,
-      title: title != null
-          ? Text(
-              title!,
-              style: AppTheme.heading2.copyWith(
-                color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? cs.onSurface,
-              ),
-            )
-          : null,
+      title: titleWidget ??
+          (title != null
+              ? Text(
+                  title!,
+                  style: AppTheme.heading2.copyWith(
+                    color: Theme.of(context).appBarTheme.titleTextStyle?.color ?? cs.onSurface,
+                  ),
+                )
+              : null),
       actions: [
         ...?actions,
-        IconButton(
-          tooltip: 'Toggle theme',
-          onPressed: () => ThemeScope.of(context).toggle(),
-          icon: Icon(
-            Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
-            color: Theme.of(context).appBarTheme.iconTheme?.color ?? cs.onSurface,
-          ),
-        ),
-        IconButton(
-          icon: ClipOval(
-            child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
-          ),
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
-          },
-        ),
         const SizedBox(width: 4),
       ],
     );
