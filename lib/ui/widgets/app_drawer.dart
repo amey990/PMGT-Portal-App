@@ -255,7 +255,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         Navigator.pop(context);
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const ViewAllUsersScreen(),
+                            builder: (_) => const ViewUsersScreen(),
                           ),
                         );
                       }),
