@@ -1,5 +1,4 @@
 // import 'package:flutter/material.dart';
-
 // import '../../../core/theme.dart';
 // import '../../../core/theme_controller.dart';
 // import '../../widgets/app_appbar.dart';
@@ -11,6 +10,7 @@
 //   const MainLayout({
 //     super.key,
 //     this.title,
+//     this.titleWidget, // NEW: custom title (e.g., your Project/Summary ToggleButtons)
 //     this.centerTitle = false,
 //     this.actions,
 //     required this.body,
@@ -24,6 +24,8 @@
 
 //   /// Title in the app bar
 //   final String? title;
+//   /// When provided, overrides [title] and is placed in the middle of the AppBar.
+//   final Widget? titleWidget;
 //   final bool centerTitle;
 //   final List<Widget>? actions;
 
@@ -48,15 +50,14 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final Widget middle =
-//         reserveBottomPadding
-//             ? Padding(
-//               padding: EdgeInsets.only(
-//                 bottom: CustomBottomNavBar.reservedBodyPadding(context),
-//               ),
-//               child: body,
-//             )
-//             : body;
+//     final Widget middle = reserveBottomPadding
+//         ? Padding(
+//             padding: EdgeInsets.only(
+//               bottom: CustomBottomNavBar.reservedBodyPadding(context),
+//             ),
+//             child: body,
+//           )
+//         : body;
 
 //     final content = safeArea ? SafeArea(child: middle) : middle;
 
@@ -65,6 +66,7 @@
 //       extendBody: extendBodyBehindNav,
 //       appBar: AppAppBar(
 //         title: title,
+//         titleWidget: titleWidget, // pass along
 //         centerTitle: centerTitle,
 //         actions: actions,
 //       ),
@@ -79,10 +81,6 @@
 //   }
 // }
 
-// // ---------------------------------------------------------------------------
-// // Optional: Full app shell that manages pages & titles with an IndexedStack.
-// // Drop-in home widget for your MaterialApp.
-// // ---------------------------------------------------------------------------
 // class AppShell extends StatefulWidget {
 //   AppShell({
 //     super.key,
@@ -92,9 +90,9 @@
 //     this.actionsBuilder,
 //     this.onNavChanged,
 //   }) : assert(
-//          pagesLengthMatchesTitles(pages, titles),
-//          'pages and titles length must match',
-//        );
+//           pagesLengthMatchesTitles(pages, titles),
+//           'pages and titles length must match',
+//         );
 
 //   final List<Widget> pages;
 //   final List<String> titles;
@@ -149,9 +147,7 @@
 //           ),
 //           child: Text(
 //             'Replace with your dashboard widgets',
-//             style: Theme.of(
-//               context,
-//             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+//             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
 //           ),
 //         ),
 //       ],
@@ -160,12 +156,10 @@
 // }
 
 
-// lib/widgets/layout/main_layout.dart
-// Reusable app shell that wires your AppBar, Drawer, and custom BottomNavBar
-// Each page supplies only the center `body`; title OR a custom `titleWidget`.
 
+
+//v2//
 import 'package:flutter/material.dart';
-
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
 import '../../widgets/app_appbar.dart';
@@ -177,7 +171,7 @@ class MainLayout extends StatelessWidget {
   const MainLayout({
     super.key,
     this.title,
-    this.titleWidget, // NEW: custom title (e.g., your Project/Summary ToggleButtons)
+    this.titleWidget,
     this.centerTitle = false,
     this.actions,
     required this.body,
@@ -187,59 +181,52 @@ class MainLayout extends StatelessWidget {
     this.safeArea = true,
     this.reserveBottomPadding = true,
     this.drawerEnabled = true,
+    this.drawerMode = DrawerMode.atlas, // <-- NEW
   });
 
-  /// Title in the app bar
   final String? title;
-  /// When provided, overrides [title] and is placed in the middle of the AppBar.
   final Widget? titleWidget;
   final bool centerTitle;
   final List<Widget>? actions;
 
-  /// Middle content
   final Widget body;
 
-  /// Bottom nav state
   final int currentIndex;
   final ValueChanged<int> onTabChanged;
 
-  /// If true, lets content draw under the custom bar (looks nicer with blur/alpha)
   final bool extendBodyBehindNav;
-
-  /// Wrap body with SafeArea
   final bool safeArea;
-
-  /// Adds bottom padding so scrollables don't sit under the bar
   final bool reserveBottomPadding;
-
-  /// Show hamburger drawer
   final bool drawerEnabled;
+
+  /// Choose which drawer to show (Atlas or Accounts).
+  final DrawerMode drawerMode; // <-- NEW
 
   @override
   Widget build(BuildContext context) {
-    final Widget middle = reserveBottomPadding
-        ? Padding(
-            padding: EdgeInsets.only(
-              bottom: CustomBottomNavBar.reservedBodyPadding(context),
-            ),
-            child: body,
-          )
-        : body;
+    final Widget middle =
+        reserveBottomPadding
+            ? Padding(
+              padding: EdgeInsets.only(
+                bottom: CustomBottomNavBar.reservedBodyPadding(context),
+              ),
+              child: body,
+            )
+            : body;
 
     final content = safeArea ? SafeArea(child: middle) : middle;
 
     return Scaffold(
-      // allow the custom stacked nav bar to float over content
       extendBody: extendBodyBehindNav,
       appBar: AppAppBar(
         title: title,
-        titleWidget: titleWidget, // pass along
+        titleWidget: titleWidget,
         centerTitle: centerTitle,
         actions: actions,
       ),
-      drawer: drawerEnabled ? const AppDrawer() : null,
+      // pass the selected drawer mode
+      drawer: drawerEnabled ? AppDrawer(mode: drawerMode) : null,
       body: content,
-      // Your custom nav bar
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
         onTap: onTabChanged,
@@ -248,10 +235,7 @@ class MainLayout extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Optional: Full app shell that manages pages & titles with an IndexedStack.
-// Drop-in home widget for your MaterialApp.
-// ---------------------------------------------------------------------------
+// Optional shell (unchanged)
 class AppShell extends StatefulWidget {
   AppShell({
     super.key,
@@ -261,9 +245,9 @@ class AppShell extends StatefulWidget {
     this.actionsBuilder,
     this.onNavChanged,
   }) : assert(
-          pagesLengthMatchesTitles(pages, titles),
-          'pages and titles length must match',
-        );
+         pagesLengthMatchesTitles(pages, titles),
+         'pages and titles length must match',
+       );
 
   final List<Widget> pages;
   final List<String> titles;
@@ -299,9 +283,7 @@ class _AppShellState extends State<AppShell> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Example placeholder body (delete once your dashboard is plugged in)
-// ---------------------------------------------------------------------------
+/// Example placeholder (unchanged)
 class DashboardBody extends StatelessWidget {
   const DashboardBody({super.key});
   @override
@@ -318,7 +300,9 @@ class DashboardBody extends StatelessWidget {
           ),
           child: Text(
             'Replace with your dashboard widgets',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ],
