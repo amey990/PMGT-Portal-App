@@ -1,49 +1,14 @@
-// import 'package:flutter/material.dart';
-// import '../../../core/theme.dart';
-// import '../../utils/responsive.dart';
-// import '../../widgets/layout/main_layout.dart';
-
-// class AddActivityScreen extends StatelessWidget {
-//   const AddActivityScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final cs = Theme.of(context).colorScheme;
-
-//     return MainLayout(
-//       title: 'Add Activity',
-//       centerTitle: true,
-//       // We’re opening this as a separate page; keep the nav visible but don’t switch tabs here.
-//       currentIndex: 0,
-//       onTabChanged: (_) {},
-
-//       // SafeArea is handled by the AppBar; turning it off avoids extra top padding.
-//       safeArea: false,
-//       reserveBottomPadding: true,
-
-//       body: ListView(
-//         padding: responsivePadding(context).copyWith(top: 12, bottom: 12),
-//         children: [
-//           Card(
-//             color: cs.surfaceVariant,
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(12),
-
-//             ),
-//             child: const SizedBox(height: 180), // empty card placeholder
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../projects/add_project_screen.dart';
+import '../analytics/analytics_screen.dart';
+import '../users/view_users_screen.dart';
+
 
 class AddActivityScreen extends StatefulWidget {
   const AddActivityScreen({super.key});
@@ -130,6 +95,21 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     });
   }
 
+    void _handleTabChange(BuildContext context, int i) {
+  if (i == 2) return; // already on Add Activity
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen();     break;
+    case 1: target = const AddProjectScreen();    break;
+    case 3: target = const AnalyticsScreen();     break;
+    case 4: target = const ViewUsersScreen();     break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (_) => target),
+  );
+}
+
   Future<void> _pickDate({required bool isCompletion}) async {
     final picked = await showDatePicker(
       context: context,
@@ -157,12 +137,18 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     final cs = Theme.of(context).colorScheme;
 
     return MainLayout(
-      title: '',
-      centerTitle: true,
-      currentIndex: 0,
-      onTabChanged: (_) {},
-      safeArea: false,
-      reserveBottomPadding: true,
+      // title: '',
+      // centerTitle: true,
+      // currentIndex: 0,
+      // onTabChanged: (_) {},
+      // safeArea: false,
+      // reserveBottomPadding: true,
+       title: 'Add Activity',          // give it a title (optional but nice)
+  centerTitle: true,
+  currentIndex: 2,                // <-- this tab’s index
+  onTabChanged: (i) => _handleTabChange(context, i),
+  safeArea: false,
+  reserveBottomPadding: true,
       actions: [
         IconButton(
           tooltip:

@@ -4,6 +4,13 @@ import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+// Add below existing imports
+import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
+import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
+import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
+import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
+import 'package:pmgt/ui/screens/users/view_users_screen.dart';
+
 
 class AddPmScreen extends StatefulWidget {
   const AddPmScreen({super.key});
@@ -46,6 +53,22 @@ class _AddPmScreenState extends State<AddPmScreen> {
     });
   }
 
+  int _selectedTab = 0;
+
+void _handleTabChange(int i) {
+  if (i == _selectedTab) return;
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen(); break;
+    case 1: target = const AddProjectScreen(); break;
+    case 2: target = const AddActivityScreen(); break;
+    case 3: target = const AnalyticsScreen(); break;
+    case 4: target = const ViewUsersScreen(); break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+}
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -85,8 +108,10 @@ class _AddPmScreenState extends State<AddPmScreen> {
         ),
         const SizedBox(width: 8),
       ],
-      currentIndex: 0,
-      onTabChanged: (_) {},
+      // currentIndex: 0,
+      // onTabChanged: (_) {},
+      currentIndex: _selectedTab,
+      onTabChanged: (i) => _handleTabChange(i),
       safeArea: false,
       reserveBottomPadding: true,
       body: ListView(

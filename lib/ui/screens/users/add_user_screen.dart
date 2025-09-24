@@ -5,6 +5,12 @@ import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+// Add after existing imports
+import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
+import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
+import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
+import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
+import 'package:pmgt/ui/screens/users/view_users_screen.dart';
 
 class AddUserScreen extends StatefulWidget {
   const AddUserScreen({super.key});
@@ -47,6 +53,35 @@ class _AddUserScreenState extends State<AddUserScreen> {
     });
   }
 
+  int _selectedTab = 0;
+
+  void _handleTabChange(int i) {
+    if (i == _selectedTab) return;
+    late final Widget target;
+    switch (i) {
+      case 0:
+        target = const DashboardScreen();
+        break;
+      case 1:
+        target = const AddProjectScreen();
+        break;
+      case 2:
+        target = const AddActivityScreen();
+        break;
+      case 3:
+        target = const AnalyticsScreen();
+        break;
+      case 4:
+        target = const ViewUsersScreen();
+        break;
+      default:
+        return;
+    }
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -56,9 +91,10 @@ class _AddUserScreenState extends State<AddUserScreen> {
       centerTitle: true,
       actions: [
         IconButton(
-          tooltip: Theme.of(context).brightness == Brightness.dark
-              ? 'Light mode'
-              : 'Dark mode',
+          tooltip:
+              Theme.of(context).brightness == Brightness.dark
+                  ? 'Light mode'
+                  : 'Dark mode',
           icon: Icon(
             Theme.of(context).brightness == Brightness.dark
                 ? Icons.light_mode_outlined
@@ -70,9 +106,9 @@ class _AddUserScreenState extends State<AddUserScreen> {
         IconButton(
           tooltip: 'Profile',
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
           icon: ClipOval(
             child: Image.asset(
@@ -85,8 +121,10 @@ class _AddUserScreenState extends State<AddUserScreen> {
         ),
         const SizedBox(width: 8),
       ],
-      currentIndex: 0,
-      onTabChanged: (_) {},
+      // currentIndex: 0,
+      // onTabChanged: (_) {},
+      currentIndex: _selectedTab,
+      onTabChanged: (i) => _handleTabChange(i),
       safeArea: false,
       reserveBottomPadding: true,
       body: ListView(
@@ -108,13 +146,12 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       Expanded(
                         child: Text(
                           'Create User',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(
-                                color: cs.onSurface,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                       TextButton(onPressed: _clear, child: const Text('Clear')),
@@ -151,23 +188,21 @@ class _AddUserScreenState extends State<AddUserScreen> {
                           label: 'Password *',
                           controller: _passwordCtrl,
                           visible: _showPass,
-                          onToggle: () =>
-                              setState(() => _showPass = !_showPass),
+                          onToggle:
+                              () => setState(() => _showPass = !_showPass),
                         ),
                         _PasswordField(
                           label: 'Confirm Password *',
                           controller: _confirmCtrl,
                           visible: _showConfirm,
-                          onToggle: () =>
-                              setState(() => _showConfirm = !_showConfirm),
+                          onToggle:
+                              () =>
+                                  setState(() => _showConfirm = !_showConfirm),
                         ),
                       ];
 
                       if (!isWide) {
-                        return Column(children: [
-                          ...left,
-                          ...right,
-                        ]);
+                        return Column(children: [...left, ...right]);
                       }
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,8 +316,10 @@ class _TextField extends StatelessWidget {
             borderSide: BorderSide(color: AppTheme.accentColor),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -321,8 +358,10 @@ class _PasswordField extends StatelessWidget {
             borderSide: BorderSide(color: AppTheme.accentColor),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
           suffixIcon: IconButton(
             onPressed: onToggle,
             icon: Icon(
@@ -367,9 +406,12 @@ class _Dropdown<T> extends StatelessWidget {
             iconEnabledColor: cs.onSurfaceVariant,
             dropdownColor: Theme.of(context).scaffoldBackgroundColor,
             style: TextStyle(color: cs.onSurface, fontSize: 14),
-            items: items
-                .map((e) => DropdownMenuItem<T>(value: e, child: Text('$e')))
-                .toList(),
+            items:
+                items
+                    .map(
+                      (e) => DropdownMenuItem<T>(value: e, child: Text('$e')),
+                    )
+                    .toList(),
             hint: Text('Select', style: TextStyle(color: cs.onSurfaceVariant)),
             onChanged: onChanged,
           ),

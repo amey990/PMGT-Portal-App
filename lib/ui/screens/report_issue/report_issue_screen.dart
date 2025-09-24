@@ -1,14 +1,19 @@
 // lib/ui/screens/report_issue/report_issue_screen.dart
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+// Bottom-nav root screens for routing
+import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
+import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
+import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
+import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
+import 'package:pmgt/ui/screens/users/view_users_screen.dart';
+
 
 class ReportIssueScreen extends StatefulWidget {
   const ReportIssueScreen({super.key});
@@ -93,6 +98,21 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
     _clear();
   }
 
+  void _handleTabChange(int i) {
+  if (i == _selectedTab) return;
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen(); break;
+    case 1: target = const AddProjectScreen(); break;
+    case 2: target = const AddActivityScreen(); break;
+    case 3: target = const AnalyticsScreen(); break;
+    case 4: target = const ViewUsersScreen(); break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+}
+
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -133,8 +153,11 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
         const SizedBox(width: 8),
       ],
       // >>> these two are REQUIRED by MainLayout <<<
+      // currentIndex: _selectedTab,
+      // onTabChanged: (i) => setState(() => _selectedTab = i),
       currentIndex: _selectedTab,
-      onTabChanged: (i) => setState(() => _selectedTab = i),
+      onTabChanged: (i) => _handleTabChange(i),
+
 
       reserveBottomPadding: true,
       safeArea: false,

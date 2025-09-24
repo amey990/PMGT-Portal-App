@@ -4,6 +4,11 @@ import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../activities/add_activity_screen.dart';
+import '../analytics/analytics_screen.dart';
+import '../users/view_users_screen.dart';
+
 
 class AddProjectScreen extends StatefulWidget {
   const AddProjectScreen({super.key});
@@ -83,6 +88,22 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     }
   }
 
+  void _handleTabChange(BuildContext context, int i) {
+  if (i == 1) return; // already on Add Project
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen();    break;
+    case 2: target = const AddActivityScreen();  break;
+    case 3: target = const AnalyticsScreen();    break;
+    case 4: target = const ViewUsersScreen();    break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (_) => target),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -90,8 +111,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     return MainLayout(
       title: 'Add Project',
       centerTitle: true,
-      currentIndex: 0,
-      onTabChanged: (_) {},
+      // currentIndex: 0,
+      // onTabChanged: (_) {},
+      currentIndex: 1,                                  
+      onTabChanged: (i) => _handleTabChange(context, i), 
       safeArea: false,
       reserveBottomPadding: true,
       actions: [

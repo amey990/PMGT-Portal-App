@@ -2,12 +2,17 @@
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../projects/add_project_screen.dart';
+import '../activities/add_activity_screen.dart';
+import '../users/view_users_screen.dart';
+
+
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -17,7 +22,7 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  int _selectedTab = 2;
+  // int _selectedTab = 2;
 
   // --- Filters (Generate Report) ---
   String? _project = 'All Projects';
@@ -68,6 +73,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     FlSpot(11, 0),
     FlSpot(12, 0),
   ];
+
+
+  void _handleTabChange(BuildContext context, int i) {
+  if (i == 3) return; // already on Analytics
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen();     break;
+    case 1: target = const AddProjectScreen();    break;
+    case 2: target = const AddActivityScreen();   break;
+    case 4: target = const ViewUsersScreen();     break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (_) => target),
+  );
+}
+
 
   // --- Activities by Category (stacked bar) sample ---
   // One stacked bar showing month buckets
@@ -192,8 +214,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ),
         const SizedBox(width: 8),
       ],
-      currentIndex: _selectedTab,
-      onTabChanged: (i) => setState(() => _selectedTab = i),
+      // currentIndex: _selectedTab,
+      // onTabChanged: (i) => setState(() => _selectedTab = i),
+      currentIndex: 3,                                  // Analytics tab index
+      onTabChanged: (i) => _handleTabChange(context, i), 
       safeArea: false,
       reserveBottomPadding: true,
       body: ListView(

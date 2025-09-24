@@ -4,6 +4,13 @@ import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+// Bottom-nav root screens (for MainLayout routing)
+import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
+import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
+import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
+import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
+import 'package:pmgt/ui/screens/users/view_users_screen.dart';
+
 
 class AddBdmScreen extends StatefulWidget {
   const AddBdmScreen({super.key});
@@ -38,6 +45,22 @@ class _AddBdmScreenState extends State<AddBdmScreen> {
       _assignedProject = null;
     });
   }
+
+  int _selectedTab = 0;
+
+void _handleTabChange(int i) {
+  if (i == _selectedTab) return;
+  late final Widget target;
+  switch (i) {
+    case 0: target = const DashboardScreen(); break;
+    case 1: target = const AddProjectScreen(); break;
+    case 2: target = const AddActivityScreen(); break;
+    case 3: target = const AnalyticsScreen(); break;
+    case 4: target = const ViewUsersScreen(); break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+}
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +103,10 @@ class _AddBdmScreenState extends State<AddBdmScreen> {
         ),
         const SizedBox(width: 8),
       ],
-      currentIndex: 0,
-      onTabChanged: (_) {},
+      // currentIndex: 0,
+      // onTabChanged: (_) {},
+      currentIndex: _selectedTab,
+onTabChanged: (i) => _handleTabChange(i),
       safeArea: false,
       reserveBottomPadding: true,
       body: ListView(
@@ -166,33 +191,7 @@ class _AddBdmScreenState extends State<AddBdmScreen> {
                     },
                   ),
 
-                  // const SizedBox(height: 12),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       // TODO: submit create BDM
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //         const SnackBar(content: Text('BDM created')),
-                  //       );
-                  //     },
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: AppTheme.accentColor,
-                  //       foregroundColor: Colors.black,
-                  //       padding: const EdgeInsets.symmetric(
-                  //         horizontal: 28,
-                  //         vertical: 14,
-                  //       ),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //     ),
-                  //     child: const Text(
-                  //       'Create',
-                  //       style: TextStyle(fontWeight: FontWeight.w800),
-                  //     ),
-                  //   ),
-                  // ),
+                 
                   const SizedBox(height: 16),
                   // wide create button aligned to right (similar to Save on Add Project)
                   Align(
@@ -203,7 +202,7 @@ class _AddBdmScreenState extends State<AddBdmScreen> {
                         onPressed: () {
                           // TODO: hook actual create
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('PM Created')),
+                            const SnackBar(content: Text('BDM Created'))
                           );
                         },
                         style: ElevatedButton.styleFrom(

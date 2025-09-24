@@ -5,6 +5,10 @@ import '../../../core/theme_controller.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
+import '../projects/add_project_screen.dart';
+import '../activities/add_activity_screen.dart';
+import '../analytics/analytics_screen.dart';
+import '../users/view_users_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -13,7 +17,9 @@ class DashboardScreen extends StatefulWidget {
 }
 class _DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedTab = 0; // bottom nav index
+  // int _selectedTab = 0; // bottom nav index
+
+
   // Toggle state for Project vs Summary
   final List<bool> _isSelected = [true, false];
   // Activities filter: index of Today/Tomorrow/Week/Month/All
@@ -110,12 +116,28 @@ class _DashboardScreenState extends State<DashboardScreen>
   };
 
   // placeholder pages for other nav tabs
-  final _pages = const [
-    SizedBox.shrink(),
-    Center(child: Text('Projects')),
-    Center(child: Text('Analytics')),
-    Center(child: Text('Users')),
-  ];
+  // final _pages = const [
+  //   SizedBox.shrink(),
+  //   Center(child: Text('Projects')),
+  //   Center(child: Text('Analytics')),
+  //   Center(child: Text('Users')),
+  // ];
+
+  void _handleTabChange(BuildContext context, int i) {
+  if (i == 0) return; // already on Dashboard
+  late final Widget target;
+  switch (i) {
+    case 1: target = const AddProjectScreen();  break;
+    case 2: target = const AddActivityScreen(); break;
+    case 3: target = const AnalyticsScreen();   break;
+    case 4: target = const ViewUsersScreen();   break;
+    default: return;
+  }
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(builder: (_) => target),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -157,22 +179,30 @@ class _DashboardScreenState extends State<DashboardScreen>
         ),
         const SizedBox(width: 8),
       ],
-      currentIndex: _selectedTab,
-      onTabChanged: (i) => setState(() => _selectedTab = i),
-      safeArea: false,
-      reserveBottomPadding: true,
+      // currentIndex: _selectedTab,
+      // onTabChanged: (i) => setState(() => _selectedTab = i),
+      // safeArea: false,
+      // reserveBottomPadding: true,
 
-      body:
-          _selectedTab == 0
-              ? _buildDashboardContent()
-              : DefaultTextStyle(
-                style: TextStyle(
-                  color: cs.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                child: _pages[_selectedTab],
-              ),
+      // body:
+      //     _selectedTab == 0
+      //         ? _buildDashboardContent()
+      //         : DefaultTextStyle(
+      //           style: TextStyle(
+      //             color: cs.onSurface,
+      //             fontSize: 18,
+      //             fontWeight: FontWeight.w600,
+      //           ),
+      //           child: _pages[_selectedTab],
+      //         ),
+
+      currentIndex: 0,
+onTabChanged: (i) => _handleTabChange(context, i),
+safeArea: false,
+reserveBottomPadding: true,
+
+body: _buildDashboardContent(),
+
     );
   }
 

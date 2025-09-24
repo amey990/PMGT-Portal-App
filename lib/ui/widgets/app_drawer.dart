@@ -747,40 +747,6 @@ class _AppDrawerState extends State<AppDrawer> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // header
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(
-              //     horizontal: 0,
-              //     vertical: 16,
-              //   ),
-              //   child: Row(
-              //     children: [
-              //       Image.asset('assets/pmgt_logo.png', width: 40, height: 40),
-              //       const SizedBox(width: 12),
-              //       Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             'Atlas',
-              //             style: const TextStyle(
-              //               fontFamily: 'Sansation',
-              //               fontSize: 20,
-              //               fontWeight: FontWeight.bold,
-              //             ).copyWith(color: cs.onSurface),
-              //           ),
-              //           const SizedBox(height: 4),
-              //           Text(
-              //             'Project Management Tool',
-              //             style: TextStyle(
-              //               color: cs.onSurfaceVariant,
-              //               fontSize: 12,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ],
-              //   ),
-              // ),
               GestureDetector(
                 onTap: () {
                   // close the drawer first
