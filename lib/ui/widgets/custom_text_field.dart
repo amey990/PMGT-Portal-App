@@ -173,7 +173,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    OutlineInputBorder _b(Color c, [double w = 1]) =>
+    OutlineInputBorder b(Color c, [double w = 1]) =>
         OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: c, width: w));
 
     return Column(
@@ -193,10 +193,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
             // safer fill for both modes
             fillColor: cs.surfaceContainerHigh,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            enabledBorder: _b(cs.outline),
-            disabledBorder: _b(cs.outlineVariant),
-            focusedBorder: _b(cs.primary, 1.4),
-            border: _b(cs.outline),
+            enabledBorder: b(cs.outline),
+            disabledBorder: b(cs.outlineVariant),
+            focusedBorder: b(cs.primary, 1.4),
+            border: b(cs.outline),
             suffix: widget.showAction
                 ? GestureDetector(
                     onTap: widget.onActionTap,

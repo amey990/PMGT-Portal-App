@@ -272,19 +272,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final pad = responsivePadding(context);
     final cs = Theme.of(context).colorScheme;
 
-    OutlineInputBorder _b(Color c, [double w = 1]) =>
+    OutlineInputBorder b(Color c, [double w = 1]) =>
         OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: c, width: w));
 
-    InputDecoration _dec(String label) => InputDecoration(
+    InputDecoration dec(String label) => InputDecoration(
           hintText: label,
           hintStyle: TextStyle(color: cs.onSurfaceVariant),
           filled: true,
           fillColor: cs.surfaceContainerHigh,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          enabledBorder: _b(cs.outline),
-          disabledBorder: _b(cs.outlineVariant),
-          focusedBorder: _b(AppTheme.accentColor, 1.4),
-          border: _b(cs.outline),
+          enabledBorder: b(cs.outline),
+          disabledBorder: b(cs.outlineVariant),
+          focusedBorder: b(AppTheme.accentColor, 1.4),
+          border: b(cs.outline),
         );
 
     return Scaffold(
@@ -315,13 +315,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                   const SizedBox(height: 20),
 
-                  _LabeledField(label: 'Code', controller: _code, decoration: _dec('Code')),
+                  _LabeledField(label: 'Code', controller: _code, decoration: dec('Code')),
                   const SizedBox(height: 16),
 
-                  _PasswordField(label: 'New Password', controller: _newPass, decoration: _dec('New Password')),
+                  _PasswordField(label: 'New Password', controller: _newPass, decoration: dec('New Password')),
                   const SizedBox(height: 16),
 
-                  _PasswordField(label: 'Confirm Password', controller: _confirmPass, decoration: _dec('Confirm Password')),
+                  _PasswordField(label: 'Confirm Password', controller: _confirmPass, decoration: dec('Confirm Password')),
                   const SizedBox(height: 24),
 
                   GradientButton(

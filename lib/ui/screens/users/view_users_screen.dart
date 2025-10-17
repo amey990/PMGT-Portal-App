@@ -31,7 +31,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
     'Users',
     'Customer',
   ];
-  late List<bool> _isSelected = List<bool>.generate(
+  late final List<bool> _isSelected = List<bool>.generate(
     _segments.length,
     (i) => i == 0,
   );

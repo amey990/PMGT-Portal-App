@@ -182,7 +182,7 @@ class _UpdateSiteModalState extends State<UpdateSiteModal> {
                       const SizedBox(height: 12),
 
                       DropdownButtonFormField<String>(
-                        value: widget.subProjects.contains(_subProject) ? _subProject : null,
+                        initialValue: widget.subProjects.contains(_subProject) ? _subProject : null,
                         items: widget.subProjects
                             .map((sp) => DropdownMenuItem(value: sp, child: Text(sp)))
                             .toList(),
@@ -249,7 +249,7 @@ class _UpdateSiteModalState extends State<UpdateSiteModal> {
                       const SizedBox(height: 12),
 
                       DropdownButtonFormField<String>(
-                        value: widget.statusOptions.contains(_status) ? _status : null,
+                        initialValue: widget.statusOptions.contains(_status) ? _status : null,
                         items: widget.statusOptions
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                             .toList(),

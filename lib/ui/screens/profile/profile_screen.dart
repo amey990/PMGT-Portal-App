@@ -335,7 +335,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../core/theme.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/gradient_button.dart';

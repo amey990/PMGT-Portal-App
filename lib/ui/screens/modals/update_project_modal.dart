@@ -81,7 +81,7 @@ class _UpdateProjectModalState extends State<UpdateProjectModal> {
   late String _amcYear  = widget.project.amcYear;
   late String _amcMonths= widget.project.amcMonths;
 
-  late List<String> _subProjects = [...widget.project.subProjects];
+  late final List<String> _subProjects = [...widget.project.subProjects];
 
   // demo lists — swap with live data
   final _customers = const ['TCL GSTN', 'ACME Corp', 'Globex'];
@@ -111,7 +111,7 @@ class _UpdateProjectModalState extends State<UpdateProjectModal> {
     }
     final picked = await showDatePicker(
       context: context,
-      initialDate: init!,
+      initialDate: init,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );

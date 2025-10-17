@@ -24,7 +24,7 @@ class ReportIssueScreen extends StatefulWidget {
 
 class _ReportIssueScreenState extends State<ReportIssueScreen> {
   // bottom nav state required by MainLayout
-  int _selectedTab = 0;
+  final int _selectedTab = 0;
 
   // form controllers
   final _nameCtrl = TextEditingController();

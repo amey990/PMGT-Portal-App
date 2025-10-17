@@ -27,7 +27,7 @@ class ViewProjectsScreen extends StatefulWidget {
 
 class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   
-  int _selectedTab = 1;
+  final int _selectedTab = 1;
 
   // Filter + sample data
   final List<String> _projectFilter = const ['All', 'NPCI', 'TelstraApari', 'BPCL Aruba WIFI'];

@@ -157,7 +157,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:pmgt/ui/screens/Auth/reset_password_screen.dart';
-import '../../../core/theme.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/gradient_button.dart';
 import '../../widgets/custom_text_field.dart';

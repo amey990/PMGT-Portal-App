@@ -29,18 +29,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final pad = responsivePadding(context);
     final cs = Theme.of(context).colorScheme;
 
-    OutlineInputBorder _b(Color c, [double w = 1]) =>
+    OutlineInputBorder b(Color c, [double w = 1]) =>
         OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: c, width: w));
 
-    InputDecoration _dec(String label) => InputDecoration(
+    InputDecoration dec(String label) => InputDecoration(
           hintText: label,
           hintStyle: TextStyle(color: cs.onSurfaceVariant),
           filled: true,
           fillColor: cs.surfaceContainerHigh,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          enabledBorder: _b(cs.outline),
-          focusedBorder: _b(AppTheme.accentColor, 1.4),
-          border: _b(cs.outline),
+          enabledBorder: b(cs.outline),
+          focusedBorder: b(AppTheme.accentColor, 1.4),
+          border: b(cs.outline),
         );
 
     return Scaffold(
@@ -69,12 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Email',
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: _dec('Email'),
+                    decoration: dec('Email'),
                   ),
                   const SizedBox(height: 16),
 
                   // Password with toggle
-                  _PasswordField(label: 'Password', controller: _password, decoration: _dec('Password')),
+                  _PasswordField(label: 'Password', controller: _password, decoration: dec('Password')),
                   const SizedBox(height: 8),
 
                   Align(

@@ -43,6 +43,7 @@ dependencies:
   fl_chart: ^0.66.2
   csc_picker_plus: ^0.0.3
   http: ^1.5.0
+  dio: ^5.9.0
   
 
 dev_dependencies:

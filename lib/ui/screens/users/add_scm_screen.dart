@@ -48,7 +48,7 @@ class _AddScmScreenState extends State<AddScmScreen> {
     });
   }
 
-  int _selectedTab = 0;
+  final int _selectedTab = 0;
 
 void _handleTabChange(int i) {
   if (i == _selectedTab) return;

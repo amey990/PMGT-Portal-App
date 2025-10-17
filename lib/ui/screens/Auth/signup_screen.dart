@@ -473,18 +473,18 @@ class _SignupScreenState extends State<SignupScreen> {
     final safeBottom = MediaQuery.of(context).padding.bottom;
     final bottomGap = (viewInsets > 0 ? viewInsets : safeBottom);
 
-    OutlineInputBorder _b(Color c, [double w = 1]) =>
+    OutlineInputBorder b(Color c, [double w = 1]) =>
         OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: c, width: w));
 
-    InputDecoration _dec(String label) => InputDecoration(
+    InputDecoration dec(String label) => InputDecoration(
           hintText: label,
           hintStyle: TextStyle(color: cs.onSurfaceVariant),
           filled: true,
           fillColor: cs.surfaceContainerHigh,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          enabledBorder: _b(cs.outline),
-          focusedBorder: _b(AppTheme.accentColor, 1.4),
-          border: _b(cs.outline),
+          enabledBorder: b(cs.outline),
+          focusedBorder: b(AppTheme.accentColor, 1.4),
+          border: b(cs.outline),
         );
 
     return Scaffold(
@@ -524,7 +524,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       final usernameField = _LabeledField(
                         label: 'Username',
                         controller: _username,
-                        decoration: _dec('Username'),
+                        decoration: dec('Username'),
                       );
 
                       final roleDropdown = _RoleDropdown(
@@ -554,13 +554,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   const SizedBox(height: 16),
 
-                  _LabeledField(label: 'Email', controller: _email, keyboardType: TextInputType.emailAddress, decoration: _dec('Email')),
+                  _LabeledField(label: 'Email', controller: _email, keyboardType: TextInputType.emailAddress, decoration: dec('Email')),
                   const SizedBox(height: 16),
 
-                  _PasswordField(label: 'Password', controller: _password, decoration: _dec('Password')),
+                  _PasswordField(label: 'Password', controller: _password, decoration: dec('Password')),
                   const SizedBox(height: 16),
 
-                  _PasswordField(label: 'Confirm Password', controller: _confirm, decoration: _dec('Confirm Password')),
+                  _PasswordField(label: 'Confirm Password', controller: _confirm, decoration: dec('Confirm Password')),
                   const SizedBox(height: 24),
 
                   GradientButton(
@@ -590,7 +590,7 @@ class _RoleDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    OutlineInputBorder _b(Color c, [double w = 1]) =>
+    OutlineInputBorder b(Color c, [double w = 1]) =>
         OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: c, width: w));
 
     return Column(
@@ -599,14 +599,14 @@ class _RoleDropdown extends StatelessWidget {
         Text('Role', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           isExpanded: true,
           decoration: InputDecoration(
             filled: true,
             fillColor: cs.surfaceContainerHigh,
-            enabledBorder: _b(cs.outline),
-            focusedBorder: _b(AppTheme.accentColor, 1.4),
-            border: _b(cs.outline),
+            enabledBorder: b(cs.outline),
+            focusedBorder: b(AppTheme.accentColor, 1.4),
+            border: b(cs.outline),
             hintText: 'Select Role',
             hintStyle: TextStyle(color: cs.onSurfaceVariant),
           ),

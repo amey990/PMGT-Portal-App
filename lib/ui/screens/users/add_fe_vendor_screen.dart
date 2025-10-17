@@ -78,7 +78,7 @@ class _AddFEVendorScreenState extends State<AddFEVendorScreen> {
     });
   }
 
-  int _selectedTab = 0;
+  final int _selectedTab = 0;
 
 void _handleTabChange(int i) {
   if (i == _selectedTab) return;
@@ -391,7 +391,6 @@ class _TextField extends StatelessWidget {
   const _TextField({
     required this.label,
     required this.controller,
-    this.maxLines = 1,
     this.keyboardType,
   });
 

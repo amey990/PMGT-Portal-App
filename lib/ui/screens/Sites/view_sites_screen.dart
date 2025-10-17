@@ -795,7 +795,7 @@ class _AllSitesScreenState extends State<AllSitesScreen> {
         _currentPage = p.clamp(1, _totalPages);
       });
 
-  int _selectedTab = 0;
+  final int _selectedTab = 0;
 
   void _handleTabChange(int i) {
     if (i == _selectedTab) return;
@@ -955,7 +955,7 @@ class _AllSitesScreenState extends State<AllSitesScreen> {
 class _SiteCard extends StatelessWidget {
   final Site site;
   final ValueChanged<Site> onUpdate;
-  const _SiteCard({required this.site, required this.onUpdate, super.key});
+  const _SiteCard({required this.site, required this.onUpdate});
 
   @override
   Widget build(BuildContext context) {

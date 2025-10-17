@@ -216,7 +216,9 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
 
   void _clearRows() {
     setState(() {
-      for (final r in _rows) r.dispose();
+      for (final r in _rows) {
+        r.dispose();
+      }
       _rows
         ..clear()
         ..add(_LineItem(site: _siteNameCtrl.text));
@@ -548,10 +550,11 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
                               setState(() {
                                 r.dispose();
                                 _rows.removeAt(i);
-                                if (_rows.isEmpty)
+                                if (_rows.isEmpty) {
                                   _rows.add(
                                     _LineItem(site: _siteNameCtrl.text),
                                   );
+                                }
                               });
                             },
                             icon: Icon(Icons.close, color: cs.onSurfaceVariant),
@@ -561,7 +564,7 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
 
               // Total (computed)
               Align(

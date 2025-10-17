@@ -131,7 +131,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
     _clearCreate();
   }
 
-  int _selectedTab =
+  final int _selectedTab =
       0; // 0 Dashboard, 1 Projects, 2 Add Activity, 3 Analytics, 4 Users
 
   void _handleTabChange(int i) {

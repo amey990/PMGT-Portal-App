@@ -46,7 +46,7 @@ class _AddBdmScreenState extends State<AddBdmScreen> {
     });
   }
 
-  int _selectedTab = 0;
+  final int _selectedTab = 0;
 
 void _handleTabChange(int i) {
   if (i == _selectedTab) return;

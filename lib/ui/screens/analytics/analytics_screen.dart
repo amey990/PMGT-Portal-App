@@ -289,7 +289,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: cs.surfaceVariant,
+                        backgroundColor: cs.surfaceContainerHighest,
                         foregroundColor: cs.onSurface,
                       ),
                       onPressed: () {},
