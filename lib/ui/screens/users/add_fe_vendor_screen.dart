@@ -4,7 +4,6 @@ import '../profile/profile_screen.dart';
 import '../../../core/theme.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
-// Bottom-nav root screens for MainLayout routing
 import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
 import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
 import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
@@ -383,15 +382,60 @@ class _FieldShell extends StatelessWidget {
   }
 }
 
+// class _TextField extends StatelessWidget {
+//   final String label;
+//   final TextEditingController controller;
+//   final int maxLines;
+//   final TextInputType? keyboardType;
+//   const _TextField({
+//     required this.label,
+//     required this.controller,
+//     this.keyboardType,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+//     return _FieldShell(
+//       label: label,
+//       child: TextField(
+//         controller: controller,
+//         maxLines: maxLines,
+//         keyboardType: keyboardType,
+//         style: TextStyle(color: cs.onSurface),
+//         decoration: InputDecoration(
+//           filled: true,
+//           fillColor: cs.surface,
+//           enabledBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: cs.outlineVariant),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           focusedBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: AppTheme.accentColor),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           contentPadding: const EdgeInsets.symmetric(
+//             horizontal: 12,
+//             vertical: 12,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
 class _TextField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final int maxLines;
   final TextInputType? keyboardType;
+
   const _TextField({
     required this.label,
     required this.controller,
     this.keyboardType,
+    this.maxLines = 1, 
   });
 
   @override
@@ -401,7 +445,7 @@ class _TextField extends StatelessWidget {
       label: label,
       child: TextField(
         controller: controller,
-        maxLines: maxLines,
+        maxLines: maxLines,               // <-- uses the value
         keyboardType: keyboardType,
         style: TextStyle(color: cs.onSurface),
         decoration: InputDecoration(
@@ -424,6 +468,7 @@ class _TextField extends StatelessWidget {
     );
   }
 }
+
 
 class _ROText extends StatelessWidget {
   final String label;

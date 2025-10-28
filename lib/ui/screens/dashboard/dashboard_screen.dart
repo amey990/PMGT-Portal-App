@@ -1,5 +1,10 @@
+// import 'dart:convert';
 // import 'dart:math';
+
+// import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+
 // import '../../../core/theme.dart';
 // import '../../../core/theme_controller.dart';
 // import '../../utils/responsive.dart';
@@ -11,91 +16,511 @@
 // import '../users/view_users_screen.dart';
 // import '../modals/update_activity_modal.dart';
 
+// // ===================== API BASE =====================
+// const String kApiBase = 'https://pmgt.commedialabs.com';
+
+// // ===================== DATA MODELS ==================
+// class Project {
+//   final String id;
+//   final String name;
+//   Project({required this.id, required this.name});
+//   factory Project.fromJson(Map<String, dynamic> j) =>
+//       Project(id: j['id']?.toString() ?? '', name: j['project_name'] ?? '');
+// }
+
+// class SubProject {
+//   final String id;
+//   final String name;
+//   SubProject({required this.id, required this.name});
+//   factory SubProject.fromJson(Map<String, dynamic> j) =>
+//       SubProject(id: j['id']?.toString() ?? '', name: j['name'] ?? j['sub_project_name'] ?? '');
+// }
+
+// class SiteAPI {
+//   final String projectId;
+//   final String projectName;
+//   final String siteId;
+//   final String siteName;
+//   final String country;
+//   final String state;
+//   final String district;
+//   final String city;
+//   final String address;
+//   final String? subProjectId;
+//   final String? subProjectName;
+
+//   SiteAPI({
+//     required this.projectId,
+//     required this.projectName,
+//     required this.siteId,
+//     required this.siteName,
+//     required this.country,
+//     required this.state,
+//     required this.district,
+//     required this.city,
+//     required this.address,
+//     this.subProjectId,
+//     this.subProjectName,
+//   });
+
+//   factory SiteAPI.fromJson(Map<String, dynamic> j) => SiteAPI(
+//         projectId: j['project_id']?.toString() ?? '',
+//         projectName: j['project_name'] ?? '',
+//         siteId: j['site_id']?.toString() ?? '',
+//         siteName: j['site_name'] ?? '',
+//         country: j['country'] ?? '',
+//         state: j['state'] ?? '',
+//         district: j['district'] ?? '',
+//         city: j['city'] ?? '',
+//         address: j['address'] ?? '',
+//         subProjectId: j['sub_project_id']?.toString(),
+//         subProjectName: j['sub_project_name'],
+//       );
+// }
+
+// class FieldEngineer {
+//   final String id;
+//   final String name;
+//   final String mobile;
+//   final String vendor;
+//   FieldEngineer({required this.id, required this.name, required this.mobile, required this.vendor});
+//   factory FieldEngineer.fromJson(Map<String, dynamic> j) => FieldEngineer(
+//         id: j['id']?.toString() ?? '',
+//         name: j['full_name'] ?? '',
+//         mobile: j['contact_no'] ?? '',
+//         vendor: j['contact_person'] ?? '',
+//       );
+// }
+
+// class NocEngineer {
+//   final String id;
+//   final String name;
+//   NocEngineer({required this.id, required this.name});
+//   factory NocEngineer.fromJson(Map<String, dynamic> j) =>
+//       NocEngineer(id: j['id']?.toString() ?? '', name: j['full_name'] ?? '');
+// }
+
+// // Row used for UI (aligned to the Web)
+// class Activity {
+//   final String id;
+//   final String tNo;
+//   final String date; // yyyy-MM-dd
+//   final String completionDate; // yyyy-MM-dd
+//   final String projectId;
+//   final String project;
+//   final String? subProject; // name
+//   final String? subProjectId;
+//   final String activity;
+//   final String country;
+//   final String state;
+//   final String district;
+//   final String city;
+//   final String address;
+//   final String siteId;   // code
+//   final String siteName; // name
+//   final String pm;
+//   final String vendor;
+//   final String? fieldEngineerId;
+//   final String feName;
+//   final String feMobile;
+//   final String? nocEngineerId;
+//   final String nocEngineer;
+//   final String remarks;
+//   final String status;
+
+//   Activity({
+//     required this.id,
+//     required this.tNo,
+//     required this.date,
+//     required this.completionDate,
+//     required this.projectId,
+//     required this.project,
+//     required this.subProject,
+//     required this.subProjectId,
+//     required this.activity,
+//     required this.country,
+//     required this.state,
+//     required this.district,
+//     required this.city,
+//     required this.address,
+//     required this.siteId,
+//     required this.siteName,
+//     required this.pm,
+//     required this.vendor,
+//     required this.fieldEngineerId,
+//     required this.feName,
+//     required this.feMobile,
+//     required this.nocEngineerId,
+//     required this.nocEngineer,
+//     required this.remarks,
+//     required this.status,
+//   });
+
+//   // UI helpers
+//   String get scheduledDate =>
+//       date.isEmpty ? '' : '${date.substring(8, 10)}/${date.substring(5, 7)}/${date.substring(0, 4)}';
+//   String get completionDateDmy => completionDate.isEmpty
+//       ? ''
+//       : '${completionDate.substring(8, 10)}/${completionDate.substring(5, 7)}/${completionDate.substring(0, 4)}';
+// }
+
+// // ===================== UI ===========================
 // class DashboardScreen extends StatefulWidget {
 //   const DashboardScreen({super.key});
 //   @override
 //   State<DashboardScreen> createState() => _DashboardScreenState();
 // }
 
-// class _DashboardScreenState extends State<DashboardScreen>
-//     with SingleTickerProviderStateMixin {
+// class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
 //   // Toggle state for Project vs Summary
 //   final List<bool> _isSelected = [true, false];
 
-//   // Activities filter: index of Today/Tomorrow/Week/Month/All
-//   int _activityTimeIndex = 4; // default to "All"
+//   // -------- Filters ----------
+//   int _activityTimeIndex = 4; // All
+//   String _selectedProject = 'all';
+//   String _selectedSubProject = 'all';
+//   String _selectedStatus = 'all';
+//   String _search = '';
 
-//   // Dropdown selections
-//   String _selectedProject = 'All';
-//   String _selectedStatus = 'All';
-
-//   // pagination
+//   // pagination (client side)
 //   int _currentPage = 1;
-//   final List<int> _perPageOptions = [5, 10, 15, 20];
-//   int _perPage = 10;
+//   final List<int> _perPageOptions = [10, 20, 30, 50];
+//   int _perPage = 20;
 
-//   // sample list of projects & statuses
-//   final List<String> _projects = const [
-//     'All',
-//     'NPCI',
-//     'TelstraApari',
-//     'BPCL Aruba WIFI',
-//   ];
-//   final List<String> _statuses = const [
-//     'All',
-//     'Open',
-//     'Completed',
-//     'Pending',
-//     'In Progress',
-//     'Reschedule',
-//     'Canceled',
-//   ];
+//   // -------- Lookups + data ----------
+//   bool _loading = false;
+//   List<Project> _projects = [];
+//   List<SubProject> _subProjects = [];
+//   List<SiteAPI> _sites = [];
+//   List<FieldEngineer> _feList = [];
+//   List<NocEngineer> _nocs = [];
+//   List<Activity> _activities = [];
 
-//   /// --- Sample data updated to include the new fields ---
-//   final List<Activity> _activities = List.generate(
-//     30,
-//     (i) => Activity(
-//       ticketNo: 'npci-${(i + 1).toString().padLeft(3, '0')}',
-//       scheduledDate: '23/07/2025',
-//       status: (i % 2 == 0) ? 'Completed' : 'Pending',
-//       project: 'NPCI',
-//       subProject: 'Breakdown – Zone ${i % 3 + 1}',
-//       siteName: 'ABCS',
-//       siteCode: '00${i % 9}',
-//       activity: 'Breakdown',
-//       projectManager: 'Amey',
-//       vendorFe: 'Yes',
-//       feVendorName: 'John Doe',
-//       feVendorMobile: '987654321${i % 10}',
-//       nocEngineer: 'xya',
-//       country: 'India',
-//       state: 'Maharashtra',
-//       district: 'Thane',
-//       city: 'Panvel',
-//       address: 'XYZ',
-//       completionDate: '23-03-2025',
-//       remarks: 'xyz',
-//     ),
-//   );
+//   @override
+//   void initState() {
+//     super.initState();
+//     _bootstrap();
+//   }
 
-//   // --- filtering + paging helpers ---
-//   List<Activity> get _filteredActivities {
-//     return _activities.where((a) {
-//       final okProject =
-//           _selectedProject == 'All' || a.project == _selectedProject;
-//       final okStatus = _selectedStatus == 'All' || a.status == _selectedStatus;
-//       return okProject && okStatus;
+//   Future<void> _bootstrap() async {
+//     setState(() => _loading = true);
+//     try {
+//       debugPrint('[BOOT] start — fetching lookups');
+//       await Future.wait([
+//         _fetchProjects(),
+//         _fetchAllSites(),
+//         _fetchFEs(),
+//         _fetchNOCs(),
+//       ]);
+//       debugPrint('[BOOT] lookups done; loading activities…');
+//       await _loadActivities();
+//       debugPrint('[BOOT] complete. activities=${_activities.length}');
+//     } catch (e, st) {
+//       debugPrint('[BOOT][ERR] $e\n$st');
+//       if (mounted) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text('Failed to load initial data')),
+//         );
+//       }
+//     } finally {
+//       if (mounted) setState(() => _loading = false);
+//     }
+//   }
+
+//   // ============== API helpers ==================
+//   Future<void> _fetchProjects() async {
+//     final uri = Uri.parse('$kApiBase/api/projects');
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /projects -> ${r.statusCode} (${r.body.length} bytes)');
+//     if (r.statusCode == 200) {
+//       final arr = jsonDecode(r.body) as List;
+//       _projects = arr.map((e) => Project.fromJson(e)).toList();
+//       setState(() {});
+//     } else {
+//       debugPrint('[GET][projects][ERR] ${r.body}');
+//     }
+//   }
+
+//   Future<void> _fetchSubProjects(String projectId) async {
+//     _selectedSubProject = 'all';
+//     _subProjects = [];
+//     setState(() {});
+//     if (projectId == 'all') {
+//       debugPrint('[SKIP] sub-projects — project=all');
+//       return;
+//     }
+
+//     final uri = Uri.parse('$kApiBase/api/projects/$projectId/sub-projects');
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /sub-projects -> ${r.statusCode} (${r.body.length} bytes)');
+//     if (r.statusCode == 200) {
+//       final data = jsonDecode(r.body);
+//       final list = (data is List) ? data : (data['sub_projects'] ?? data['data'] ?? []);
+//       _subProjects = (list as List).map((e) => SubProject.fromJson(e)).toList();
+//       debugPrint('[GET] sub-projects count=${_subProjects.length}');
+//       setState(() {});
+//     } else {
+//       debugPrint('[GET][sub-projects][ERR] ${r.body}');
+//     }
+//   }
+
+//   Future<void> _fetchAllSites() async {
+//     final uri = Uri.parse('$kApiBase/api/project-sites');
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /project-sites -> ${r.statusCode} (${r.body.length} bytes)');
+//     if (r.statusCode == 200) {
+//       final arr = jsonDecode(r.body) as List;
+//       _sites = arr.map((e) => SiteAPI.fromJson(e)).toList();
+//       debugPrint('[GET] sites count=${_sites.length}');
+//       setState(() {});
+//     } else {
+//       debugPrint('[GET][sites][ERR] ${r.body}');
+//     }
+//   }
+
+//   Future<void> _fetchFEs() async {
+//     final uri = Uri.parse('$kApiBase/api/field-engineers');
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /field-engineers -> ${r.statusCode} (${r.body.length} bytes)');
+//     if (r.statusCode == 200) {
+//       final data = jsonDecode(r.body);
+//       final raw = (data is List) ? data : (data['field_engineers'] ?? []);
+//       _feList = (raw as List).map((e) => FieldEngineer.fromJson(e)).toList();
+//       debugPrint('[GET] FE count=${_feList.length}');
+//       setState(() {});
+//     } else {
+//       debugPrint('[GET][FEs][ERR] ${r.body}');
+//     }
+//   }
+
+//   Future<void> _fetchNOCs() async {
+//     final uri = Uri.parse('$kApiBase/api/nocs');
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /nocs -> ${r.statusCode} (${r.body.length} bytes)');
+//     if (r.statusCode == 200) {
+//       final data = jsonDecode(r.body);
+//       final list = (data is List) ? data : [];
+//       _nocs = (list as List).map((e) => NocEngineer.fromJson(e)).toList();
+//       debugPrint('[GET] NOC count=${_nocs.length}');
+//       setState(() {});
+//     } else {
+//       debugPrint('[GET][NOCs][ERR] ${r.body}');
+//     }
+//   }
+
+//   String _iso10(dynamic v) {
+//     final s = (v ?? '').toString();
+//     return s.length >= 10 ? s.substring(0, 10) : '';
+//   }
+
+//   Future<void> _loadActivities() async {
+//     final params = <String, String>{"page": "1", "limit": "1000"};
+//     if (_selectedProject != 'all') params['projectId'] = _selectedProject;
+//     if (_selectedSubProject != 'all') params['subProjectId'] = _selectedSubProject;
+
+//     final uri = Uri.parse('$kApiBase/api/activities').replace(queryParameters: params);
+//     debugPrint('[GET] $uri');
+//     final r = await http.get(uri);
+//     debugPrint('[GET] /activities -> ${r.statusCode} (${r.body.length} bytes)');
+
+//     if (r.statusCode != 200) {
+//       debugPrint('[GET][activities][ERR] ${r.body}');
+//       return;
+//     }
+
+//     final data = jsonDecode(r.body);
+//     final rawActs = (data is List) ? data : (data['activities'] ?? []);
+//     final projectsById = {for (final p in _projects) p.id: p.name};
+
+//     List<Activity> rows = [];
+//     for (final a in rawActs) {
+//       final site = _sites.firstWhere(
+//         (s) =>
+//             s.projectId == (a['project_id']?.toString() ?? '') &&
+//             s.siteId == (a['site_id']?.toString() ?? '') &&
+//             (((a['sub_project_id']?.toString() ?? '').isNotEmpty)
+//                 ? s.subProjectId == (a['sub_project_id']?.toString() ?? '')
+//                 : (s.subProjectId == null || s.subProjectId!.isEmpty)),
+//         orElse: () => SiteAPI.fromJson({
+//           'project_id': a['project_id']?.toString(),
+//           'project_name': projectsById[a['project_id']?.toString()] ?? '',
+//           'site_id': a['site_id']?.toString() ?? '',
+//           'site_name': a['site_name'] ?? '',
+//           'country': a['country'] ?? '',
+//           'state': a['state'] ?? '',
+//           'district': a['district'] ?? '',
+//           'city': a['city'] ?? '',
+//           'address': a['address'] ?? '',
+//           'sub_project_id': a['sub_project_id'],
+//           'sub_project_name': a['sub_project_name'] ?? a['sub_project'],
+//         }),
+//       );
+
+//       final fe = _feList.firstWhere(
+//         (f) => f.id == (a['field_engineer_id']?.toString() ?? ''),
+//         orElse: () => FieldEngineer(id: '', name: '', mobile: a['fe_mobile'] ?? '', vendor: a['vendor'] ?? ''),
+//       );
+//       final noc = _nocs.firstWhere(
+//         (n) => n.id == (a['noc_engineer_id']?.toString() ?? ''),
+//         orElse: () => NocEngineer(id: '', name: a['noc_engineer'] ?? ''),
+//       );
+
+//       rows.add(
+//         Activity(
+//           id: a['id']?.toString() ?? '',
+//           tNo: a['ticket_no'] ?? '',
+//           date: _iso10(a['activity_date']),
+//           completionDate: _iso10(a['completion_date']),
+//           projectId: a['project_id']?.toString() ?? '',
+//           project: projectsById[a['project_id']?.toString()] ?? '',
+//           subProject: a['sub_project_name'] ?? a['sub_project'],
+//           subProjectId: a['sub_project_id']?.toString(),
+//           activity: a['activity_category'] ?? '',
+//           country: a['country'] ?? site.country,
+//           state: a['state'] ?? site.state,
+//           district: a['district'] ?? site.district,
+//           city: a['city'] ?? site.city,
+//           address: a['address'] ?? site.address,
+//           siteId: a['site_id']?.toString() ?? '',
+//           siteName: a['site_name'] ?? site.siteName,
+//           pm: a['project_manager'] ?? '',
+//           vendor: a['vendor'] ?? '',
+//           fieldEngineerId: a['field_engineer_id']?.toString(),
+//           feName: fe.name.isNotEmpty ? fe.name : (a['vendor'] ?? ''),
+//           feMobile: fe.mobile.isNotEmpty ? fe.mobile : (a['fe_mobile'] ?? ''),
+//           nocEngineerId: a['noc_engineer_id']?.toString(),
+//           nocEngineer: noc.name,
+//           remarks: a['remarks'] ?? '',
+//           status: a['status'] ?? '',
+//         ),
+//       );
+//     }
+
+//     // sort by numeric part of ticket no
+//     rows.sort((a, b) {
+//       int num(String s) {
+//         final parts = s.split('-');
+//         if (parts.length > 1) {
+//           return int.tryParse(parts.last.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+//         }
+//         return int.tryParse(RegExp(r'\d+').firstMatch(s)?.group(0) ?? '') ?? 0;
+//       }
+
+//       return num(a.tNo).compareTo(num(b.tNo));
+//     });
+
+//     // de-dup by id
+//     final seen = <String>{};
+//     _activities = rows.where((e) => seen.add(e.id)).toList();
+//     _currentPage = 1;
+//     debugPrint('[GET] activities mapped=${_activities.length}');
+//     setState(() {});
+//   }
+
+//   // ============== FILTERING/PAGING ==================
+//   List<Activity> get _dateScoped {
+//     DateTime today0() {
+//       final n = DateTime.now();
+//       return DateTime(n.year, n.month, n.day);
+//     }
+
+//     DateTime endOfDay(DateTime d) => DateTime(d.year, d.month, d.day, 23, 59, 59, 999);
+//     DateTime addDays(DateTime d, int n) => d.add(Duration(days: n));
+
+//     bool inFutureWindow(DateTime d, int days) {
+//       final t0 = today0();
+//       return (d.isAtSameMomentAs(t0) || d.isAfter(t0)) && d.isBefore(endOfDay(addDays(t0, days)));
+//     }
+
+//     return _activities.where((r) {
+//       if (r.date.isEmpty) return false;
+//       final d = DateTime.tryParse(r.date) ?? DateTime(1970);
+//       switch (_activityTimeIndex) {
+//         case 0:
+//           final t0 = today0();
+//           return d.year == t0.year && d.month == t0.month && d.day == t0.day;
+//         case 1:
+//           final t1 = addDays(today0(), 1);
+//           return d.year == t1.year && d.month == t1.month && d.day == t1.day;
+//         case 2:
+//           return inFutureWindow(d, 7);
+//         case 3:
+//           return inFutureWindow(d, 30);
+//         default:
+//           return true;
+//       }
+//     }).toList();
+//   }
+
+//   List<Activity> get _filtered {
+//     final byProject = _selectedProject == 'all'
+//         ? _dateScoped
+//         : _dateScoped.where((r) => r.projectId == _selectedProject).toList();
+
+//     final bySubProject = _selectedSubProject == 'all'
+//         ? byProject
+//         : byProject
+//             .where((r) =>
+//                 (r.subProjectId != null && r.subProjectId == _selectedSubProject) ||
+//                 (r.subProjectId == null &&
+//                     r.subProject != null &&
+//                     r.subProject ==
+//                         (_subProjects.firstWhere(
+//                           (s) => s.id == _selectedSubProject,
+//                           orElse: () => SubProject(id: '', name: ''),
+//                         ).name)))
+//             .toList();
+
+//     final byStatus = _selectedStatus == 'all'
+//         ? bySubProject
+//         : bySubProject.where((r) {
+//             final s = (r.status).toLowerCase();
+//             if (_selectedStatus.toLowerCase().startsWith('resched')) return s.startsWith('resched');
+//             return s == _selectedStatus.toLowerCase();
+//           }).toList();
+
+//     final term = _search.trim().toLowerCase();
+//     if (term.isEmpty) return byStatus;
+
+//     return byStatus.where((r) {
+//       final blob = jsonEncode({
+//         'tNo': r.tNo,
+//         'date': r.date,
+//         'project': r.project,
+//         'subProject': r.subProject,
+//         'siteName': r.siteName,
+//         'siteId': r.siteId,
+//         'activity': r.activity,
+//         'pm': r.pm,
+//         'vendor': r.vendor,
+//         'feName': r.feName,
+//         'feMobile': r.feMobile,
+//         'nocEngineer': r.nocEngineer,
+//         'country': r.country,
+//         'state': r.state,
+//         'district': r.district,
+//         'city': r.city,
+//         'address': r.address,
+//         'remarks': r.remarks,
+//         'status': r.status,
+//       }).toLowerCase();
+//       return blob.contains(term);
 //     }).toList();
 //   }
 
 //   int get _totalPages {
-//     final len = _filteredActivities.length;
-//     if (len == 0) return 1; // keep UI stable
+//     final len = _filtered.length;
+//     if (len == 0) return 1;
 //     return (len + _perPage - 1) ~/ _perPage;
 //   }
 
-//   List<Activity> get _pagedActivities {
-//     final list = _filteredActivities;
+//   List<Activity> get _paged {
+//     final list = _filtered;
 //     if (list.isEmpty) return const [];
 //     final start = (_currentPage - 1) * _perPage;
 //     final end = min(start + _perPage, list.length);
@@ -103,26 +528,11 @@
 //     return list.sublist(start, end);
 //   }
 
-//   void _goToPage(int p) => setState(() {
-//         _currentPage = p.clamp(1, _totalPages);
-//       });
+//   void _goToPage(int p) => setState(() => _currentPage = p.clamp(1, _totalPages));
 
-//   // summary chart data
-//   final Map<String, double> _chartData = const {
-//     'Completed': 18,
-//     'In Progress': 4,
-//     'Open': 6,
-//     'Rescheduled': 2,
-//   };
-//   final Map<String, Color> _chartColors = const {
-//     'Completed': Colors.greenAccent,
-//     'In Progress': Colors.blueAccent,
-//     'Open': AppTheme.accentColor,
-//     'Rescheduled': Colors.redAccent,
-//   };
-
+//   // ================== NAV ===========================
 //   void _handleTabChange(BuildContext context, int i) {
-//     if (i == 0) return; // already on Dashboard
+//     if (i == 0) return;
 //     late final Widget target;
 //     switch (i) {
 //       case 1:
@@ -140,11 +550,10 @@
 //       default:
 //         return;
 //     }
-//     Navigator.of(context).pushReplacement(
-//       MaterialPageRoute(builder: (_) => target),
-//     );
+//     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
 //   }
 
+//   // ================== UI ============================
 //   @override
 //   Widget build(BuildContext context) {
 //     final cs = Theme.of(context).colorScheme;
@@ -154,13 +563,9 @@
 //       centerTitle: true,
 //       actions: [
 //         IconButton(
-//           tooltip: Theme.of(context).brightness == Brightness.dark
-//               ? 'Light mode'
-//               : 'Dark mode',
+//           tooltip: Theme.of(context).brightness == Brightness.dark ? 'Light mode' : 'Dark mode',
 //           icon: Icon(
-//             Theme.of(context).brightness == Brightness.dark
-//                 ? Icons.light_mode_outlined
-//                 : Icons.dark_mode_outlined,
+//             Theme.of(context).brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
 //             color: cs.onSurface,
 //           ),
 //           onPressed: () => ThemeScope.of(context).toggle(),
@@ -168,18 +573,9 @@
 //         IconButton(
 //           tooltip: 'Profile',
 //           onPressed: () {
-//             Navigator.of(
-//               context,
-//             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+//             Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
 //           },
-//           icon: ClipOval(
-//             child: Image.asset(
-//               'assets/User_profile.png',
-//               width: 36,
-//               height: 36,
-//               fit: BoxFit.cover,
-//             ),
-//           ),
+//           icon: ClipOval(child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover)),
 //         ),
 //         const SizedBox(width: 8),
 //       ],
@@ -187,17 +583,15 @@
 //       onTabChanged: (i) => _handleTabChange(context, i),
 //       safeArea: false,
 //       reserveBottomPadding: true,
-//       body: _buildDashboardContent(),
+//       body: _loading ? const Center(child: CircularProgressIndicator()) : _buildDashboardContent(),
 //     );
 //   }
 
-//   /// Center toggle placed in the AppBar
 //   Widget _buildTopToggle(BuildContext context) {
 //     final isLight = Theme.of(context).brightness == Brightness.light;
 //     final cs = Theme.of(context).colorScheme;
 
-//     final fillColor =
-//         isLight ? Colors.black12 : AppTheme.accentColor.withOpacity(0.18);
+//     final fillColor = isLight ? Colors.black12 : AppTheme.accentColor.withOpacity(0.18);
 //     final selBorderColor = isLight ? Colors.black : AppTheme.accentColor;
 //     final borderColor = isLight ? Colors.black26 : cs.outlineVariant;
 //     final selTextColor = isLight ? Colors.black : AppTheme.accentColor;
@@ -220,106 +614,81 @@
 //         });
 //       },
 //       children: const [
-//         Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 14),
-//           child: Text('Project'),
-//         ),
-//         Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 14),
-//           child: Text('Summary'),
-//         ),
+//         Padding(padding: EdgeInsets.symmetric(horizontal: 14), child: Text('Project')),
+//         Padding(padding: EdgeInsets.symmetric(horizontal: 14), child: Text('Summary')),
 //       ],
 //     );
 //   }
 
-//   /// Main dashboard content
 //   Widget _buildDashboardContent() {
 //     final cs = Theme.of(context).colorScheme;
 //     final pad = responsivePadding(context);
 
-//     // ===== Summary tab =====
 //     if (!_isSelected[0]) {
 //       return ListView(
-//         padding: pad.copyWith(
-//           top: 4,
-//           bottom: 8 + 58, // matches CustomBottomNavBar.reservedBodyPadding
-//         ),
-//         children: const [
-//           _SummaryCardWrapper(),
-//           SizedBox(height: 12),
-//           _ActivityStatusSection(),
+//         padding: pad.copyWith(top: 4, bottom: 8 + 58),
+//         children: [
+//           _SummaryCard(stats: _calcStats(_dateScoped)),
+//           const SizedBox(height: 12),
+//           _ActivityStatusSection(stats: _calcStats(_dateScoped)),
 //         ],
 //       );
 //     }
 
-//     // ===== Project tab =====
 //     return Padding(
 //       padding: pad.copyWith(top: 2, bottom: 0),
 //       child: Column(
 //         crossAxisAlignment: CrossAxisAlignment.stretch,
 //         children: [
 //           const SizedBox(height: 4),
-
 //           Row(
 //             children: [
-//               Text(
-//                 'Activities',
-//                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-//                       color: cs.onSurface,
-//                       fontWeight: FontWeight.w700,
-//                     ),
-//               ),
+//               Text('Activities',
+//                   style: Theme.of(context).textTheme.titleLarge?.copyWith(color: cs.onSurface, fontWeight: FontWeight.w700)),
 //               const Spacer(),
-//               SizedBox(width: 220, child: const _SearchField()),
+//               SizedBox(
+//                 width: 280,
+//                 child: _SearchField(
+//                   onChanged: (v) => setState(() {
+//                     _search = v;
+//                     _currentPage = 1;
+//                   }),
+//                 ),
+//               ),
 //             ],
 //           ),
 //           const SizedBox(height: 2),
 //           Divider(color: cs.outlineVariant),
 //           const SizedBox(height: 2),
 
-//           // Time filter row (centered)
+//           // Time filter
 //           Center(
 //             child: SingleChildScrollView(
 //               scrollDirection: Axis.horizontal,
 //               physics: const BouncingScrollPhysics(),
 //               child: Row(
 //                 mainAxisSize: MainAxisSize.min,
-//                 children: [
-//                   'Today',
-//                   'Tomorrow',
-//                   'Week',
-//                   'Month',
-//                   'All',
-//                 ].asMap().entries.map((e) {
+//                 children: ['Today', 'Tomorrow', 'Week', 'Month', 'All'].asMap().entries.map((e) {
 //                   final idx = e.key;
 //                   final label = e.value;
 //                   final selected = idx == _activityTimeIndex;
-
 //                   return Padding(
 //                     padding: const EdgeInsets.only(right: 8),
 //                     child: GestureDetector(
-//                       onTap: () => setState(() => _activityTimeIndex = idx),
+//                       onTap: () => setState(() {
+//                         _activityTimeIndex = idx;
+//                         _currentPage = 1;
+//                       }),
 //                       child: Container(
-//                         padding: const EdgeInsets.symmetric(
-//                           horizontal: 12,
-//                           vertical: 6,
-//                         ),
+//                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
 //                         decoration: BoxDecoration(
-//                           color: selected
-//                               ? AppTheme.accentColor
-//                               : Theme.of(context)
-//                                   .colorScheme
-//                                   .surfaceContainerHighest,
+//                           color: selected ? AppTheme.accentColor : Theme.of(context).colorScheme.surfaceContainerHighest,
 //                           borderRadius: BorderRadius.circular(6),
 //                         ),
 //                         child: Text(
 //                           label,
 //                           style: TextStyle(
-//                             color: selected
-//                                 ? Colors.black
-//                                 : Theme.of(context)
-//                                     .colorScheme
-//                                     .onSurfaceVariant,
+//                             color: selected ? Colors.black : Theme.of(context).colorScheme.onSurfaceVariant,
 //                             fontSize: 12,
 //                             fontWeight: FontWeight.w600,
 //                           ),
@@ -331,101 +700,243 @@
 //               ),
 //             ),
 //           ),
-
 //           const SizedBox(height: 8),
 
-//           // Two filters in a single row
+//           // Filters
 //           Row(
 //             children: [
 //               Expanded(
 //                 child: _buildDropdown(
 //                   'Project',
-//                   _projects,
+//                   ['all', ..._projects.map((p) => p.id)],
 //                   _selectedProject,
-//                   (v) => setState(() => _selectedProject = v!),
+//                   (v) async {
+//                     _selectedProject = v ?? 'all';
+//                     debugPrint('[UI] project=$_selectedProject');
+//                     await _fetchSubProjects(_selectedProject);
+//                     await _loadActivities();
+//                   },
+//                   displayBuilder: (id) {
+//                     if (id == 'all') return 'All';
+//                     final p = _projects.firstWhere(
+//                       (x) => x.id == id,
+//                       orElse: () => Project(id: id, name: id),
+//                     );
+//                     return p.name;
+//                   },
+//                 ),
+//               ),
+//               const SizedBox(width: 8),
+//               Expanded(
+//                 child: _buildDropdown(
+//                   'Sub Project',
+//                   ['all', ..._subProjects.map((s) => s.id)],
+//                   _selectedSubProject,
+//                   (v) async {
+//                     _selectedSubProject = v ?? 'all';
+//                     debugPrint('[UI] subProject=$_selectedSubProject');
+//                     await _loadActivities();
+//                   },
+//                   enabled: _selectedProject != 'all' && _subProjects.isNotEmpty,
+//                   displayBuilder: (id) => id == 'all'
+//                       ? 'All'
+//                       : (_subProjects.firstWhere(
+//                             (s) => s.id == id,
+//                             orElse: () => SubProject(id: id, name: id),
+//                           ).name),
 //                 ),
 //               ),
 //               const SizedBox(width: 8),
 //               Expanded(
 //                 child: _buildDropdown(
 //                   'Status',
-//                   _statuses,
+//                   const ['all', 'Open', 'Reschedule', 'Pending', 'In Progress', 'Completed', 'Canceled'],
 //                   _selectedStatus,
-//                   (v) => setState(() => _selectedStatus = v!),
+//                   (v) => setState(() {
+//                     _selectedStatus = v ?? 'all';
+//                     _currentPage = 1;
+//                     debugPrint('[UI] status=$_selectedStatus');
+//                   }),
 //                 ),
 //               ),
 //             ],
 //           ),
 
 //           const SizedBox(height: 12),
-//           Expanded(
-//             child: ListView.separated(
-//               padding: const EdgeInsets.only(
-//                 bottom: 12 + 58, // keep some space above bottom nav
-//               ),
-//               separatorBuilder: (_, __) => const SizedBox(height: 12),
-//               itemCount: _pagedActivities.length + 1,
-//               itemBuilder: (context, i) {
-//                 if (i < _pagedActivities.length) {
-//                   return _ActivityCard(a: _pagedActivities[i]);
-//                 }
 
-//                 // last item = pagination row
-//                 return _PaginationInline(
-//                   currentPage: _currentPage,
-//                   totalPages: _totalPages,
-//                   onPrev: () => _goToPage(_currentPage - 1),
-//                   onNext: () => _goToPage(_currentPage + 1),
-//                   onPageSelected: _goToPage,
-//                   perPage: _perPage,
-//                   options: _perPageOptions,
-//                   onPerPageChanged: (v) {
-//                     setState(() {
-//                       _perPage = v;
-//                       _currentPage = 1;
-//                     });
-//                   },
-//                 );
-//               },
-//             ),
+//           // List
+//           Expanded(
+//             child: _paged.isEmpty
+//                 ? const Center(child: Text('No records found'))
+//                 : ListView.separated(
+//                     padding: const EdgeInsets.only(bottom: 12 + 58),
+//                     separatorBuilder: (_, __) => const SizedBox(height: 12),
+//                     itemCount: _paged.length + 1,
+//                     itemBuilder: (context, i) {
+//                       if (i < _paged.length) {
+//                         return _ActivityCard(
+//                           a: _paged[i],
+//                           onUpdate: () async {
+//                             // lists from lookups
+//                             final subProjectNames = _subProjects.map((e) => e.name).toList();
+//                             final siteNames = _sites
+//                                 .where((s) => s.projectId == _paged[i].projectId)
+//                                 .map((s) => s.siteName)
+//                                 .toSet()
+//                                 .toList()
+//                               ..sort();
+//                             final feNames = _feList.map((e) => e.name).where((e) => e.isNotEmpty).toSet().toList()
+//                               ..sort();
+//                             final nocNames = _nocs.map((e) => e.name).where((e) => e.isNotEmpty).toSet().toList()
+//                               ..sort();
+
+//                             await UpdateActivityModal.show(
+//                               context,
+//                               activity: _paged[i],
+//                               subProjects: subProjectNames,
+//                               siteNames: siteNames,
+//                               feNames: feNames,
+//                               nocEngineers: nocNames,
+//                               onSubmit: (updated) async {
+//                                 final feId = _feList.firstWhere(
+//                                   (f) => f.name == updated.feName,
+//                                   orElse: () => FieldEngineer(id: '', name: '', mobile: '', vendor: ''),
+//                                 ).id;
+
+//                                 final nocId = _nocs.firstWhere(
+//                                   (n) => n.name == updated.nocEngineer,
+//                                   orElse: () => NocEngineer(id: '', name: ''),
+//                                 ).id;
+
+//                                 final payload = {
+//                                   'ticket_no': updated.tNo,
+//                                   'project_id': _paged[i].projectId,
+//                                   'site_id': updated.siteId,
+//                                   'activity_category': updated.activity,
+//                                   'activity_date': _paged[i].date.isEmpty ? null : _paged[i].date,
+//                                   'completion_date':
+//                                       updated.completionDate.isEmpty ? null : updated.completionDate,
+//                                   'country': updated.country,
+//                                   'state': updated.state,
+//                                   'district': updated.district,
+//                                   'city': updated.city,
+//                                   'address': updated.address,
+//                                   'project_manager': updated.pm,
+//                                   'vendor': updated.vendor,
+//                                   'field_engineer_id': feId.isEmpty ? null : feId,
+//                                   'fe_mobile': updated.feMobile,
+//                                   'noc_engineer_id': nocId.isEmpty ? null : nocId,
+//                                   'remarks': updated.remarks,
+//                                   'status': updated.status,
+//                                   if (_paged[i].subProjectId != null && _paged[i].subProjectId!.isNotEmpty)
+//                                     'sub_project_id': _paged[i].subProjectId,
+//                                 };
+
+//                                 final uri = Uri.parse('$kApiBase/api/activities/${_paged[i].id}');
+//                                 debugPrint('[PUT] $uri\n${jsonEncode(payload)}');
+//                                 final res = await http.put(
+//                                   uri,
+//                                   headers: {'Content-Type': 'application/json'},
+//                                   body: jsonEncode(payload),
+//                                 );
+//                                 debugPrint('[PUT] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)');
+
+//                                 if (res.statusCode >= 200 && res.statusCode < 300) {
+//                                   if (mounted) {
+//                                     ScaffoldMessenger.of(context)
+//                                         .showSnackBar(const SnackBar(content: Text('Activity updated')));
+//                                     await _loadActivities();
+//                                   }
+//                                 } else {
+//                                   if (mounted) {
+//                                     ScaffoldMessenger.of(context).showSnackBar(
+//                                       SnackBar(content: Text('Update failed (${res.statusCode})')),
+//                                     );
+//                                   }
+//                                 }
+//                               },
+//                               onDelete: () async {
+//                                 final uri = Uri.parse('$kApiBase/api/activities/${_paged[i].id}');
+//                                 debugPrint('[DELETE] $uri');
+//                                 final res = await http.delete(uri);
+//                                 debugPrint('[DELETE] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)');
+//                                 if (res.statusCode >= 200 && res.statusCode < 300) {
+//                                   if (mounted) {
+//                                     Navigator.of(context).pop();
+//                                     ScaffoldMessenger.of(context)
+//                                         .showSnackBar(const SnackBar(content: Text('Activity deleted')));
+//                                     await _loadActivities();
+//                                   }
+//                                 } else {
+//                                   if (mounted) {
+//                                     ScaffoldMessenger.of(context).showSnackBar(
+//                                       SnackBar(content: Text('Delete failed (${res.statusCode})')),
+//                                     );
+//                                   }
+//                                 }
+//                               },
+//                             );
+//                           },
+//                         );
+//                       }
+
+//                       // last item = pagination row
+//                       return _PaginationInline(
+//                         currentPage: _currentPage,
+//                         totalPages: _totalPages,
+//                         onPageSelected: _goToPage,
+//                         onPrev: () => _goToPage(_currentPage - 1),
+//                         onNext: () => _goToPage(_currentPage + 1),
+//                         perPage: _perPage,
+//                         options: _perPageOptions,
+//                         onPerPageChanged: (v) => setState(() {
+//                           _perPage = v;
+//                           _currentPage = 1;
+//                         }),
+//                       );
+//                     },
+//                   ),
 //           ),
 //         ],
 //       ),
 //     );
 //   }
 
-//   /// Themed dropdown (compact)
 //   Widget _buildDropdown(
 //     String hint,
 //     List<String> items,
 //     String selected,
-//     ValueChanged<String?> onChanged,
-//   ) {
+//     ValueChanged<String?> onChanged, {
+//     bool enabled = true,
+//     String Function(String value)? displayBuilder,
+//   }) {
 //     final cs = Theme.of(context).colorScheme;
+//     String labelOf(String v) => displayBuilder != null ? displayBuilder(v) : v;
+
+//     final effectiveSelected = items.contains(selected) ? selected : items.first;
+
 //     return Container(
 //       height: 34,
 //       padding: const EdgeInsets.symmetric(horizontal: 8),
 //       decoration: BoxDecoration(
 //         color: cs.surfaceContainerHighest,
 //         borderRadius: BorderRadius.circular(8),
+//         border: Border.all(color: cs.outlineVariant),
 //       ),
 //       child: DropdownButton<String>(
-//         value: selected,
+//         value: effectiveSelected,
 //         isExpanded: true,
 //         underline: const SizedBox(),
 //         dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-//         iconEnabledColor: cs.onSurfaceVariant,
-//         style: TextStyle(color: cs.onSurface, fontSize: 12),
-//         hint: Text(
-//           hint,
-//           style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
-//         ),
-//         onChanged: onChanged,
+//         iconEnabledColor: enabled ? cs.onSurfaceVariant : cs.outlineVariant,
+//         style: TextStyle(color: enabled ? cs.onSurface : cs.onSurfaceVariant, fontSize: 12),
+//         hint: Text(hint, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
+//         onChanged: enabled ? onChanged : null,
 //         items: items
 //             .map(
 //               (s) => DropdownMenuItem(
 //                 value: s,
-//                 child: Text(s, style: const TextStyle(fontSize: 12)),
+//                 child: Text(labelOf(s), style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis),
 //               ),
 //             )
 //             .toList(),
@@ -433,17 +944,38 @@
 //     );
 //   }
 
-//   // Summary tiles card (kept as-is)
-//   Widget _buildSummaryCard() {
+//   Map<String, int> _calcStats(List<Activity> list) {
+//     final m = {'Completed': 0, 'Pending': 0, 'In Progress': 0, 'Open': 0, 'Scheduled': 0, 'Rescheduled': 0};
+//     for (final r in list) {
+//       final s = r.status.toLowerCase();
+//       if (s == 'completed') m['Completed'] = (m['Completed'] ?? 0) + 1;
+//       else if (s == 'in progress') m['In Progress'] = (m['In Progress'] ?? 0) + 1;
+//       else if (s == 'pending') m['Pending'] = (m['Pending'] ?? 0) + 1;
+//       else if (s == 'open') m['Open'] = (m['Open'] ?? 0) + 1;
+//       else if (s == 'scheduled') m['Scheduled'] = (m['Scheduled'] ?? 0) + 1;
+//       else if (s.startsWith('resched')) m['Rescheduled'] = (m['Rescheduled'] ?? 0) + 1;
+//     }
+//     return m;
+//   }
+// }
+
+// // ====== Reusable bits ======
+
+// class _SummaryCard extends StatelessWidget {
+//   final Map<String, int> stats;
+//   const _SummaryCard({required this.stats});
+
+//   @override
+//   Widget build(BuildContext context) {
 //     final cs = Theme.of(context).colorScheme;
 //     final isLight = Theme.of(context).brightness == Brightness.light;
 
-//     const summaryItems = [
-//       {'label': 'Completed', 'count': '0'},
-//       {'label': 'Pending', 'count': '0'},
-//       {'label': 'In-Progress', 'count': '0'},
-//       {'label': 'Open', 'count': '0'},
-//       {'label': 'Rescheduled', 'count': '0'},
+//     final items = [
+//       {'label': 'Completed', 'count': '${stats['Completed'] ?? 0}'},
+//       {'label': 'Pending', 'count': '${stats['Pending'] ?? 0}'},
+//       {'label': 'In-Progress', 'count': '${stats['In Progress'] ?? 0}'},
+//       {'label': 'Open', 'count': '${stats['Open'] ?? 0}'},
+//       {'label': 'Rescheduled', 'count': '${stats['Rescheduled'] ?? 0}'},
 //     ];
 
 //     return Card(
@@ -453,11 +985,11 @@
 //         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
 //         child: LayoutBuilder(
 //           builder: (context, c) {
-//             final tileWidth = (c.maxWidth - 24) / 2; // Wrap spacing
+//             final tileWidth = (c.maxWidth - 24) / 2;
 //             return Wrap(
 //               spacing: 12,
 //               runSpacing: 12,
-//               children: summaryItems.map((item) {
+//               children: items.map((item) {
 //                 return SizedBox(
 //                   width: tileWidth,
 //                   child: Container(
@@ -469,23 +1001,10 @@
 //                     child: Column(
 //                       mainAxisSize: MainAxisSize.min,
 //                       children: [
-//                         Text(
-//                           item['count']!,
-//                           style: TextStyle(
-//                             fontSize: 18,
-//                             fontWeight: FontWeight.w800,
-//                             color: isLight ? Colors.black : cs.onSurface,
-//                           ),
-//                         ),
+//                         Text(item['count']!,
+//                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: isLight ? Colors.black : cs.onSurface)),
 //                         const SizedBox(height: 4),
-//                         Text(
-//                           item['label']!,
-//                           style: TextStyle(
-//                             fontSize: 13,
-//                             color:
-//                                 isLight ? Colors.black54 : cs.onSurfaceVariant,
-//                           ),
-//                         ),
+//                         Text(item['label']!, style: TextStyle(fontSize: 13, color: isLight ? Colors.black54 : cs.onSurfaceVariant)),
 //                       ],
 //                     ),
 //                   ),
@@ -499,87 +1018,40 @@
 //   }
 // }
 
-// // Helper to access the state's _buildSummaryCard from a child stateless widget.
-// class _SummaryCardWrapper extends StatelessWidget {
-//   const _SummaryCardWrapper();
-//   @override
-//   Widget build(BuildContext context) {
-//     final state = context.findAncestorStateOfType<_DashboardScreenState>()!;
-//     return state._buildSummaryCard();
-//   }
-// }
-
 // class _ActivityStatusSection extends StatelessWidget {
-//   const _ActivityStatusSection();
+//   final Map<String, int> stats;
+//   const _ActivityStatusSection({required this.stats});
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final state = context.findAncestorStateOfType<_DashboardScreenState>()!;
 //     final cs = Theme.of(context).colorScheme;
 
-//     final data = state._chartData;
-//     final colors = state._chartColors;
+//     final total = stats.values.fold<int>(0, (a, b) => a + b);
+//     double pct(String k) => total == 0 ? 0 : (100.0 * (stats[k] ?? 0) / total);
 
 //     return Card(
 //       color: cs.surfaceContainerHighest,
 //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
 //       child: Padding(
 //         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.stretch,
-//           children: [
-//             Text(
-//               'Activity Status',
-//               textAlign: TextAlign.center,
-//               style: TextStyle(
-//                 color: cs.onSurface,
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
+//         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+//           Text('Activity Status', textAlign: TextAlign.center, style: TextStyle(color: cs.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+//           Divider(color: cs.outlineVariant),
+//           const SizedBox(height: 10),
+//           ...['Completed', 'In Progress', 'Open', 'Rescheduled', 'Pending'].map((k) {
+//             return Padding(
+//               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+//               child: Row(
+//                 children: [
+//                   const CircleAvatar(radius: 5),
+//                   const SizedBox(width: 8),
+//                   Expanded(child: Text(k, style: TextStyle(color: cs.onSurface))),
+//                   Text('${pct(k).round()}%', style: TextStyle(color: cs.onSurfaceVariant)),
+//                 ],
 //               ),
-//             ),
-//             Divider(color: cs.outlineVariant),
-//             const SizedBox(height: 10),
-//             Center(
-//               child: SizedBox(
-//                 width: 200,
-//                 height: 200,
-//                 child: CustomPaint(
-//                   painter: _DonutPainter(
-//                     data: data,
-//                     colors: colors,
-//                     holeColor: cs.surfaceContainerHighest,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             ...data.keys.map((key) {
-//               final val = data[key]!;
-//               final total = data.values.fold(0.0, (a, b) => a + b);
-//               final pct = total > 0 ? (val / total * 100).round() : 0;
-//               return Padding(
-//                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-//                 child: Row(
-//                   children: [
-//                     Container(
-//                       width: 10,
-//                       height: 10,
-//                       decoration: BoxDecoration(
-//                         color: colors[key],
-//                         shape: BoxShape.circle,
-//                       ),
-//                     ),
-//                     const SizedBox(width: 8),
-//                     Expanded(
-//                       child: Text(key, style: TextStyle(color: cs.onSurface)),
-//                     ),
-//                     Text('$pct%', style: TextStyle(color: cs.onSurfaceVariant)),
-//                   ],
-//                 ),
-//               );
-//             }),
-//           ],
-//         ),
+//             );
+//           }),
+//         ]),
 //       ),
 //     );
 //   }
@@ -590,26 +1062,16 @@
 //   final int totalPages;
 //   final ValueChanged<int> onPageSelected;
 //   static const int _windowSize = 5;
-//   const _PaginationBar({
-//     required this.currentPage,
-//     required this.totalPages,
-//     required this.onPageSelected,
-//   });
+//   const _PaginationBar({required this.currentPage, required this.totalPages, required this.onPageSelected});
 
 //   @override
 //   Widget build(BuildContext context) {
 //     final cs = Theme.of(context).colorScheme;
 
-//     // Current 5-wide "window": 1–5, 6–10, 11–15, ...
 //     final int windowStart = ((currentPage - 1) ~/ _windowSize) * _windowSize + 1;
 //     final int windowEnd = min(windowStart + _windowSize - 1, totalPages);
 
-//     Widget pill({
-//       required Widget child,
-//       required bool selected,
-//       VoidCallback? onTap,
-//       double width = 40,
-//     }) {
+//     Widget pill({required Widget child, required bool selected, VoidCallback? onTap, double width = 40}) {
 //       final bg = selected ? Colors.black : cs.surfaceContainerHighest;
 //       final fg = selected ? Colors.white : cs.onSurface;
 
@@ -624,8 +1086,7 @@
 //           border: Border.all(color: cs.outlineVariant),
 //         ),
 //         child: DefaultTextStyle(
-//           style: TextStyle(
-//               color: fg, fontWeight: FontWeight.w600, fontSize: 13),
+//           style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 13),
 //           child: IconTheme.merge(
 //             data: IconThemeData(color: fg, size: 18),
 //             child: child,
@@ -633,13 +1094,7 @@
 //         ),
 //       );
 
-//       return onTap == null
-//           ? Opacity(opacity: 0.5, child: content)
-//           : InkWell(
-//               onTap: onTap,
-//               borderRadius: BorderRadius.circular(10),
-//               child: content,
-//             );
+//       return onTap == null ? Opacity(opacity: 0.5, child: content) : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(10), child: content);
 //     }
 
 //     final hasPrevWindow = windowStart > 1;
@@ -648,22 +1103,9 @@
 //     return Row(
 //       mainAxisSize: MainAxisSize.min,
 //       children: [
-//         pill(
-//           child: const Icon(Icons.chevron_left),
-//           selected: false,
-//           onTap: hasPrevWindow ? () => onPageSelected(windowStart - 1) : null,
-//         ),
-//         for (int p = windowStart; p <= windowEnd; p++)
-//           pill(
-//             child: Text('$p'),
-//             selected: p == currentPage,
-//             onTap: () => onPageSelected(p),
-//           ),
-//         pill(
-//           child: const Icon(Icons.chevron_right),
-//           selected: false,
-//           onTap: hasNextWindow ? () => onPageSelected(windowEnd + 1) : null,
-//         ),
+//         pill(child: const Icon(Icons.chevron_left), selected: false, onTap: hasPrevWindow ? () => onPageSelected(windowStart - 1) : null),
+//         for (int p = windowStart; p <= windowEnd; p++) pill(child: Text('$p'), selected: p == currentPage, onTap: () => onPageSelected(p)),
+//         pill(child: const Icon(Icons.chevron_right), selected: false, onTap: hasNextWindow ? () => onPageSelected(windowEnd + 1) : null),
 //       ],
 //     );
 //   }
@@ -673,10 +1115,8 @@
 //   final int currentPage;
 //   final int totalPages;
 //   final ValueChanged<int> onPageSelected;
-
 //   final VoidCallback onPrev;
 //   final VoidCallback onNext;
-
 //   final int perPage;
 //   final List<int> options;
 //   final ValueChanged<int> onPerPageChanged;
@@ -703,11 +1143,7 @@
 //         child: Stack(
 //           alignment: Alignment.center,
 //           children: [
-//             _PaginationBar(
-//               currentPage: currentPage,
-//               totalPages: totalPages,
-//               onPageSelected: onPageSelected,
-//             ),
+//             _PaginationBar(currentPage: currentPage, totalPages: totalPages, onPageSelected: onPageSelected),
 //             Align(
 //               alignment: Alignment.centerRight,
 //               child: Container(
@@ -723,10 +1159,7 @@
 //                     value: perPage,
 //                     dropdownColor: Theme.of(context).scaffoldBackgroundColor,
 //                     style: TextStyle(fontSize: 13, color: cs.onSurface),
-//                     items: options
-//                         .map(
-//                             (n) => DropdownMenuItem(value: n, child: Text('$n')))
-//                         .toList(),
+//                     items: options.map((n) => DropdownMenuItem(value: n, child: Text('$n'))).toList(),
 //                     onChanged: (v) {
 //                       if (v != null) onPerPageChanged(v);
 //                     },
@@ -741,9 +1174,9 @@
 //   }
 // }
 
-// /// Search field (compact)
 // class _SearchField extends StatelessWidget {
-//   const _SearchField();
+//   final ValueChanged<String>? onChanged;
+//   const _SearchField({this.onChanged});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -751,31 +1184,26 @@
 //     return SizedBox(
 //       height: 34,
 //       child: TextField(
+//         onChanged: onChanged,
 //         style: TextStyle(color: cs.onSurface, fontSize: 12),
 //         decoration: InputDecoration(
-//           hintText: 'Search...',
+//           hintText: 'Search activities...',
 //           hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
 //           prefixIcon: Icon(Icons.search, color: cs.onSurfaceVariant, size: 20),
 //           filled: true,
 //           fillColor: cs.surfaceContainerHighest,
-//           border: OutlineInputBorder(
-//             borderRadius: BorderRadius.circular(8),
-//             borderSide: BorderSide.none,
-//           ),
-//           contentPadding: const EdgeInsets.symmetric(
-//             horizontal: 12,
-//             vertical: 8,
-//           ),
+//           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+//           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 //         ),
 //       ),
 //     );
 //   }
 // }
 
-// /// Activity card (updated fields and labels)
 // class _ActivityCard extends StatelessWidget {
 //   final Activity a;
-//   const _ActivityCard({required this.a});
+//   final VoidCallback onUpdate;
+//   const _ActivityCard({required this.a, required this.onUpdate});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -790,317 +1218,101 @@
 //     return Container(
 //       margin: const EdgeInsets.only(bottom: 12),
 //       padding: const EdgeInsets.all(16),
-//       decoration: BoxDecoration(
-//         color: cs.surfaceContainerHighest,
-//         borderRadius: BorderRadius.circular(12),
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-
-//         children: [
-//           // ---- Header: Ticket No · Scheduled Date · Status ----
-//           Row(
-//   children: [
-//     Expanded(
-//       child: Text(
-//         '${_t(a.ticketNo)}  ${_t(a.scheduledDate)}',
-//         style: TextStyle(
-//           color: valueColor,
-//           fontWeight: FontWeight.w800,
-//           fontSize: 14,
-//         ),
-//       ),
-//     ),
-//     Text(
-//       'Status : ${_t(a.status)}',
-//       style: TextStyle(
-//         color: valueColor,
-//         fontWeight: FontWeight.w700,
-//         fontSize: 14,
-//       ),
-//     ),
-//   ],
-// ),
-//           const SizedBox(height: 8),
-//           Divider(color: cs.outlineVariant),
-//           const SizedBox(height: 12),
-
-//           // ---- Two columns with the new order/labels ----
-//           Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               // LEFT
-//               Expanded(
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     _infoRow('Project', a.project, labelColor, valueColor),
-//                     _infoRow('Sub Project', a.subProject, labelColor, valueColor),
-//                     _infoRow('Site Name', a.siteName, labelColor, valueColor),
-//                     _infoRow('Site Code', a.siteCode, labelColor, valueColor),
-//                     _infoRow('Activity', a.activity, labelColor, valueColor),
-//                     _infoRow('Project Manager', a.projectManager, labelColor, valueColor),
-//                     _infoRow('Vendor (FE)', a.vendorFe, labelColor, valueColor),
-//                     _infoRow('FE/Vendor Name', a.feVendorName, labelColor, valueColor),
-//                     _infoRow('FE/Vendor Mobile', a.feVendorMobile, labelColor, valueColor),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(width: 16),
-//               // RIGHT
-//               Expanded(
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     _infoRow('NOC Engineer', a.nocEngineer, labelColor, valueColor),
-//                     _infoRow('Country', a.country, labelColor, valueColor),
-//                     _infoRow('State', a.state, labelColor, valueColor),
-//                     _infoRow('District', a.district, labelColor, valueColor),
-//                     _infoRow('City', a.city, labelColor, valueColor),
-//                     _infoRow('Address', a.address, labelColor, valueColor),
-//                     _infoRow('Completion Date', a.completionDate, labelColor, valueColor),
-//                     _infoRow('Remarks', a.remarks, labelColor, valueColor),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-
-//           const SizedBox(height: 16),
-
-//           Align(
-//             alignment: Alignment.centerRight,
-//             child: OutlinedButton(
-//               style: OutlinedButton.styleFrom(
-//                 backgroundColor: AppTheme.accentColor,
-//                 side: const BorderSide(color: AppTheme.accentColor),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(6),
-//                 ),
-//                 padding: const EdgeInsets.symmetric(
-//                   horizontal: 16,
-//                   vertical: 8,
-//                 ),
-//               ),
-//               // onPressed: () {},
-//               onPressed: () {
-//   // These lists should come from your API. For demo we use small samples.
-//   final subProjects = ['Airtel CEDGE NAC', 'Samofa', 'Telangana Gramin Bank'];
-//   final siteNames = ['HEAD OFFICE', 'KANGAL', 'CHOWDAPUR', 'DADAPUR'];
-//   final feNames = ['John Doe', 'Manoj', 'Sneha', 'Rahul'];
-//   final nocEngineers = ['Anita', 'Karan', 'Vikas', 'Pooja'];
-
-//   UpdateActivityModal.show(
-//     context,
-//     activity: a,
-//     subProjects: subProjects,
-//     siteNames: siteNames,
-//     feNames: feNames,
-//     nocEngineers: nocEngineers,
-//     onSubmit: (updated) {
-//       // TODO: call your API here, then refresh the list.
-//       // For now, just show a snackbar.
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Activity updated')),
-//       );
-//       // If you keep activities in parent state, lift this callback up and setState there.
-//     },
-//     onDelete: () {
-//       // TODO: call delete API here
-//       Navigator.of(context).pop(); // close modal
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Activity deleted')),
-//       );
-//     },
-//   );
-// },
-//               child: const Text(
-//                 'Update',
-//                 style: TextStyle(color: Color(0xFF000000), fontSize: 12),
+//       decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+//       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//         Row(
+//           children: [
+//             Expanded(
+//               child: Text(
+//                 '${_t(a.tNo)}  ${_t(a.scheduledDate)}',
+//                 style: TextStyle(color: valueColor, fontWeight: FontWeight.w800, fontSize: 14),
+//                 overflow: TextOverflow.ellipsis,
 //               ),
 //             ),
+//             Text('Status : ${_t(a.status)}', style: TextStyle(color: valueColor, fontWeight: FontWeight.w700, fontSize: 14)),
+//           ],
+//         ),
+//         const SizedBox(height: 8),
+//         Divider(color: cs.outlineVariant),
+//         const SizedBox(height: 12),
+//         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//           // LEFT
+//           Expanded(
+//             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//               _infoRow('Project', a.project, labelColor, valueColor),
+//               _infoRow('Sub Project', a.subProject, labelColor, valueColor),
+//               // Site Name ellipsis
+//               Padding(
+//                 padding: const EdgeInsets.only(bottom: 4),
+//                 child: Row(
+//                   children: [
+//                     Text('Site Name: ', style: TextStyle(color: labelColor, fontSize: 11)),
+//                     Expanded(
+//                       child: Text(a.siteName, style: TextStyle(color: valueColor, fontSize: 11), overflow: TextOverflow.ellipsis),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               _infoRow('Site Code', a.siteId, labelColor, valueColor),
+//               _infoRow('Activity', a.activity, labelColor, valueColor),
+//               _infoRow('Project Manager', a.pm, labelColor, valueColor),
+//               _infoRow('Vendor (FE)', a.vendor, labelColor, valueColor),
+//               _infoRow('FE/Vendor Name', a.feName, labelColor, valueColor),
+//               _infoRow('FE/Vendor Mobile', a.feMobile, labelColor, valueColor),
+//             ]),
 //           ),
-//         ],
-//       ),
+//           const SizedBox(width: 16),
+//           // RIGHT
+//           Expanded(
+//             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//               _infoRow('NOC Engineer', a.nocEngineer, labelColor, valueColor),
+//               _infoRow('Country', a.country, labelColor, valueColor),
+//               _infoRow('State', a.state, labelColor, valueColor),
+//               _infoRow('District', a.district, labelColor, valueColor),
+//               _infoRow('City', a.city, labelColor, valueColor),
+//               _infoRow('Address', a.address, labelColor, valueColor),
+//               _infoRow('Completion Date', a.completionDateDmy, labelColor, valueColor),
+//               _infoRow('Remarks', a.remarks, labelColor, valueColor),
+//             ]),
+//           ),
+//         ]),
+//         const SizedBox(height: 16),
+//         Align(
+//           alignment: Alignment.centerRight,
+//           child: OutlinedButton(
+//             style: OutlinedButton.styleFrom(
+//               backgroundColor: AppTheme.accentColor,
+//               side: const BorderSide(color: AppTheme.accentColor),
+//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+//             ),
+//             onPressed: onUpdate,
+//             child: const Text('Update', style: TextStyle(color: Color(0xFF000000), fontSize: 12)),
+//           ),
+//         ),
+//       ]),
 //     );
 //   }
 
-//   Widget _infoRow(
-//   String label,
-//   String? value,
-//   Color labelColor,
-//   Color valueColor,
-// ) {
-//   String text = (value == null || value.trim().isEmpty) ? '-' : value;
-//   return Padding(
-//     padding: const EdgeInsets.only(bottom: 4),
-//     child: RichText(
-//       text: TextSpan(
-//         text: '$label: ',
-//         style: TextStyle(color: labelColor, fontSize: 11),
-//         children: [
-//           TextSpan(
-//             text: text,
-//             style: TextStyle(color: valueColor, fontSize: 11),
-//           ),
-//         ],
+//   Widget _infoRow(String label, String? value, Color labelColor, Color valueColor) {
+//     String text = (value == null || value.trim().isEmpty) ? '-' : value;
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 4),
+//       child: RichText(
+//         text: TextSpan(
+//           text: '$label: ',
+//           style: TextStyle(color: labelColor, fontSize: 11),
+//           children: [TextSpan(text: text, style: TextStyle(color: valueColor, fontSize: 11))],
+//         ),
 //       ),
-//     ),
-//   );
-// }
-
-// }
-
-// /// ---- Model updated with new fields/renames ----
-// class Activity {
-//   final String? ticketNo;
-//   final String? scheduledDate;
-//   final String? status;
-
-//   final String? project;
-//   final String? subProject;
-
-//   final String? siteName;
-//   final String? siteCode;
-
-//   final String? activity;
-
-//   final String? projectManager;   // PM
-//   final String? vendorFe;         // Yes/No or flag text
-//   final String? feVendorName;
-//   final String? feVendorMobile;
-
-//   final String? nocEngineer;
-//   final String? country;
-//   final String? state;
-//   final String? district;
-//   final String? city;
-//   final String? address;
-
-//   final String? completionDate;
-//   final String? remarks;
-
-//   const Activity({
-//     this.ticketNo,
-//     this.scheduledDate,
-//     this.status,
-//     this.project,
-//     this.subProject,
-//     this.siteName,
-//     this.siteCode,
-//     this.activity,
-//     this.projectManager,
-//     this.vendorFe,
-//     this.feVendorName,
-//     this.feVendorMobile,
-//     this.nocEngineer,
-//     this.country,
-//     this.state,
-//     this.district,
-//     this.city,
-//     this.address,
-//     this.completionDate,
-//     this.remarks,
-//   });
-// }
-
-// class _DonutPainter extends CustomPainter {
-//   final Map<String, double> data;
-//   final Map<String, Color> colors;
-//   final Color holeColor;
-//   _DonutPainter({
-//     required this.data,
-//     required this.colors,
-//     required this.holeColor,
-//   });
-
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     final total = data.values.fold(0.0, (a, b) => a + b);
-//     double startAngle = -pi / 2;
-//     final stroke = size.width * 0.20;
-//     final paint = Paint()
-//       ..style = PaintingStyle.stroke
-//       ..strokeWidth = stroke
-//       ..strokeCap = StrokeCap.butt;
-//     final rect = Rect.fromLTWH(
-//       stroke / 2,
-//       stroke / 2,
-//       size.width - stroke,
-//       size.height - stroke,
-//     );
-//     data.forEach((key, value) {
-//       if (value <= 0) return;
-//       final sweep = (value / total) * 2 * pi;
-//       paint.color = colors[key]!;
-//       canvas.drawArc(rect, startAngle, sweep, false, paint);
-//       startAngle += sweep;
-//     });
-//     final holePaint = Paint()..color = holeColor;
-//     canvas.drawCircle(
-//       Offset(size.width / 2, size.height / 2),
-//       (size.width - stroke) / 2.3,
-//       holePaint,
 //     );
 //   }
-
-//   @override
-//   bool shouldRepaint(covariant CustomPainter old) => true;
 // }
 
-// DASHBOARD — wired to backend like the web app
-// Endpoints used (same as web):
-// - GET /api/projects
-// - GET /api/projects/:projectId/sub-projects
-// - GET /api/project-sites
-// - GET /api/field-engineers
-// - GET /api/nocs
-// - GET /api/activities? page=1&limit=1000[&projectId=][&subProjectId=]
-
-// DASHBOARD — Backend-wired like your web app.
-// Endpoints used:
-// GET  /api/projects
-// GET  /api/projects/:projectId/sub-projects
-// GET  /api/project-sites
-// GET  /api/field-engineers
-// GET  /api/nocs
-// GET  /api/activities? page=1&limit=1000[&projectId=][&subProjectId=]
-// PUT  /api/activities/:id
-// DELETE /api/activities/:id
-
-
-// DASHBOARD — Live data with verbose debug logs.
-// Endpoints:
-//  GET    /api/projects
-//  GET    /api/projects/:projectId/sub-projects
-//  GET    /api/project-sites
-//  GET    /api/field-engineers
-//  GET    /api/nocs
-//  GET    /api/activities? page=1&limit=1000[&projectId=][&subProjectId=]
-//  PUT    /api/activities/:id
-//  DELETE /api/activities/:id
-
-
-
-
-
-
-
-// DASHBOARD — Live data with verbose debug logs.
-// Endpoints:
-//  GET    /api/projects
-//  GET    /api/projects/:projectId/sub-projects
-//  GET    /api/project-sites
-//  GET    /api/field-engineers
-//  GET    /api/nocs
-//  GET    /api/activities? page=1&limit=1000[&projectId=][&subProjectId=]
-//  PUT    /api/activities/:id
-//  DELETE /api/activities/:id
-
+// ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -1131,8 +1343,10 @@ class SubProject {
   final String id;
   final String name;
   SubProject({required this.id, required this.name});
-  factory SubProject.fromJson(Map<String, dynamic> j) =>
-      SubProject(id: j['id']?.toString() ?? '', name: j['name'] ?? j['sub_project_name'] ?? '');
+  factory SubProject.fromJson(Map<String, dynamic> j) => SubProject(
+    id: j['id']?.toString() ?? '',
+    name: j['name'] ?? j['sub_project_name'] ?? '',
+  );
 }
 
 class SiteAPI {
@@ -1163,18 +1377,18 @@ class SiteAPI {
   });
 
   factory SiteAPI.fromJson(Map<String, dynamic> j) => SiteAPI(
-        projectId: j['project_id']?.toString() ?? '',
-        projectName: j['project_name'] ?? '',
-        siteId: j['site_id']?.toString() ?? '',
-        siteName: j['site_name'] ?? '',
-        country: j['country'] ?? '',
-        state: j['state'] ?? '',
-        district: j['district'] ?? '',
-        city: j['city'] ?? '',
-        address: j['address'] ?? '',
-        subProjectId: j['sub_project_id']?.toString(),
-        subProjectName: j['sub_project_name'],
-      );
+    projectId: j['project_id']?.toString() ?? '',
+    projectName: j['project_name'] ?? '',
+    siteId: j['site_id']?.toString() ?? '',
+    siteName: j['site_name'] ?? '',
+    country: j['country'] ?? '',
+    state: j['state'] ?? '',
+    district: j['district'] ?? '',
+    city: j['city'] ?? '',
+    address: j['address'] ?? '',
+    subProjectId: j['sub_project_id']?.toString(),
+    subProjectName: j['sub_project_name'],
+  );
 }
 
 class FieldEngineer {
@@ -1182,13 +1396,18 @@ class FieldEngineer {
   final String name;
   final String mobile;
   final String vendor;
-  FieldEngineer({required this.id, required this.name, required this.mobile, required this.vendor});
+  FieldEngineer({
+    required this.id,
+    required this.name,
+    required this.mobile,
+    required this.vendor,
+  });
   factory FieldEngineer.fromJson(Map<String, dynamic> j) => FieldEngineer(
-        id: j['id']?.toString() ?? '',
-        name: j['full_name'] ?? '',
-        mobile: j['contact_no'] ?? '',
-        vendor: j['contact_person'] ?? '',
-      );
+    id: j['id']?.toString() ?? '',
+    name: j['full_name'] ?? '',
+    mobile: j['contact_no'] ?? '',
+    vendor: j['contact_person'] ?? '',
+  );
 }
 
 class NocEngineer {
@@ -1215,7 +1434,7 @@ class Activity {
   final String district;
   final String city;
   final String address;
-  final String siteId;   // code
+  final String siteId; // code
   final String siteName; // name
   final String pm;
   final String vendor;
@@ -1255,12 +1474,14 @@ class Activity {
     required this.status,
   });
 
-  // UI helpers
   String get scheduledDate =>
-      date.isEmpty ? '' : '${date.substring(8, 10)}/${date.substring(5, 7)}/${date.substring(0, 4)}';
-  String get completionDateDmy => completionDate.isEmpty
-      ? ''
-      : '${completionDate.substring(8, 10)}/${completionDate.substring(5, 7)}/${completionDate.substring(0, 4)}';
+      date.isEmpty
+          ? ''
+          : '${date.substring(8, 10)}/${date.substring(5, 7)}/${date.substring(0, 4)}';
+  String get completionDateDmy =>
+      completionDate.isEmpty
+          ? ''
+          : '${completionDate.substring(8, 10)}/${completionDate.substring(5, 7)}/${completionDate.substring(0, 4)}';
 }
 
 // ===================== UI ===========================
@@ -1270,12 +1491,14 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends State<DashboardScreen>
+    with SingleTickerProviderStateMixin {
   // Toggle state for Project vs Summary
   final List<bool> _isSelected = [true, false];
 
   // -------- Filters ----------
-  int _activityTimeIndex = 4; // All
+  // 0=today, 1=tomorrow, 2=week, 3=month, 4=all   (web has year too; keep mobile concise)
+  int _activityTimeIndex = 4;
   String _selectedProject = 'all';
   String _selectedSubProject = 'all';
   String _selectedStatus = 'all';
@@ -1327,11 +1550,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   }
 
   // ============== API helpers ==================
+  Future<void> _logGet(Uri uri, http.Response r, {String tag = ''}) async {
+    debugPrint('[GET] $uri $tag -> ${r.statusCode} (${r.body.length} bytes)');
+  }
+
   Future<void> _fetchProjects() async {
     final uri = Uri.parse('$kApiBase/api/projects');
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /projects -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/projects');
     if (r.statusCode == 200) {
       final arr = jsonDecode(r.body) as List;
       _projects = arr.map((e) => Project.fromJson(e)).toList();
@@ -1353,10 +1580,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final uri = Uri.parse('$kApiBase/api/projects/$projectId/sub-projects');
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /sub-projects -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/sub-projects');
     if (r.statusCode == 200) {
       final data = jsonDecode(r.body);
-      final list = (data is List) ? data : (data['sub_projects'] ?? data['data'] ?? []);
+      final list =
+          (data is List) ? data : (data['sub_projects'] ?? data['data'] ?? []);
       _subProjects = (list as List).map((e) => SubProject.fromJson(e)).toList();
       debugPrint('[GET] sub-projects count=${_subProjects.length}');
       setState(() {});
@@ -1369,7 +1597,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final uri = Uri.parse('$kApiBase/api/project-sites');
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /project-sites -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/project-sites');
     if (r.statusCode == 200) {
       final arr = jsonDecode(r.body) as List;
       _sites = arr.map((e) => SiteAPI.fromJson(e)).toList();
@@ -1384,7 +1612,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final uri = Uri.parse('$kApiBase/api/field-engineers');
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /field-engineers -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/field-engineers');
     if (r.statusCode == 200) {
       final data = jsonDecode(r.body);
       final raw = (data is List) ? data : (data['field_engineers'] ?? []);
@@ -1400,7 +1628,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final uri = Uri.parse('$kApiBase/api/nocs');
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /nocs -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/nocs');
     if (r.statusCode == 200) {
       final data = jsonDecode(r.body);
       final list = (data is List) ? data : [];
@@ -1420,12 +1648,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   Future<void> _loadActivities() async {
     final params = <String, String>{"page": "1", "limit": "1000"};
     if (_selectedProject != 'all') params['projectId'] = _selectedProject;
-    if (_selectedSubProject != 'all') params['subProjectId'] = _selectedSubProject;
+    if (_selectedSubProject != 'all')
+      params['subProjectId'] = _selectedSubProject;
 
-    final uri = Uri.parse('$kApiBase/api/activities').replace(queryParameters: params);
+    final uri = Uri.parse(
+      '$kApiBase/api/activities',
+    ).replace(queryParameters: params);
     debugPrint('[GET] $uri');
     final r = await http.get(uri);
-    debugPrint('[GET] /activities -> ${r.statusCode} (${r.body.length} bytes)');
+    await _logGet(uri, r, tag: '/activities');
 
     if (r.statusCode != 200) {
       debugPrint('[GET][activities][ERR] ${r.body}');
@@ -1438,31 +1669,43 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
     List<Activity> rows = [];
     for (final a in rawActs) {
+      final aPid = a['project_id']?.toString() ?? '';
+      final aSid = a['site_id']?.toString() ?? '';
+      final aSpid = a['sub_project_id']?.toString() ?? '';
+
+      // Composite (site_id + sub_project_id) matching (same as web)
       final site = _sites.firstWhere(
         (s) =>
-            s.projectId == (a['project_id']?.toString() ?? '') &&
-            s.siteId == (a['site_id']?.toString() ?? '') &&
-            (((a['sub_project_id']?.toString() ?? '').isNotEmpty)
-                ? s.subProjectId == (a['sub_project_id']?.toString() ?? '')
-                : (s.subProjectId == null || s.subProjectId!.isEmpty)),
-        orElse: () => SiteAPI.fromJson({
-          'project_id': a['project_id']?.toString(),
-          'project_name': projectsById[a['project_id']?.toString()] ?? '',
-          'site_id': a['site_id']?.toString() ?? '',
-          'site_name': a['site_name'] ?? '',
-          'country': a['country'] ?? '',
-          'state': a['state'] ?? '',
-          'district': a['district'] ?? '',
-          'city': a['city'] ?? '',
-          'address': a['address'] ?? '',
-          'sub_project_id': a['sub_project_id'],
-          'sub_project_name': a['sub_project_name'] ?? a['sub_project'],
-        }),
+            s.projectId == aPid &&
+            s.siteId == aSid &&
+            ((aSpid.isNotEmpty)
+                ? (s.subProjectId ?? '') == aSpid
+                : ((s.subProjectId ?? '').isEmpty)),
+        orElse:
+            () => SiteAPI.fromJson({
+              'project_id': aPid,
+              'project_name': projectsById[aPid] ?? '',
+              'site_id': aSid,
+              'site_name': a['site_name'] ?? '',
+              'country': a['country'] ?? '',
+              'state': a['state'] ?? '',
+              'district': a['district'] ?? '',
+              'city': a['city'] ?? '',
+              'address': a['address'] ?? '',
+              'sub_project_id': aSpid.isEmpty ? null : aSpid,
+              'sub_project_name': a['sub_project_name'] ?? a['sub_project'],
+            }),
       );
 
       final fe = _feList.firstWhere(
         (f) => f.id == (a['field_engineer_id']?.toString() ?? ''),
-        orElse: () => FieldEngineer(id: '', name: '', mobile: a['fe_mobile'] ?? '', vendor: a['vendor'] ?? ''),
+        orElse:
+            () => FieldEngineer(
+              id: '',
+              name: '',
+              mobile: a['fe_mobile'] ?? '',
+              vendor: a['vendor'] ?? '',
+            ),
       );
       final noc = _nocs.firstWhere(
         (n) => n.id == (a['noc_engineer_id']?.toString() ?? ''),
@@ -1475,17 +1718,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           tNo: a['ticket_no'] ?? '',
           date: _iso10(a['activity_date']),
           completionDate: _iso10(a['completion_date']),
-          projectId: a['project_id']?.toString() ?? '',
-          project: projectsById[a['project_id']?.toString()] ?? '',
+          projectId: aPid,
+          project: projectsById[aPid] ?? '',
           subProject: a['sub_project_name'] ?? a['sub_project'],
-          subProjectId: a['sub_project_id']?.toString(),
+          subProjectId: aSpid.isEmpty ? null : aSpid,
           activity: a['activity_category'] ?? '',
           country: a['country'] ?? site.country,
           state: a['state'] ?? site.state,
           district: a['district'] ?? site.district,
           city: a['city'] ?? site.city,
           address: a['address'] ?? site.address,
-          siteId: a['site_id']?.toString() ?? '',
+          siteId: aSid,
           siteName: a['site_name'] ?? site.siteName,
           pm: a['project_manager'] ?? '',
           vendor: a['vendor'] ?? '',
@@ -1505,7 +1748,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       int num(String s) {
         final parts = s.split('-');
         if (parts.length > 1) {
-          return int.tryParse(parts.last.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+          return int.tryParse(parts.last.replaceAll(RegExp(r'[^0-9]'), '')) ??
+              0;
         }
         return int.tryParse(RegExp(r'\d+').firstMatch(s)?.group(0) ?? '') ?? 0;
       }
@@ -1517,7 +1761,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final seen = <String>{};
     _activities = rows.where((e) => seen.add(e.id)).toList();
     _currentPage = 1;
-    debugPrint('[GET] activities mapped=${_activities.length}');
+    debugPrint('[MAP] activities=${_activities.length}');
     setState(() {});
   }
 
@@ -1528,12 +1772,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       return DateTime(n.year, n.month, n.day);
     }
 
-    DateTime endOfDay(DateTime d) => DateTime(d.year, d.month, d.day, 23, 59, 59, 999);
+    DateTime endOfDay(DateTime d) =>
+        DateTime(d.year, d.month, d.day, 23, 59, 59, 999);
     DateTime addDays(DateTime d, int n) => d.add(Duration(days: n));
 
     bool inFutureWindow(DateTime d, int days) {
       final t0 = today0();
-      return (d.isAtSameMomentAs(t0) || d.isAfter(t0)) && d.isBefore(endOfDay(addDays(t0, days)));
+      return (d.isAtSameMomentAs(t0) || d.isAfter(t0)) &&
+          d.isBefore(endOfDay(addDays(t0, days)));
     }
 
     return _activities.where((r) {
@@ -1557,57 +1803,67 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   }
 
   List<Activity> get _filtered {
-    final byProject = _selectedProject == 'all'
-        ? _dateScoped
-        : _dateScoped.where((r) => r.projectId == _selectedProject).toList();
+    final byProject =
+        _selectedProject == 'all'
+            ? _dateScoped
+            : _dateScoped
+                .where((r) => r.projectId == _selectedProject)
+                .toList();
 
-    final bySubProject = _selectedSubProject == 'all'
-        ? byProject
-        : byProject
-            .where((r) =>
-                (r.subProjectId != null && r.subProjectId == _selectedSubProject) ||
-                (r.subProjectId == null &&
-                    r.subProject != null &&
-                    r.subProject ==
-                        (_subProjects.firstWhere(
-                          (s) => s.id == _selectedSubProject,
-                          orElse: () => SubProject(id: '', name: ''),
-                        ).name)))
-            .toList();
+    final bySubProject =
+        _selectedSubProject == 'all'
+            ? byProject
+            : byProject.where((r) {
+              // Accepts either exact subProjectId match OR name match when id is absent
+              final spName =
+                  _subProjects
+                      .firstWhere(
+                        (s) => s.id == _selectedSubProject,
+                        orElse: () => SubProject(id: '', name: ''),
+                      )
+                      .name;
+              return (r.subProjectId != null &&
+                      r.subProjectId == _selectedSubProject) ||
+                  (r.subProjectId == null && (r.subProject ?? '') == spName);
+            }).toList();
 
-    final byStatus = _selectedStatus == 'all'
-        ? bySubProject
-        : bySubProject.where((r) {
-            final s = (r.status).toLowerCase();
-            if (_selectedStatus.toLowerCase().startsWith('resched')) return s.startsWith('resched');
-            return s == _selectedStatus.toLowerCase();
-          }).toList();
+    final byStatus =
+        _selectedStatus == 'all'
+            ? bySubProject
+            : bySubProject.where((r) {
+              final s = (r.status).toLowerCase();
+              if (_selectedStatus.toLowerCase().startsWith('resched')) {
+                return s.startsWith('resched');
+              }
+              return s == _selectedStatus.toLowerCase();
+            }).toList();
 
     final term = _search.trim().toLowerCase();
     if (term.isEmpty) return byStatus;
 
     return byStatus.where((r) {
-      final blob = jsonEncode({
-        'tNo': r.tNo,
-        'date': r.date,
-        'project': r.project,
-        'subProject': r.subProject,
-        'siteName': r.siteName,
-        'siteId': r.siteId,
-        'activity': r.activity,
-        'pm': r.pm,
-        'vendor': r.vendor,
-        'feName': r.feName,
-        'feMobile': r.feMobile,
-        'nocEngineer': r.nocEngineer,
-        'country': r.country,
-        'state': r.state,
-        'district': r.district,
-        'city': r.city,
-        'address': r.address,
-        'remarks': r.remarks,
-        'status': r.status,
-      }).toLowerCase();
+      final blob =
+          jsonEncode({
+            'tNo': r.tNo,
+            'date': r.date,
+            'project': r.project,
+            'subProject': r.subProject,
+            'siteName': r.siteName,
+            'siteId': r.siteId,
+            'activity': r.activity,
+            'pm': r.pm,
+            'vendor': r.vendor,
+            'feName': r.feName,
+            'feMobile': r.feMobile,
+            'nocEngineer': r.nocEngineer,
+            'country': r.country,
+            'state': r.state,
+            'district': r.district,
+            'city': r.city,
+            'address': r.address,
+            'remarks': r.remarks,
+            'status': r.status,
+          }).toLowerCase();
       return blob.contains(term);
     }).toList();
   }
@@ -1627,7 +1883,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     return list.sublist(start, end);
   }
 
-  void _goToPage(int p) => setState(() => _currentPage = p.clamp(1, _totalPages));
+  void _goToPage(int p) =>
+      setState(() => _currentPage = p.clamp(1, _totalPages));
 
   // ================== NAV ===========================
   void _handleTabChange(BuildContext context, int i) {
@@ -1649,7 +1906,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       default:
         return;
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
   }
 
   // ================== UI ============================
@@ -1662,9 +1921,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       centerTitle: true,
       actions: [
         IconButton(
-          tooltip: Theme.of(context).brightness == Brightness.dark ? 'Light mode' : 'Dark mode',
+          tooltip:
+              Theme.of(context).brightness == Brightness.dark
+                  ? 'Light mode'
+                  : 'Dark mode',
           icon: Icon(
-            Theme.of(context).brightness == Brightness.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            Theme.of(context).brightness == Brightness.dark
+                ? Icons.light_mode_outlined
+                : Icons.dark_mode_outlined,
             color: cs.onSurface,
           ),
           onPressed: () => ThemeScope.of(context).toggle(),
@@ -1672,9 +1936,18 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         IconButton(
           tooltip: 'Profile',
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover)),
+          icon: ClipOval(
+            child: Image.asset(
+              'assets/User_profile.png',
+              width: 36,
+              height: 36,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         const SizedBox(width: 8),
       ],
@@ -1682,7 +1955,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       onTabChanged: (i) => _handleTabChange(context, i),
       safeArea: false,
       reserveBottomPadding: true,
-      body: _loading ? const Center(child: CircularProgressIndicator()) : _buildDashboardContent(),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildDashboardContent(),
     );
   }
 
@@ -1690,7 +1966,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final isLight = Theme.of(context).brightness == Brightness.light;
     final cs = Theme.of(context).colorScheme;
 
-    final fillColor = isLight ? Colors.black12 : AppTheme.accentColor.withOpacity(0.18);
+    final fillColor =
+        isLight ? Colors.black12 : AppTheme.accentColor.withOpacity(0.18);
     final selBorderColor = isLight ? Colors.black : AppTheme.accentColor;
     final borderColor = isLight ? Colors.black26 : cs.outlineVariant;
     final selTextColor = isLight ? Colors.black : AppTheme.accentColor;
@@ -1713,8 +1990,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         });
       },
       children: const [
-        Padding(padding: EdgeInsets.symmetric(horizontal: 14), child: Text('Project')),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 14), child: Text('Summary')),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14),
+          child: Text('Project'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14),
+          child: Text('Summary'),
+        ),
       ],
     );
   }
@@ -1742,16 +2025,22 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           const SizedBox(height: 4),
           Row(
             children: [
-              Text('Activities',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(color: cs.onSurface, fontWeight: FontWeight.w700)),
+              Text(
+                'Activities',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const Spacer(),
               SizedBox(
                 width: 280,
                 child: _SearchField(
-                  onChanged: (v) => setState(() {
-                    _search = v;
-                    _currentPage = 1;
-                  }),
+                  onChanged:
+                      (v) => setState(() {
+                        _search = v;
+                        _currentPage = 1;
+                      }),
                 ),
               ),
             ],
@@ -1767,35 +2056,56 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               physics: const BouncingScrollPhysics(),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: ['Today', 'Tomorrow', 'Week', 'Month', 'All'].asMap().entries.map((e) {
-                  final idx = e.key;
-                  final label = e.value;
-                  final selected = idx == _activityTimeIndex;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () => setState(() {
-                        _activityTimeIndex = idx;
-                        _currentPage = 1;
-                      }),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: selected ? AppTheme.accentColor : Theme.of(context).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          label,
-                          style: TextStyle(
-                            color: selected ? Colors.black : Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                children:
+                    [
+                      'Today',
+                      'Tomorrow',
+                      'Week',
+                      'Month',
+                      'All',
+                    ].asMap().entries.map((e) {
+                      final idx = e.key;
+                      final label = e.value;
+                      final selected = idx == _activityTimeIndex;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: GestureDetector(
+                          onTap:
+                              () => setState(() {
+                                _activityTimeIndex = idx;
+                                _currentPage = 1;
+                              }),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  selected
+                                      ? AppTheme.accentColor
+                                      : Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              label,
+                              style: TextStyle(
+                                color:
+                                    selected
+                                        ? Colors.black
+                                        : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ),
             ),
           ),
@@ -1837,19 +2147,31 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     await _loadActivities();
                   },
                   enabled: _selectedProject != 'all' && _subProjects.isNotEmpty,
-                  displayBuilder: (id) => id == 'all'
-                      ? 'All'
-                      : (_subProjects.firstWhere(
-                            (s) => s.id == id,
-                            orElse: () => SubProject(id: id, name: id),
-                          ).name),
+                  displayBuilder:
+                      (id) =>
+                          id == 'all'
+                              ? 'All'
+                              : (_subProjects
+                                  .firstWhere(
+                                    (s) => s.id == id,
+                                    orElse: () => SubProject(id: id, name: id),
+                                  )
+                                  .name),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _buildDropdown(
                   'Status',
-                  const ['all', 'Open', 'Reschedule', 'Pending', 'In Progress', 'Completed', 'Canceled'],
+                  const [
+                    'all',
+                    'Open',
+                    'Reschedule',
+                    'Pending',
+                    'In Progress',
+                    'Completed',
+                    'Canceled',
+                  ],
                   _selectedStatus,
                   (v) => setState(() {
                     _selectedStatus = v ?? 'all';
@@ -1865,136 +2187,358 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
           // List
           Expanded(
-            child: _paged.isEmpty
-                ? const Center(child: Text('No records found'))
-                : ListView.separated(
-                    padding: const EdgeInsets.only(bottom: 12 + 58),
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemCount: _paged.length + 1,
-                    itemBuilder: (context, i) {
-                      if (i < _paged.length) {
-                        return _ActivityCard(
-                          a: _paged[i],
-                          onUpdate: () async {
-                            // lists from lookups
-                            final subProjectNames = _subProjects.map((e) => e.name).toList();
-                            final siteNames = _sites
-                                .where((s) => s.projectId == _paged[i].projectId)
-                                .map((s) => s.siteName)
-                                .toSet()
-                                .toList()
-                              ..sort();
-                            final feNames = _feList.map((e) => e.name).where((e) => e.isNotEmpty).toSet().toList()
-                              ..sort();
-                            final nocNames = _nocs.map((e) => e.name).where((e) => e.isNotEmpty).toSet().toList()
-                              ..sort();
+            child:
+                _paged.isEmpty
+                    ? const Center(child: Text('No records found'))
+                    : ListView.separated(
+                      padding: const EdgeInsets.only(bottom: 12 + 58),
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemCount: _paged.length + 1,
+                      itemBuilder: (context, i) {
+                        if (i < _paged.length) {
+                          return _ActivityCard(
+                            a: _paged[i],
+                            onUpdate: () async {
+                              // lists from lookups (for modal choices)
+                              final subProjectNames =
+                                  _subProjects.map((e) => e.name).toList();
 
-                            await UpdateActivityModal.show(
-                              context,
-                              activity: _paged[i],
-                              subProjects: subProjectNames,
-                              siteNames: siteNames,
-                              feNames: feNames,
-                              nocEngineers: nocNames,
-                              onSubmit: (updated) async {
-                                final feId = _feList.firstWhere(
-                                  (f) => f.name == updated.feName,
-                                  orElse: () => FieldEngineer(id: '', name: '', mobile: '', vendor: ''),
-                                ).id;
+                              final siteNames =
+                                  _sites
+                                      .where(
+                                        (s) =>
+                                            s.projectId == _paged[i].projectId,
+                                      )
+                                      .map((s) => s.siteName)
+                                      .toSet()
+                                      .toList()
+                                    ..sort();
 
-                                final nocId = _nocs.firstWhere(
-                                  (n) => n.name == updated.nocEngineer,
-                                  orElse: () => NocEngineer(id: '', name: ''),
-                                ).id;
+                              final feNames =
+                                  _feList
+                                      .map((e) => e.name)
+                                      .where((e) => e.isNotEmpty)
+                                      .toSet()
+                                      .toList()
+                                    ..sort();
 
-                                final payload = {
-                                  'ticket_no': updated.tNo,
-                                  'project_id': _paged[i].projectId,
-                                  'site_id': updated.siteId,
-                                  'activity_category': updated.activity,
-                                  'activity_date': _paged[i].date.isEmpty ? null : _paged[i].date,
-                                  'completion_date':
-                                      updated.completionDate.isEmpty ? null : updated.completionDate,
-                                  'country': updated.country,
-                                  'state': updated.state,
-                                  'district': updated.district,
-                                  'city': updated.city,
-                                  'address': updated.address,
-                                  'project_manager': updated.pm,
-                                  'vendor': updated.vendor,
-                                  'field_engineer_id': feId.isEmpty ? null : feId,
-                                  'fe_mobile': updated.feMobile,
-                                  'noc_engineer_id': nocId.isEmpty ? null : nocId,
-                                  'remarks': updated.remarks,
-                                  'status': updated.status,
-                                  if (_paged[i].subProjectId != null && _paged[i].subProjectId!.isNotEmpty)
-                                    'sub_project_id': _paged[i].subProjectId,
-                                };
+                              final nocNames =
+                                  _nocs
+                                      .map((e) => e.name)
+                                      .where((e) => e.isNotEmpty)
+                                      .toSet()
+                                      .toList()
+                                    ..sort();
 
-                                final uri = Uri.parse('$kApiBase/api/activities/${_paged[i].id}');
-                                debugPrint('[PUT] $uri\n${jsonEncode(payload)}');
-                                final res = await http.put(
-                                  uri,
-                                  headers: {'Content-Type': 'application/json'},
-                                  body: jsonEncode(payload),
-                                );
-                                debugPrint('[PUT] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)');
+                              // await UpdateActivityModal.show(
+                              //   context,
+                              //   activity: _paged[i],
+                              //   subProjects: _subProjects, // List<SubProject>
+                              //   sites: _sites, // List<SiteAPI>
+                              //   fes: _feList, // List<FieldEngineer>
+                              //   nocs: _nocs, // List<NocEngineer>
+                              //   onSubmit: (updated) async {
+                              //     final payload = {
+                              //       'ticket_no': updated.tNo,
+                              //       'project_id': _paged[i].projectId,
+                              //       'site_id':
+                              //           updated.siteId, // from composite picker
+                              //       'activity_category': updated.activity,
+                              //       'activity_date':
+                              //           _paged[i].date.isEmpty
+                              //               ? null
+                              //               : _paged[i].date,
+                              //       'completion_date':
+                              //           updated.completionDate.isEmpty
+                              //               ? null
+                              //               : updated.completionDate,
+                              //       'country': updated.country,
+                              //       'state': updated.state,
+                              //       'district': updated.district,
+                              //       'city': updated.city,
+                              //       'address': updated.address,
+                              //       'project_manager': updated.pm,
+                              //       'vendor': updated.vendor,
+                              //       'field_engineer_id':
+                              //           (updated.fieldEngineerId ?? '').isEmpty
+                              //               ? null
+                              //               : updated.fieldEngineerId,
+                              //       'fe_mobile': updated.feMobile,
+                              //       'noc_engineer_id':
+                              //           (updated.nocEngineerId ?? '').isEmpty
+                              //               ? null
+                              //               : updated.nocEngineerId,
+                              //       'remarks': updated.remarks,
+                              //       'status': updated.status,
+                              //       if ((updated.subProjectId ?? '').isNotEmpty)
+                              //         'sub_project_id': updated.subProjectId,
+                              //     };
 
-                                if (res.statusCode >= 200 && res.statusCode < 300) {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(content: Text('Activity updated')));
-                                    await _loadActivities();
+                              //     final uri = Uri.parse(
+                              //       '$kApiBase/api/activities/${_paged[i].id}',
+                              //     );
+                              //     debugPrint(
+                              //       '[PUT] $uri\n${jsonEncode(payload)}',
+                              //     );
+                              //     final res = await http.put(
+                              //       uri,
+                              //       headers: {
+                              //         'Content-Type': 'application/json',
+                              //       },
+                              //       body: jsonEncode(payload),
+                              //     );
+                              //     debugPrint(
+                              //       '[PUT] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
+                              //     );
+
+                              //     if (res.statusCode >= 200 &&
+                              //         res.statusCode < 300) {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         const SnackBar(
+                              //           content: Text('Activity updated'),
+                              //         ),
+                              //       );
+                              //       await _loadActivities();
+                              //     } else {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         SnackBar(
+                              //           content: Text(
+                              //             'Update failed (${res.statusCode})',
+                              //           ),
+                              //         ),
+                              //       );
+                              //     }
+                              //   },
+                              //   onDelete: () async {
+                              //     final uri = Uri.parse(
+                              //       '$kApiBase/api/activities/${_paged[i].id}',
+                              //     );
+                              //     debugPrint('[DELETE] $uri');
+                              //     final res = await http.delete(uri);
+                              //     debugPrint(
+                              //       '[DELETE] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
+                              //     );
+                              //     if (res.statusCode >= 200 &&
+                              //         res.statusCode < 300) {
+                              //       Navigator.of(context).pop();
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         const SnackBar(
+                              //           content: Text('Activity deleted'),
+                              //         ),
+                              //       );
+                              //       await _loadActivities();
+                              //     } else {
+                              //       ScaffoldMessenger.of(context).showSnackBar(
+                              //         SnackBar(
+                              //           content: Text(
+                              //             'Delete failed (${res.statusCode})',
+                              //           ),
+                              //         ),
+                              //       );
+                              //     }
+                              //   },
+                              // );
+
+                              final projId = _paged[i].projectId;
+
+// Build sub-project options from sites of this project (id + name, unique by id)
+final Map<String, String> spMap = {};
+for (final s in _sites.where((s) => s.projectId == projId)) {
+  final id = (s.subProjectId ?? '').trim();
+  final name = (s.subProjectName ?? '').trim();
+  if (id.isNotEmpty && name.isNotEmpty) spMap[id] = name;
+}
+final subProjectsForRow = spMap.entries
+    .map((e) => SubProject(id: e.key, name: e.value))
+    .toList();
+
+// FE/NOC lists you already have:
+final fes = _feList;
+final nocs = _nocs;
+
+                              await UpdateActivityModal.show(
+                                context,
+                                activity: _paged[i],
+                                // subProjects: _subProjects, 
+                                subProjects: subProjectsForRow, 
+                             
+                                sites: _sites, // List<SiteAPI>
+                                
+                                // fes: _feList, // List<FieldEngineer>
+                                // nocs: _nocs, // List<NocEngineer>
+
+                                fes: fes,
+                                nocs: nocs,
+                                onSubmit: (updated) async {
+                                  final feId =
+                                      _feList
+                                          .firstWhere(
+                                            (f) =>
+                                                f.name.trim().toLowerCase() ==
+                                                updated.feName
+                                                    .trim()
+                                                    .toLowerCase(),
+                                            orElse:
+                                                () => FieldEngineer(
+                                                  id: '',
+                                                  name: '',
+                                                  mobile: '',
+                                                  vendor: '',
+                                                ),
+                                          )
+                                          .id;
+
+                                  final nocId =
+                                      _nocs
+                                          .firstWhere(
+                                            (n) =>
+                                                n.name.trim().toLowerCase() ==
+                                                updated.nocEngineer
+                                                    .trim()
+                                                    .toLowerCase(),
+                                            orElse:
+                                                () => NocEngineer(
+                                                  id: '',
+                                                  name: '',
+                                                ),
+                                          )
+                                          .id;
+
+                                  final payload = {
+                                    'ticket_no': updated.tNo,
+                                    'project_id': _paged[i].projectId,
+                                    'site_id':
+                                        updated
+                                            .siteId, // from composite Site ID picker
+                                    'activity_category': updated.activity,
+                                    'activity_date':
+                                        _paged[i].date.isEmpty
+                                            ? null
+                                            : _paged[i].date,
+                                    'completion_date':
+                                        updated.completionDate.isEmpty
+                                            ? null
+                                            : updated.completionDate,
+                                    'country': updated.country,
+                                    'state': updated.state,
+                                    'district': updated.district,
+                                    'city': updated.city,
+                                    'address': updated.address,
+                                    'project_manager': updated.pm,
+                                    'vendor': updated.vendor,
+                                    'field_engineer_id':
+                                        feId.isEmpty ? null : feId,
+                                    'fe_mobile': updated.feMobile,
+                                    'noc_engineer_id':
+                                        nocId.isEmpty ? null : nocId,
+                                    'remarks': updated.remarks,
+                                    'status': updated.status,
+                                    // include for disambiguation like web
+                                    if ((updated.subProjectId ?? '').isNotEmpty)
+                                      'sub_project_id': updated.subProjectId,
+                                  };
+
+                                  final uri = Uri.parse(
+                                    '$kApiBase/api/activities/${_paged[i].id}',
+                                  );
+                                  debugPrint(
+                                    '[PUT] $uri\n${jsonEncode(payload)}',
+                                  );
+                                  final res = await http.put(
+                                    uri,
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: jsonEncode(payload),
+                                  );
+                                  debugPrint(
+                                    '[PUT] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
+                                  );
+
+                                  if (res.statusCode >= 200 &&
+                                      res.statusCode < 300) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Activity updated'),
+                                        ),
+                                      );
+                                      await _loadActivities();
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Update failed (${res.statusCode})',
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   }
-                                } else {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Update failed (${res.statusCode})')),
-                                    );
+                                },
+                                onDelete: () async {
+                                  final uri = Uri.parse(
+                                    '$kApiBase/api/activities/${_paged[i].id}',
+                                  );
+                                  debugPrint('[DELETE] $uri');
+                                  final res = await http.delete(uri);
+                                  debugPrint(
+                                    '[DELETE] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
+                                  );
+                                  if (res.statusCode >= 200 &&
+                                      res.statusCode < 300) {
+                                    if (mounted) {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Activity deleted'),
+                                        ),
+                                      );
+                                      await _loadActivities();
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Delete failed (${res.statusCode})',
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   }
-                                }
-                              },
-                              onDelete: () async {
-                                final uri = Uri.parse('$kApiBase/api/activities/${_paged[i].id}');
-                                debugPrint('[DELETE] $uri');
-                                final res = await http.delete(uri);
-                                debugPrint('[DELETE] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)');
-                                if (res.statusCode >= 200 && res.statusCode < 300) {
-                                  if (mounted) {
-                                    Navigator.of(context).pop();
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(content: Text('Activity deleted')));
-                                    await _loadActivities();
-                                  }
-                                } else {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Delete failed (${res.statusCode})')),
-                                    );
-                                  }
-                                }
-                              },
-                            );
-                          },
+                                },
+                              );
+                            },
+                          );
+                        }
+
+                        // last item = pagination row
+                        return _PaginationInline(
+                          currentPage: _currentPage,
+                          totalPages: _totalPages,
+                          onPageSelected: _goToPage,
+                          onPrev: () => _goToPage(_currentPage - 1),
+                          onNext: () => _goToPage(_currentPage + 1),
+                          perPage: _perPage,
+                          options: _perPageOptions,
+                          onPerPageChanged:
+                              (v) => setState(() {
+                                _perPage = v;
+                                _currentPage = 1;
+                              }),
                         );
-                      }
-
-                      // last item = pagination row
-                      return _PaginationInline(
-                        currentPage: _currentPage,
-                        totalPages: _totalPages,
-                        onPageSelected: _goToPage,
-                        onPrev: () => _goToPage(_currentPage - 1),
-                        onNext: () => _goToPage(_currentPage + 1),
-                        perPage: _perPage,
-                        options: _perPageOptions,
-                        onPerPageChanged: (v) => setState(() {
-                          _perPage = v;
-                          _currentPage = 1;
-                        }),
-                      );
-                    },
-                  ),
+                      },
+                    ),
           ),
         ],
       ),
@@ -2028,31 +2572,56 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         underline: const SizedBox(),
         dropdownColor: Theme.of(context).scaffoldBackgroundColor,
         iconEnabledColor: enabled ? cs.onSurfaceVariant : cs.outlineVariant,
-        style: TextStyle(color: enabled ? cs.onSurface : cs.onSurfaceVariant, fontSize: 12),
-        hint: Text(hint, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
+        style: TextStyle(
+          color: enabled ? cs.onSurface : cs.onSurfaceVariant,
+          fontSize: 12,
+        ),
+        hint: Text(
+          hint,
+          style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+        ),
         onChanged: enabled ? onChanged : null,
-        items: items
-            .map(
-              (s) => DropdownMenuItem(
-                value: s,
-                child: Text(labelOf(s), style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis),
-              ),
-            )
-            .toList(),
+        items:
+            items
+                .map(
+                  (s) => DropdownMenuItem(
+                    value: s,
+                    child: Text(
+                      labelOf(s),
+                      style: const TextStyle(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList(),
       ),
     );
   }
 
   Map<String, int> _calcStats(List<Activity> list) {
-    final m = {'Completed': 0, 'Pending': 0, 'In Progress': 0, 'Open': 0, 'Scheduled': 0, 'Rescheduled': 0};
+    final m = {
+      'Completed': 0,
+      'Pending': 0,
+      'In Progress': 0,
+      'Open': 0,
+      'Scheduled': 0,
+      'Rescheduled': 0,
+    };
     for (final r in list) {
       final s = r.status.toLowerCase();
-      if (s == 'completed') m['Completed'] = (m['Completed'] ?? 0) + 1;
-      else if (s == 'in progress') m['In Progress'] = (m['In Progress'] ?? 0) + 1;
-      else if (s == 'pending') m['Pending'] = (m['Pending'] ?? 0) + 1;
-      else if (s == 'open') m['Open'] = (m['Open'] ?? 0) + 1;
-      else if (s == 'scheduled') m['Scheduled'] = (m['Scheduled'] ?? 0) + 1;
-      else if (s.startsWith('resched')) m['Rescheduled'] = (m['Rescheduled'] ?? 0) + 1;
+      if (s == 'completed') {
+        m['Completed'] = (m['Completed'] ?? 0) + 1;
+      } else if (s == 'in progress') {
+        m['In Progress'] = (m['In Progress'] ?? 0) + 1;
+      } else if (s == 'pending') {
+        m['Pending'] = (m['Pending'] ?? 0) + 1;
+      } else if (s == 'open') {
+        m['Open'] = (m['Open'] ?? 0) + 1;
+      } else if (s == 'scheduled') {
+        m['Scheduled'] = (m['Scheduled'] ?? 0) + 1;
+      } else if (s.startsWith('resched')) {
+        m['Rescheduled'] = (m['Rescheduled'] ?? 0) + 1;
+      }
     }
     return m;
   }
@@ -2088,29 +2657,230 @@ class _SummaryCard extends StatelessWidget {
             return Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: items.map((item) {
-                return SizedBox(
-                  width: tileWidth,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: cs.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(item['count']!,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: isLight ? Colors.black : cs.onSurface)),
-                        const SizedBox(height: 4),
-                        Text(item['label']!, style: TextStyle(fontSize: 13, color: isLight ? Colors.black54 : cs.onSurfaceVariant)),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+              children:
+                  items.map((item) {
+                    return SizedBox(
+                      width: tileWidth,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              item['count']!,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: isLight ? Colors.black : cs.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              item['label']!,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color:
+                                    isLight
+                                        ? Colors.black54
+                                        : cs.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _ActivityCard extends StatelessWidget {
+  final Activity a;
+  final VoidCallback onUpdate;
+  const _ActivityCard({required this.a, required this.onUpdate});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    final labelColor = isLight ? Colors.black54 : cs.onSurfaceVariant;
+    final valueColor = isLight ? Colors.black : cs.onSurface;
+
+    String _t(String? v) => (v == null || v.trim().isEmpty) ? '-' : v;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${_t(a.tNo)}  ${_t(a.scheduledDate)}',
+                  style: TextStyle(
+                    color: valueColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                'Status : ${_t(a.status)}',
+                style: TextStyle(
+                  color: valueColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Divider(color: cs.outlineVariant),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // LEFT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _infoRow('Project', a.project, labelColor, valueColor),
+                    _infoRow(
+                      'Sub Project',
+                      a.subProject,
+                      labelColor,
+                      valueColor,
+                    ),
+                    // Site Name ellipsis
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Site Name: ',
+                            style: TextStyle(color: labelColor, fontSize: 11),
+                          ),
+                          Expanded(
+                            child: Text(
+                              a.siteName,
+                              style: TextStyle(color: valueColor, fontSize: 11),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _infoRow('Site Code', a.siteId, labelColor, valueColor),
+                    _infoRow('Activity', a.activity, labelColor, valueColor),
+                    _infoRow('Project Manager', a.pm, labelColor, valueColor),
+                    _infoRow('Vendor (FE)', a.vendor, labelColor, valueColor),
+                    _infoRow(
+                      'FE/Vendor Name',
+                      a.feName,
+                      labelColor,
+                      valueColor,
+                    ),
+                    _infoRow(
+                      'FE/Vendor Mobile',
+                      a.feMobile,
+                      labelColor,
+                      valueColor,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              // RIGHT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _infoRow(
+                      'NOC Engineer',
+                      a.nocEngineer,
+                      labelColor,
+                      valueColor,
+                    ),
+                    _infoRow('Country', a.country, labelColor, valueColor),
+                    _infoRow('State', a.state, labelColor, valueColor),
+                    _infoRow('District', a.district, labelColor, valueColor),
+                    _infoRow('City', a.city, labelColor, valueColor),
+                    _infoRow('Address', a.address, labelColor, valueColor),
+                    _infoRow(
+                      'Completion Date',
+                      a.completionDateDmy,
+                      labelColor,
+                      valueColor,
+                    ),
+                    _infoRow('Remarks', a.remarks, labelColor, valueColor),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: AppTheme.accentColor,
+                side: const BorderSide(color: AppTheme.accentColor),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
+              onPressed: onUpdate,
+              child: const Text(
+                'Update',
+                style: TextStyle(color: Color(0xFF000000), fontSize: 12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRow(
+    String label,
+    String? value,
+    Color labelColor,
+    Color valueColor,
+  ) {
+    String text = (value == null || value.trim().isEmpty) ? '-' : value;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: RichText(
+        text: TextSpan(
+          text: '$label: ',
+          style: TextStyle(color: labelColor, fontSize: 11),
+          children: [
+            TextSpan(
+              text: text,
+              style: TextStyle(color: valueColor, fontSize: 11),
+            ),
+          ],
         ),
       ),
     );
@@ -2133,24 +2903,46 @@ class _ActivityStatusSection extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text('Activity Status', textAlign: TextAlign.center, style: TextStyle(color: cs.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
-          Divider(color: cs.outlineVariant),
-          const SizedBox(height: 10),
-          ...['Completed', 'In Progress', 'Open', 'Rescheduled', 'Pending'].map((k) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: Row(
-                children: [
-                  const CircleAvatar(radius: 5),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(k, style: TextStyle(color: cs.onSurface))),
-                  Text('${pct(k).round()}%', style: TextStyle(color: cs.onSurfaceVariant)),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Activity Status',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: cs.onSurface,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-            );
-          }),
-        ]),
+            ),
+            Divider(color: cs.outlineVariant),
+            const SizedBox(height: 10),
+            ...[
+              'Completed',
+              'In Progress',
+              'Open',
+              'Rescheduled',
+              'Pending',
+            ].map((k) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Row(
+                  children: [
+                    const CircleAvatar(radius: 5),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(k, style: TextStyle(color: cs.onSurface)),
+                    ),
+                    Text(
+                      '${pct(k).round()}%',
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -2161,16 +2953,26 @@ class _PaginationBar extends StatelessWidget {
   final int totalPages;
   final ValueChanged<int> onPageSelected;
   static const int _windowSize = 5;
-  const _PaginationBar({required this.currentPage, required this.totalPages, required this.onPageSelected});
+  const _PaginationBar({
+    required this.currentPage,
+    required this.totalPages,
+    required this.onPageSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    final int windowStart = ((currentPage - 1) ~/ _windowSize) * _windowSize + 1;
+    final int windowStart =
+        ((currentPage - 1) ~/ _windowSize) * _windowSize + 1;
     final int windowEnd = min(windowStart + _windowSize - 1, totalPages);
 
-    Widget pill({required Widget child, required bool selected, VoidCallback? onTap, double width = 40}) {
+    Widget pill({
+      required Widget child,
+      required bool selected,
+      VoidCallback? onTap,
+      double width = 40,
+    }) {
       final bg = selected ? Colors.black : cs.surfaceContainerHighest;
       final fg = selected ? Colors.white : cs.onSurface;
 
@@ -2185,7 +2987,11 @@ class _PaginationBar extends StatelessWidget {
           border: Border.all(color: cs.outlineVariant),
         ),
         child: DefaultTextStyle(
-          style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 13),
+          style: TextStyle(
+            color: fg,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
           child: IconTheme.merge(
             data: IconThemeData(color: fg, size: 18),
             child: child,
@@ -2193,7 +2999,13 @@ class _PaginationBar extends StatelessWidget {
         ),
       );
 
-      return onTap == null ? Opacity(opacity: 0.5, child: content) : InkWell(onTap: onTap, borderRadius: BorderRadius.circular(10), child: content);
+      return onTap == null
+          ? Opacity(opacity: 0.5, child: content)
+          : InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(10),
+            child: content,
+          );
     }
 
     final hasPrevWindow = windowStart > 1;
@@ -2202,9 +3014,22 @@ class _PaginationBar extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        pill(child: const Icon(Icons.chevron_left), selected: false, onTap: hasPrevWindow ? () => onPageSelected(windowStart - 1) : null),
-        for (int p = windowStart; p <= windowEnd; p++) pill(child: Text('$p'), selected: p == currentPage, onTap: () => onPageSelected(p)),
-        pill(child: const Icon(Icons.chevron_right), selected: false, onTap: hasNextWindow ? () => onPageSelected(windowEnd + 1) : null),
+        pill(
+          child: const Icon(Icons.chevron_left),
+          selected: false,
+          onTap: hasPrevWindow ? () => onPageSelected(windowStart - 1) : null,
+        ),
+        for (int p = windowStart; p <= windowEnd; p++)
+          pill(
+            child: Text('$p'),
+            selected: p == currentPage,
+            onTap: () => onPageSelected(p),
+          ),
+        pill(
+          child: const Icon(Icons.chevron_right),
+          selected: false,
+          onTap: hasNextWindow ? () => onPageSelected(windowEnd + 1) : null,
+        ),
       ],
     );
   }
@@ -2242,7 +3067,11 @@ class _PaginationInline extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            _PaginationBar(currentPage: currentPage, totalPages: totalPages, onPageSelected: onPageSelected),
+            _PaginationBar(
+              currentPage: currentPage,
+              totalPages: totalPages,
+              onPageSelected: onPageSelected,
+            ),
             Align(
               alignment: Alignment.centerRight,
               child: Container(
@@ -2258,7 +3087,13 @@ class _PaginationInline extends StatelessWidget {
                     value: perPage,
                     dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                     style: TextStyle(fontSize: 13, color: cs.onSurface),
-                    items: options.map((n) => DropdownMenuItem(value: n, child: Text('$n'))).toList(),
+                    items:
+                        options
+                            .map(
+                              (n) =>
+                                  DropdownMenuItem(value: n, child: Text('$n')),
+                            )
+                            .toList(),
                     onChanged: (v) {
                       if (v != null) onPerPageChanged(v);
                     },
@@ -2291,117 +3126,14 @@ class _SearchField extends StatelessWidget {
           prefixIcon: Icon(Icons.search, color: cs.onSurfaceVariant, size: 20),
           filled: true,
           fillColor: cs.surfaceContainerHighest,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActivityCard extends StatelessWidget {
-  final Activity a;
-  final VoidCallback onUpdate;
-  const _ActivityCard({required this.a, required this.onUpdate});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-
-    final labelColor = isLight ? Colors.black54 : cs.onSurfaceVariant;
-    final valueColor = isLight ? Colors.black : cs.onSurface;
-
-    String _t(String? v) => (v == null || v.trim().isEmpty) ? '-' : v;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                '${_t(a.tNo)}  ${_t(a.scheduledDate)}',
-                style: TextStyle(color: valueColor, fontWeight: FontWeight.w800, fontSize: 14),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Text('Status : ${_t(a.status)}', style: TextStyle(color: valueColor, fontWeight: FontWeight.w700, fontSize: 14)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Divider(color: cs.outlineVariant),
-        const SizedBox(height: 12),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // LEFT
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _infoRow('Project', a.project, labelColor, valueColor),
-              _infoRow('Sub Project', a.subProject, labelColor, valueColor),
-              // Site Name ellipsis
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  children: [
-                    Text('Site Name: ', style: TextStyle(color: labelColor, fontSize: 11)),
-                    Expanded(
-                      child: Text(a.siteName, style: TextStyle(color: valueColor, fontSize: 11), overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
-                ),
-              ),
-              _infoRow('Site Code', a.siteId, labelColor, valueColor),
-              _infoRow('Activity', a.activity, labelColor, valueColor),
-              _infoRow('Project Manager', a.pm, labelColor, valueColor),
-              _infoRow('Vendor (FE)', a.vendor, labelColor, valueColor),
-              _infoRow('FE/Vendor Name', a.feName, labelColor, valueColor),
-              _infoRow('FE/Vendor Mobile', a.feMobile, labelColor, valueColor),
-            ]),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
           ),
-          const SizedBox(width: 16),
-          // RIGHT
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _infoRow('NOC Engineer', a.nocEngineer, labelColor, valueColor),
-              _infoRow('Country', a.country, labelColor, valueColor),
-              _infoRow('State', a.state, labelColor, valueColor),
-              _infoRow('District', a.district, labelColor, valueColor),
-              _infoRow('City', a.city, labelColor, valueColor),
-              _infoRow('Address', a.address, labelColor, valueColor),
-              _infoRow('Completion Date', a.completionDateDmy, labelColor, valueColor),
-              _infoRow('Remarks', a.remarks, labelColor, valueColor),
-            ]),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
           ),
-        ]),
-        const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerRight,
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              backgroundColor: AppTheme.accentColor,
-              side: const BorderSide(color: AppTheme.accentColor),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            ),
-            onPressed: onUpdate,
-            child: const Text('Update', style: TextStyle(color: Color(0xFF000000), fontSize: 12)),
-          ),
-        ),
-      ]),
-    );
-  }
-
-  Widget _infoRow(String label, String? value, Color labelColor, Color valueColor) {
-    String text = (value == null || value.trim().isEmpty) ? '-' : value;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: RichText(
-        text: TextSpan(
-          text: '$label: ',
-          style: TextStyle(color: labelColor, fontSize: 11),
-          children: [TextSpan(text: text, style: TextStyle(color: valueColor, fontSize: 11))],
         ),
       ),
     );
