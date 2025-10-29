@@ -1725,8 +1725,9 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
                               );
                               _feMobileCtrl.text = fe.mobile;
                               // keep vendor from FE when present (mimic web auto-fill)
-                              if (fe.vendor.isNotEmpty)
+                              if (fe.vendor.isNotEmpty) {
                                 _vendorCtrl.text = fe.vendor;
+                              }
                             });
                           },
                         ),

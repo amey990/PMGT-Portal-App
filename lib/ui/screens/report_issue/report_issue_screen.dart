@@ -1,5 +1,4 @@
 // lib/ui/screens/report_issue/report_issue_screen.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../core/theme.dart';

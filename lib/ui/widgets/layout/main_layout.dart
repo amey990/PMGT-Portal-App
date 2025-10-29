@@ -157,8 +157,6 @@
 
 //v2//
 import 'package:flutter/material.dart';
-import '../../../core/theme.dart';
-import '../../../core/theme_controller.dart';
 import '../../widgets/app_appbar.dart';
 import '../../widgets/app_drawer.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';

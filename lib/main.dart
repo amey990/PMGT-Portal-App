@@ -1,25 +1,6 @@
 // import 'package:flutter/material.dart';
 // import 'core/theme.dart';
-// import 'ui/screens/Auth/splash_screen.dart';
-
-// void main() => runApp(const MyApp());
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'PMGT App',
-//       debugShowCheckedModeBanner: false,
-//       theme: AppTheme.theme,
-//       home: const SplashScreen(),  // start here
-//     );
-//   }
-// }
-
-// import 'package:flutter/material.dart';
-// import 'core/theme.dart';
-// import 'core/theme_controller.dart'; // <-- new (we’ll add this file next)
+// import 'core/theme_controller.dart';
 // import 'ui/screens/Auth/splash_screen.dart';
 
 // void main() => runApp(const MyApp());
@@ -32,9 +13,9 @@
 // }
 
 // class _MyAppState extends State<MyApp> {
-//   // Theme controller lives at the top so any page can toggle later
-//   final ThemeController _themeController =
-//       ThemeController(initialMode: ThemeMode.system);
+//   final ThemeController _themeController = ThemeController(
+//     initialMode: ThemeMode.system,
+//   );
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -46,14 +27,15 @@
 //           return MaterialApp(
 //             title: 'PMGT App',
 //             debugShowCheckedModeBanner: false,
-//             theme: AppTheme.light,        // Light look
-//             darkTheme: AppTheme.dark,     // Dark look
-//             themeMode: _themeController.mode, // Which one to use
-//             // Clamp extreme accessibility scales a bit to protect layout
+//             theme: AppTheme.light,
+//             darkTheme: AppTheme.dark,
+//             themeMode: _themeController.mode,
 //             builder: (context, child) {
 //               final media = MediaQuery.of(context);
-//               final clamped = media.textScaler
-//                   .clamp(minScaleFactor: 0.9, maxScaleFactor: 1.2);
+//               final clamped = media.textScaler.clamp(
+//                 minScaleFactor: 0.9,
+//                 maxScaleFactor: 1.2,
+//               );
 //               return MediaQuery(
 //                 data: media.copyWith(textScaler: clamped),
 //                 child: child ?? const SizedBox.shrink(),
@@ -67,12 +49,33 @@
 //   }
 // }
 
+
+// lib/main.dart
 import 'package:flutter/material.dart';
+
 import 'core/theme.dart';
 import 'core/theme_controller.dart';
 import 'ui/screens/Auth/splash_screen.dart';
 
-void main() => runApp(const MyApp());
+// ⬇️ providers/bootstrap wrapper you added
+import 'app_bootstrap.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Wrap the app with AppBootstrap so UserSession + ApiClient are available everywhere.
+  runApp(const _Root());
+}
+
+class _Root extends StatelessWidget {
+  const _Root();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBootstrap(
+      child: const MyApp(),
+    );
+  }
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -110,7 +113,13 @@ class _MyAppState extends State<MyApp> {
                 child: child ?? const SizedBox.shrink(),
               );
             },
+            // Keep your current entry point; SplashScreen can decide where to go.
             home: const SplashScreen(),
+            // (Optional) Add routes now or later when you wire login/dashboard:
+            // routes: {
+            //   '/login': (_) => const LoginScreen(),
+            //   '/dashboard': (_) => const DashboardScreen(),
+            // },
           );
         },
       ),

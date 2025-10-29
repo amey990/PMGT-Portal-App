@@ -382,48 +382,6 @@ class _FieldShell extends StatelessWidget {
   }
 }
 
-// class _TextField extends StatelessWidget {
-//   final String label;
-//   final TextEditingController controller;
-//   final int maxLines;
-//   final TextInputType? keyboardType;
-//   const _TextField({
-//     required this.label,
-//     required this.controller,
-//     this.keyboardType,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final cs = Theme.of(context).colorScheme;
-//     return _FieldShell(
-//       label: label,
-//       child: TextField(
-//         controller: controller,
-//         maxLines: maxLines,
-//         keyboardType: keyboardType,
-//         style: TextStyle(color: cs.onSurface),
-//         decoration: InputDecoration(
-//           filled: true,
-//           fillColor: cs.surface,
-//           enabledBorder: OutlineInputBorder(
-//             borderSide: BorderSide(color: cs.outlineVariant),
-//             borderRadius: BorderRadius.circular(8),
-//           ),
-//           focusedBorder: OutlineInputBorder(
-//             borderSide: BorderSide(color: AppTheme.accentColor),
-//             borderRadius: BorderRadius.circular(8),
-//           ),
-//           contentPadding: const EdgeInsets.symmetric(
-//             horizontal: 12,
-//             vertical: 12,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 
 class _TextField extends StatelessWidget {
   final String label;
@@ -434,8 +392,8 @@ class _TextField extends StatelessWidget {
   const _TextField({
     required this.label,
     required this.controller,
+    this.maxLines = 1,        // <-- default so it's always initialized
     this.keyboardType,
-    this.maxLines = 1, 
   });
 
   @override
@@ -445,7 +403,7 @@ class _TextField extends StatelessWidget {
       label: label,
       child: TextField(
         controller: controller,
-        maxLines: maxLines,               // <-- uses the value
+        maxLines: maxLines,
         keyboardType: keyboardType,
         style: TextStyle(color: cs.onSurface),
         decoration: InputDecoration(
@@ -459,10 +417,7 @@ class _TextField extends StatelessWidget {
             borderSide: BorderSide(color: AppTheme.accentColor),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );

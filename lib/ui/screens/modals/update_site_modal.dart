@@ -181,14 +181,22 @@ class _UpdateSiteModalState extends State<UpdateSiteModal> {
                       ),
                       const SizedBox(height: 12),
 
+                      // DropdownButtonFormField<String>(
+                      //   initialValue: widget.subProjects.contains(_subProject) ? _subProject : null,
+                      //   items: widget.subProjects
+                      //       .map((sp) => DropdownMenuItem(value: sp, child: Text(sp)))
+                      //       .toList(),
+                      //   onChanged: (v) => setState(() => _subProject = v),
+                      //   decoration: _dec('Sub Project'),
+                      // ),
                       DropdownButtonFormField<String>(
-                        initialValue: widget.subProjects.contains(_subProject) ? _subProject : null,
-                        items: widget.subProjects
-                            .map((sp) => DropdownMenuItem(value: sp, child: Text(sp)))
-                            .toList(),
-                        onChanged: (v) => setState(() => _subProject = v),
-                        decoration: _dec('Sub Project'),
-                      ),
+  value: widget.subProjects.contains(_subProject) ? _subProject : null,
+  items: widget.subProjects
+      .map((sp) => DropdownMenuItem<String>(value: sp, child: Text(sp)))
+      .toList(),
+  onChanged: (v) => setState(() => _subProject = v),
+  decoration: _dec('Sub Project'),
+),
                       const SizedBox(height: 12),
 
                       TextFormField(controller: _siteNameCtrl, decoration: _dec('Site Name *')),
@@ -248,14 +256,24 @@ class _UpdateSiteModalState extends State<UpdateSiteModal> {
                       TextFormField(controller: _districtCtrl, decoration: _dec('District *')),
                       const SizedBox(height: 12),
 
-                      DropdownButtonFormField<String>(
-                        initialValue: widget.statusOptions.contains(_status) ? _status : null,
-                        items: widget.statusOptions
-                            .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                            .toList(),
-                        onChanged: (v) => setState(() => _status = v),
-                        decoration: _dec('Status *'),
-                      ),
+                      // DropdownButtonFormField<String>(
+                      //   initialValue: widget.statusOptions.contains(_status) ? _status : null,
+                      //   items: widget.statusOptions
+                      //       .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                      //       .toList(),
+                      //   onChanged: (v) => setState(() => _status = v),
+                      //   decoration: _dec('Status *'),
+                      // ),
+                      // Status
+DropdownButtonFormField<String>(
+  value: widget.statusOptions.contains(_status) ? _status : null,
+  items: widget.statusOptions
+      .map((s) => DropdownMenuItem<String>(value: s, child: Text(s)))
+      .toList(),
+  onChanged: (v) => setState(() => _status = v),
+  decoration: _dec('Status *'),
+),
+
                       const SizedBox(height: 12),
 
                       InkWell(

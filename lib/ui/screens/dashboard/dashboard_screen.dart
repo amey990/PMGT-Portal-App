@@ -1632,7 +1632,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     if (r.statusCode == 200) {
       final data = jsonDecode(r.body);
       final list = (data is List) ? data : [];
-      _nocs = (list as List).map((e) => NocEngineer.fromJson(e)).toList();
+      _nocs = (list).map((e) => NocEngineer.fromJson(e)).toList();
       debugPrint('[GET] NOC count=${_nocs.length}');
       setState(() {});
     } else {
@@ -1648,8 +1648,9 @@ class _DashboardScreenState extends State<DashboardScreen>
   Future<void> _loadActivities() async {
     final params = <String, String>{"page": "1", "limit": "1000"};
     if (_selectedProject != 'all') params['projectId'] = _selectedProject;
-    if (_selectedSubProject != 'all')
+    if (_selectedSubProject != 'all') {
       params['subProjectId'] = _selectedSubProject;
+    }
 
     final uri = Uri.parse(
       '$kApiBase/api/activities',
@@ -2230,114 +2231,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       .toList()
                                     ..sort();
 
-                              // await UpdateActivityModal.show(
-                              //   context,
-                              //   activity: _paged[i],
-                              //   subProjects: _subProjects, // List<SubProject>
-                              //   sites: _sites, // List<SiteAPI>
-                              //   fes: _feList, // List<FieldEngineer>
-                              //   nocs: _nocs, // List<NocEngineer>
-                              //   onSubmit: (updated) async {
-                              //     final payload = {
-                              //       'ticket_no': updated.tNo,
-                              //       'project_id': _paged[i].projectId,
-                              //       'site_id':
-                              //           updated.siteId, // from composite picker
-                              //       'activity_category': updated.activity,
-                              //       'activity_date':
-                              //           _paged[i].date.isEmpty
-                              //               ? null
-                              //               : _paged[i].date,
-                              //       'completion_date':
-                              //           updated.completionDate.isEmpty
-                              //               ? null
-                              //               : updated.completionDate,
-                              //       'country': updated.country,
-                              //       'state': updated.state,
-                              //       'district': updated.district,
-                              //       'city': updated.city,
-                              //       'address': updated.address,
-                              //       'project_manager': updated.pm,
-                              //       'vendor': updated.vendor,
-                              //       'field_engineer_id':
-                              //           (updated.fieldEngineerId ?? '').isEmpty
-                              //               ? null
-                              //               : updated.fieldEngineerId,
-                              //       'fe_mobile': updated.feMobile,
-                              //       'noc_engineer_id':
-                              //           (updated.nocEngineerId ?? '').isEmpty
-                              //               ? null
-                              //               : updated.nocEngineerId,
-                              //       'remarks': updated.remarks,
-                              //       'status': updated.status,
-                              //       if ((updated.subProjectId ?? '').isNotEmpty)
-                              //         'sub_project_id': updated.subProjectId,
-                              //     };
-
-                              //     final uri = Uri.parse(
-                              //       '$kApiBase/api/activities/${_paged[i].id}',
-                              //     );
-                              //     debugPrint(
-                              //       '[PUT] $uri\n${jsonEncode(payload)}',
-                              //     );
-                              //     final res = await http.put(
-                              //       uri,
-                              //       headers: {
-                              //         'Content-Type': 'application/json',
-                              //       },
-                              //       body: jsonEncode(payload),
-                              //     );
-                              //     debugPrint(
-                              //       '[PUT] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
-                              //     );
-
-                              //     if (res.statusCode >= 200 &&
-                              //         res.statusCode < 300) {
-                              //       ScaffoldMessenger.of(context).showSnackBar(
-                              //         const SnackBar(
-                              //           content: Text('Activity updated'),
-                              //         ),
-                              //       );
-                              //       await _loadActivities();
-                              //     } else {
-                              //       ScaffoldMessenger.of(context).showSnackBar(
-                              //         SnackBar(
-                              //           content: Text(
-                              //             'Update failed (${res.statusCode})',
-                              //           ),
-                              //         ),
-                              //       );
-                              //     }
-                              //   },
-                              //   onDelete: () async {
-                              //     final uri = Uri.parse(
-                              //       '$kApiBase/api/activities/${_paged[i].id}',
-                              //     );
-                              //     debugPrint('[DELETE] $uri');
-                              //     final res = await http.delete(uri);
-                              //     debugPrint(
-                              //       '[DELETE] -> ${res.statusCode} ${res.reasonPhrase} (${res.body.length} bytes)',
-                              //     );
-                              //     if (res.statusCode >= 200 &&
-                              //         res.statusCode < 300) {
-                              //       Navigator.of(context).pop();
-                              //       ScaffoldMessenger.of(context).showSnackBar(
-                              //         const SnackBar(
-                              //           content: Text('Activity deleted'),
-                              //         ),
-                              //       );
-                              //       await _loadActivities();
-                              //     } else {
-                              //       ScaffoldMessenger.of(context).showSnackBar(
-                              //         SnackBar(
-                              //           content: Text(
-                              //             'Delete failed (${res.statusCode})',
-                              //           ),
-                              //         ),
-                              //       );
-                              //     }
-                              //   },
-                              // );
 
                               final projId = _paged[i].projectId;
 
@@ -2364,9 +2257,6 @@ final nocs = _nocs;
                              
                                 sites: _sites, // List<SiteAPI>
                                 
-                                // fes: _feList, // List<FieldEngineer>
-                                // nocs: _nocs, // List<NocEngineer>
-
                                 fes: fes,
                                 nocs: nocs,
                                 onSubmit: (updated) async {
@@ -2715,7 +2605,7 @@ class _ActivityCard extends StatelessWidget {
     final labelColor = isLight ? Colors.black54 : cs.onSurfaceVariant;
     final valueColor = isLight ? Colors.black : cs.onSurface;
 
-    String _t(String? v) => (v == null || v.trim().isEmpty) ? '-' : v;
+    String t(String? v) => (v == null || v.trim().isEmpty) ? '-' : v;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -2731,7 +2621,7 @@ class _ActivityCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${_t(a.tNo)}  ${_t(a.scheduledDate)}',
+                  '${t(a.tNo)}  ${t(a.scheduledDate)}',
                   style: TextStyle(
                     color: valueColor,
                     fontWeight: FontWeight.w800,
@@ -2741,7 +2631,7 @@ class _ActivityCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Status : ${_t(a.status)}',
+                'Status : ${t(a.status)}',
                 style: TextStyle(
                   color: valueColor,
                   fontWeight: FontWeight.w700,
