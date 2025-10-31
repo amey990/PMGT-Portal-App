@@ -32,8 +32,7 @@
 //             themeMode: _themeController.mode,
 //             builder: (context, child) {
 //               final media = MediaQuery.of(context);
-//               final clamped = media.textScaler.clamp(
-//                 minScaleFactor: 0.9,
+//               final clamped = media.textScaler.clamp(=//                 minScaleFactor: 0.9,
 //                 maxScaleFactor: 1.2,
 //               );
 //               return MediaQuery(
@@ -48,7 +47,6 @@
 //     );
 //   }
 // }
-
 
 // lib/main.dart
 import 'package:flutter/material.dart';
@@ -71,9 +69,7 @@ class _Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBootstrap(
-      child: const MyApp(),
-    );
+    return AppBootstrap(child: const MyApp());
   }
 }
 

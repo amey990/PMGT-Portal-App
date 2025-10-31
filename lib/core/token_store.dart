@@ -1,28 +1,37 @@
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-// class TokenStore {
-//   static const _key = 'pmgt_token';
-//   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-
-//   Future<void> saveToken(String token) => _storage.write(key: _key, value: token);
-//   Future<String?> readToken() => _storage.read(key: _key);
-//   Future<void> clear() => _storage.delete(key: _key);
-// }
-
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Lightweight wrapper over secure storage so we can swap/testing later.
 class TokenStore {
   TokenStore() : _storage = const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
 
-  static const _key = 'pmgt_jwt';
+  static const _jwtKey   = 'pmgt_jwt';
+  static const _emailKey = 'pmgt_email';
+  static const _roleKey  = 'pmgt_role';
 
-  Future<void> save(String token) => _storage.write(key: _key, value: token);
+  // ---------- Token ----------
+  Future<void> saveToken(String token) => _storage.write(key: _jwtKey, value: token);
+  Future<String?> readToken() => _storage.read(key: _jwtKey);
+  Future<void> clearToken() => _storage.delete(key: _jwtKey);
 
-  Future<String?> read() => _storage.read(key: _key);
+  // ---------- Email ----------
+  Future<void> saveEmail(String email) => _storage.write(key: _emailKey, value: email);
+  Future<String?> readEmail() => _storage.read(key: _emailKey);
+  Future<void> clearEmail() => _storage.delete(key: _emailKey);
 
-  Future<void> clear() => _storage.delete(key: _key);
+  // ---------- Role ----------
+  Future<void> saveRole(String role) => _storage.write(key: _roleKey, value: role);
+  Future<String?> readRole() => _storage.read(key: _roleKey);
+  Future<void> clearRole() => _storage.delete(key: _roleKey);
+
+  // ---------- Helpers ----------
+  Future<void> saveAll({required String token, String? email, String? role}) async {
+    await saveToken(token);
+    if (email != null) await saveEmail(email);
+    if (role  != null) await saveRole(role);
+  }
+
+  Future<void> clearAll() async {
+    await Future.wait([clearToken(), clearEmail(), clearRole()]);
+  }
 }

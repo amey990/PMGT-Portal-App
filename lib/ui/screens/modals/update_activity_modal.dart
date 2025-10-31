@@ -1534,7 +1534,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
                         // ),
 
                         DropdownButtonFormField<String>(
-  value: _subProjectId.isEmpty ? null : _subProjectId,
+  initialValue: _subProjectId.isEmpty ? null : _subProjectId,
   isExpanded: true,
   decoration: _dec('Sub Project'),
   items: widget.subProjects
@@ -1564,7 +1564,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
   },
 ),
                         DropdownButtonFormField<String>(
-                          value: _activityCategory,
+                          initialValue: _activityCategory,
                           isExpanded: true,
                           decoration: _dec('Activity Category'),
                           items:
@@ -1590,7 +1590,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
                       _row2(
                         // Site ID (composite) — like web Autocomplete; here a searchable dropdown substitute
                         DropdownButtonFormField<String>(
-                          value:
+                          initialValue:
                               _siteOptions.any((o) => o.key == _siteKey)
                                   ? _siteKey
                                   : null,
@@ -1698,7 +1698,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
                           ),
                         ),
                         DropdownButtonFormField<String>(
-                          value: (_feId ?? '').isEmpty ? null : _feId,
+                          initialValue: (_feId ?? '').isEmpty ? null : _feId,
                           isExpanded: true,
                           decoration: _dec('FE Name'),
                           items:
@@ -1744,7 +1744,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
                           ),
                         ),
                         DropdownButtonFormField<String>(
-                          value: (_nocId ?? '').isEmpty ? null : _nocId,
+                          initialValue: (_nocId ?? '').isEmpty ? null : _nocId,
                           isExpanded: true,
                           decoration: _dec('NOC Engineer'),
                           items:
@@ -1763,7 +1763,7 @@ if (_subProjectId.isEmpty && (a.subProject ?? '').trim().isNotEmpty) {
 
                       _row2(
                         DropdownButtonFormField<String>(
-                          value: _status,
+                          initialValue: _status,
                           isExpanded: true,
                           decoration: _dec('Status'),
                           items:

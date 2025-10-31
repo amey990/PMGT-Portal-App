@@ -1932,7 +1932,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     final api = context.read<ApiClient>();
     setState(() => _loadingLookups = true);
 
-    Future<List<String>> _fetchList(
+    Future<List<String>> fetchList(
       String path,
       String field,
       String subfield,
@@ -1955,9 +1955,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
     try {
       final results = await Future.wait([
-        _fetchList('/api/customers', 'customers', 'company_name'), // customers
-        _fetchList('/api/project-managers', 'project_managers', 'full_name'),
-        _fetchList('/api/bdms', 'bdms', 'full_name'),
+        fetchList('/api/customers', 'customers', 'company_name'), // customers
+        fetchList('/api/project-managers', 'project_managers', 'full_name'),
+        fetchList('/api/bdms', 'bdms', 'full_name'),
       ]);
 
       if (!mounted) return;

@@ -1326,6 +1326,7 @@ import '../activities/add_activity_screen.dart';
 import '../analytics/analytics_screen.dart';
 import '../users/view_users_screen.dart';
 import '../modals/update_activity_modal.dart';
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 // ===================== API BASE =====================
 const String kApiBase = 'https://pmgt.commedialabs.com';
@@ -1941,14 +1942,15 @@ class _DashboardScreenState extends State<DashboardScreen>
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset(
+          //     'assets/User_profile.png',
+          //     width: 36,
+          //     height: 36,
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          icon: const ProfileAvatar(size: 36),
         ),
         const SizedBox(width: 8),
       ],
@@ -2231,32 +2233,40 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       .toList()
                                     ..sort();
 
-
                               final projId = _paged[i].projectId;
 
-// Build sub-project options from sites of this project (id + name, unique by id)
-final Map<String, String> spMap = {};
-for (final s in _sites.where((s) => s.projectId == projId)) {
-  final id = (s.subProjectId ?? '').trim();
-  final name = (s.subProjectName ?? '').trim();
-  if (id.isNotEmpty && name.isNotEmpty) spMap[id] = name;
-}
-final subProjectsForRow = spMap.entries
-    .map((e) => SubProject(id: e.key, name: e.value))
-    .toList();
+                              // Build sub-project options from sites of this project (id + name, unique by id)
+                              final Map<String, String> spMap = {};
+                              for (final s in _sites.where(
+                                (s) => s.projectId == projId,
+                              )) {
+                                final id = (s.subProjectId ?? '').trim();
+                                final name = (s.subProjectName ?? '').trim();
+                                if (id.isNotEmpty && name.isNotEmpty)
+                                  spMap[id] = name;
+                              }
+                              final subProjectsForRow =
+                                  spMap.entries
+                                      .map(
+                                        (e) => SubProject(
+                                          id: e.key,
+                                          name: e.value,
+                                        ),
+                                      )
+                                      .toList();
 
-// FE/NOC lists you already have:
-final fes = _feList;
-final nocs = _nocs;
+                              // FE/NOC lists you already have:
+                              final fes = _feList;
+                              final nocs = _nocs;
 
                               await UpdateActivityModal.show(
                                 context,
                                 activity: _paged[i],
-                                // subProjects: _subProjects, 
-                                subProjects: subProjectsForRow, 
-                             
+                                // subProjects: _subProjects,
+                                subProjects: subProjectsForRow,
+
                                 sites: _sites, // List<SiteAPI>
-                                
+
                                 fes: fes,
                                 nocs: nocs,
                                 onSubmit: (updated) async {
