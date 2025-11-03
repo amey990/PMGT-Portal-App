@@ -12,7 +12,7 @@ import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
 import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
 import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
 import 'package:pmgt/ui/screens/users/view_users_screen.dart';
-
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 class ReportIssueScreen extends StatefulWidget {
   const ReportIssueScreen({super.key});
@@ -140,14 +140,16 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset(
+          //     'assets/User_profile.png',
+          //     width: 36,
+          //     height: 36,
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          icon: const ProfileAvatar(size: 36),
+
         ),
         const SizedBox(width: 8),
       ],

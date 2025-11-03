@@ -639,7 +639,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:csc_picker_plus/csc_picker_plus.dart';
-
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 import '../../../core/api_client.dart'; // your API client
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
@@ -965,36 +965,14 @@ class _AddSiteScreenState extends State<AddSiteScreen> {
     );
   }
 
-  void _clearBulk() {
-    setState(() {
-      _bulkProjectId = null;
-      _bulkSubId = null;
-      _bulkFile = null;
-    });
-  }
-
-  // void _clearSingle() {
+  // void _clearBulk() {
   //   setState(() {
-  //     _projectId = null;
-  //     _subId = null;
-  //     _subs.clear();
-
-  //     _siteIdCtrl.clear();
-  //     _siteNameCtrl.clear();
-  //     _addressCtrl.clear();
-  //     _pincodeCtrl.clear();
-  //     _pocCtrl.clear();
-
-  //     _country = null;
-  //     _state = null;
-  //     _city = null;
-  //     _districtCtrl.clear();
-
-  //     _status = 'Pending';
-  //     _completionDate = null;
-  //     _remarksCtrl.clear();
+  //     _bulkProjectId = null;
+  //     _bulkSubId = null;
+  //     _bulkFile = null;
   //   });
   // }
+
 
 
 void _clearSingle() {
@@ -1074,14 +1052,16 @@ void _clearSingle() {
               () => Navigator.of(
                 context,
               ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset(
+          //     'assets/User_profile.png',
+          //     width: 36,
+          //     height: 36,
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          icon: const ProfileAvatar(size: 36),
+
         ),
         const SizedBox(width: 8),
       ],

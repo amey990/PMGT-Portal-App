@@ -3054,7 +3054,7 @@ import 'package:pmgt/core/theme_controller.dart';
 import 'package:pmgt/ui/utils/responsive.dart';
 import 'package:pmgt/ui/widgets/layout/main_layout.dart';
 import 'package:pmgt/ui/screens/profile/profile_screen.dart';
-
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
 import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
 import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
@@ -3502,14 +3502,16 @@ class _AllSitesScreenState extends State<AllSitesScreen> {
               () => Navigator.of(
                 context,
               ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset(
+          //     'assets/User_profile.png',
+          //     width: 36,
+          //     height: 36,
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          icon: const ProfileAvatar(size: 36),
+
         ),
         const SizedBox(width: 8),
       ],
@@ -3593,113 +3595,7 @@ class _AllSitesScreenState extends State<AllSitesScreen> {
 
                 const SizedBox(height: 12),
 
-                // List + pagination
-                // Expanded(
-                //   child:
-                //       _paged.isEmpty
-                //           ? Center(
-                //             child: Text(
-                //               _loadingSites ? '' : 'No records found.',
-                //               style: TextStyle(color: cs.onSurfaceVariant),
-                //             ),
-                //           )
-                //           : ListView.separated(
-                //             padding: const EdgeInsets.only(bottom: 12 + 58),
-                //             separatorBuilder:
-                //                 (_, __) => const SizedBox(height: 12),
-                //             itemCount: _paged.length + 1,
-                //             itemBuilder: (context, i) {
-                //               if (i < _paged.length) {
-                //                 final s = _paged[i];
-                //                 final globalIndex = _sites.indexOf(s);
-                //                 return _SiteCard(
-                //                   site: s,
-                //                   onUpdate: (updated) async {
-                //                     try {
-                //                       final api = context.read<ApiClient>();
-                //                       final String baseUrl =
-                //                           (api as dynamic).baseUrl as String;
-                //                       final String? token =
-                //                           (api as dynamic).token as String?;
-                //                       final uri = Uri.parse(
-                //                         '$baseUrl/api/project-sites/${s.projectId}/${s.siteId}',
-                //                       );
-
-                //                       final resp = await http.put(
-                //                         uri,
-                //                         headers: {
-                //                           if (token != null && token.isNotEmpty)
-                //                             'Authorization': 'Bearer $token',
-                //                           'Content-Type': 'application/json',
-                //                         },
-                //                         body: jsonEncode({
-                //                           'site_name': updated.siteName,
-                //                           'address': updated.address,
-                //                           'pincode': updated.pincode,
-                //                           'poc': updated.poc,
-                //                           'country': updated.country,
-                //                           'state': updated.state,
-                //                           'district': updated.district,
-                //                           'city': updated.city,
-                //                           'remarks':
-                //                               updated.remarks.isEmpty
-                //                                   ? null
-                //                                   : updated.remarks,
-                //                           'status': updated.status,
-                //                           'completion_date':
-                //                               updated.completionDate == null ||
-                //                                       updated
-                //                                           .completionDate!
-                //                                           .isEmpty
-                //                                   ? null
-                //                                   : updated.completionDate,
-                //                         }),
-                //                       );
-
-                //                       if (resp.statusCode < 200 ||
-                //                           resp.statusCode >= 300) {
-                //                         final msg =
-                //                             (jsonDecode(resp.body)
-                //                                     as Map?)?['error']
-                //                                 ?.toString() ??
-                //                             'Update failed';
-                //                         throw Exception(msg);
-                //                       }
-
-                //                       setState(
-                //                         () => _sites[globalIndex] = updated,
-                //                       );
-                //                       _toast('Site updated');
-                //                     } catch (e) {
-                //                       _toast('Update failed', false);
-                //                     }
-                //                   },
-                //                   dmy: _dmy,
-                //                   subProjectOptions:
-                //                       _childOptions
-                //                           .where((e) => e != 'All')
-                //                           .toList(),
-                //                   statusOptions: _statusOptions,
-                //                 );
-                //               }
-                //               return _PaginationInline(
-                //                 currentPage: _currentPage,
-                //                 totalPages: _totalPages,
-                //                 onPageSelected: _goToPage,
-                //                 onPrev: () => _goToPage(_currentPage - 1),
-                //                 onNext: () => _goToPage(_currentPage + 1),
-                //                 perPage: _perPage,
-                //                 options: _perPageOptions,
-                //                 onPerPageChanged: (v) {
-                //                   setState(() {
-                //                     _perPage = v;
-                //                     _currentPage = 1;
-                //                   });
-                //                 },
-                //               );
-                //             },
-                //           ),
-                // ),
+               
 
                 Expanded(
   child: _paged.isEmpty
@@ -4028,25 +3924,7 @@ class _SiteCard extends StatelessWidget {
     );
   }
 
-  // Widget _kv(String k, String v, Color kColor, Color vColor) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 4),
-  //     child: RichText(
-  //       overflow: TextOverflow.ellipsis,
-  //       text: TextSpan(
-  //         text: '$k: ',
-  //         style: TextStyle(color: kColor, fontSize: 11),
-  //         children: [
-  //           TextSpan(
-  //             text: v.isEmpty ? '—' : v,
-  //             style: TextStyle(color: vColor, fontSize: 11),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
+  
   Widget _kv(
     String k,
     String v,

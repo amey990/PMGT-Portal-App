@@ -902,10 +902,6 @@
 //   }
 // }
 
-
-
-
-
 //p2//
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -1795,14 +1791,12 @@
 //   }
 // }
 
-
-
 //p3//
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:http/http.dart' as http;
 
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
@@ -1815,6 +1809,7 @@ import '../dashboard/dashboard_screen.dart';
 import '../activities/add_activity_screen.dart';
 import '../analytics/analytics_screen.dart';
 import '../users/view_users_screen.dart';
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 class AddProjectScreen extends StatefulWidget {
   const AddProjectScreen({super.key});
@@ -1847,8 +1842,12 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   List<String> _bdms = const [];
 
   // enums
-  final List<String> _types = const ['Implementation', 'Upgrade', 'Maintenance'];
-  final List<String> _years = List<String>.generate(6, (i) => '$i');  // 0..5
+  final List<String> _types = const [
+    'Implementation',
+    'Upgrade',
+    'Maintenance',
+  ];
+  final List<String> _years = List<String>.generate(6, (i) => '$i'); // 0..5
   final List<String> _months = List<String>.generate(12, (i) => '$i'); // 0..11
 
   bool _loadingLookups = false;
@@ -1995,7 +1994,8 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       'start_date': _fmtIso(_startDate!),
       'end_date': _fmtIso(_endDate!),
       'amc_year': (_amcYear ?? '').isEmpty ? null : int.tryParse(_amcYear!),
-      'amc_months': (_amcMonths ?? '').isEmpty ? null : int.tryParse(_amcMonths!),
+      'amc_months':
+          (_amcMonths ?? '').isEmpty ? null : int.tryParse(_amcMonths!),
     };
 
     setState(() => _saving = true);
@@ -2016,17 +2016,20 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       }
 
       final createdId = (j['id'] ?? '').toString();
-      final names = _subProjects
-          .map((s) => s.trim())
-          .where((s) => s.isNotEmpty)
-          .toList();
+      final names =
+          _subProjects.map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
 
       // best-effort subprojects
       if (createdId.isNotEmpty && names.isNotEmpty) {
         for (final name in names) {
           try {
-            await api.post('/api/projects/$createdId/sub-projects', body: {'name': name});
-          } catch (_) {/* ignore per-item errors */}
+            await api.post(
+              '/api/projects/$createdId/sub-projects',
+              body: {'name': name},
+            );
+          } catch (_) {
+            /* ignore per-item errors */
+          }
         }
       }
 
@@ -2061,7 +2064,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       default:
         return;
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
   }
 
   // ---------- UI ----------
@@ -2078,7 +2083,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       reserveBottomPadding: true,
       actions: [
         IconButton(
-          tooltip: Theme.of(context).brightness == Brightness.dark ? 'Light mode' : 'Dark mode',
+          tooltip:
+              Theme.of(context).brightness == Brightness.dark
+                  ? 'Light mode'
+                  : 'Dark mode',
           icon: Icon(
             Theme.of(context).brightness == Brightness.dark
                 ? Icons.light_mode_outlined
@@ -2090,11 +2098,14 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         IconButton(
           tooltip: 'Profile',
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(
-            child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
+          // ),
+          icon: const ProfileAvatar(size: 36),
         ),
         const SizedBox(width: 8),
       ],
@@ -2103,7 +2114,9 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         children: [
           Card(
             color: cs.surfaceContainerHighest,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
@@ -2115,10 +2128,12 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                       Expanded(
                         child: Text(
                           'Add New Project',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: cs.onSurface,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                       TextButton(
@@ -2135,9 +2150,16 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                       child: Row(
                         children: [
                           const SizedBox(width: 8),
-                          const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                          const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                           const SizedBox(width: 10),
-                          Text('Loading lookups…', style: TextStyle(color: cs.onSurfaceVariant)),
+                          Text(
+                            'Loading lookups…',
+                            style: TextStyle(color: cs.onSurfaceVariant),
+                          ),
                         ],
                       ),
                     ),
@@ -2149,7 +2171,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                     onChanged: (v) => setState(() => _customer = v),
                   ),
 
-                  _TextOneLine(label: 'Project Name*', controller: _projectNameCtrl),
+                  _TextOneLine(
+                    label: 'Project Name*',
+                    controller: _projectNameCtrl,
+                  ),
 
                   _ROText('Project Code*', _projectCodeCtrl),
 
@@ -2185,11 +2210,27 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   LayoutBuilder(
                     builder: (context, c) {
                       final wide = c.maxWidth > 560;
-                      final start = _DateField(label: 'Start Date*', date: _startDate, onTap: () => _pickDate(isStart: true));
-                      final end = _DateField(label: 'End Date*', date: _endDate, onTap: () => _pickDate(isStart: false));
+                      final start = _DateField(
+                        label: 'Start Date*',
+                        date: _startDate,
+                        onTap: () => _pickDate(isStart: true),
+                      );
+                      final end = _DateField(
+                        label: 'End Date*',
+                        date: _endDate,
+                        onTap: () => _pickDate(isStart: false),
+                      );
                       return wide
-                          ? Row(children: [Expanded(child: start), const SizedBox(width: 12), Expanded(child: end)])
-                          : Column(children: [start, const SizedBox(height: 6), end]);
+                          ? Row(
+                            children: [
+                              Expanded(child: start),
+                              const SizedBox(width: 12),
+                              Expanded(child: end),
+                            ],
+                          )
+                          : Column(
+                            children: [start, const SizedBox(height: 6), end],
+                          );
                     },
                   ),
 
@@ -2210,12 +2251,20 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   const SizedBox(height: 12),
 
                   LayoutBuilder(
-                    builder: (context, c) => c.maxWidth >= 640
-                        ? Align(
-                            alignment: Alignment.centerRight,
-                            child: _SaveButton(onPressed: _saving ? null : _onSave, saving: _saving),
-                          )
-                        : _SaveButton(onPressed: _saving ? null : _onSave, saving: _saving),
+                    builder:
+                        (context, c) =>
+                            c.maxWidth >= 640
+                                ? Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _SaveButton(
+                                    onPressed: _saving ? null : _onSave,
+                                    saving: _saving,
+                                  ),
+                                )
+                                : _SaveButton(
+                                  onPressed: _saving ? null : _onSave,
+                                  saving: _saving,
+                                ),
                   ),
                 ],
               ),
@@ -2228,35 +2277,43 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
   // Add/Edit single sub-project via dialog
   Future<void> _addOrEditSubProject({int? editIndex}) async {
-    final controller = TextEditingController(text: editIndex != null ? _subProjects[editIndex] : '');
+    final controller = TextEditingController(
+      text: editIndex != null ? _subProjects[editIndex] : '',
+    );
     final result = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(ctx).colorScheme.surface,
-        title: Text(editIndex == null ? 'Add Sub Project' : 'Edit Sub Project'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: 'Sub Project Name',
-            border: const OutlineInputBorder(),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.accentColor),
+      builder:
+          (ctx) => AlertDialog(
+            backgroundColor: Theme.of(ctx).colorScheme.surface,
+            title: Text(
+              editIndex == null ? 'Add Sub Project' : 'Edit Sub Project',
             ),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: AppTheme.accentColor,
-              foregroundColor: Colors.black,
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'Sub Project Name',
+                border: const OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.accentColor),
+                ),
+              ),
             ),
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(editIndex == null ? 'ADD' : 'SAVE'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('CANCEL'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.accentColor,
+                  foregroundColor: Colors.black,
+                ),
+                onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                child: Text(editIndex == null ? 'ADD' : 'SAVE'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (result != null && result.isNotEmpty) {
@@ -2285,7 +2342,14 @@ class _FieldShell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 6),
           child,
         ],
@@ -2320,7 +2384,10 @@ class _TextOneLine extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: AppTheme.accentColor),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -2350,7 +2417,10 @@ class _ROText extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: cs.outlineVariant),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -2362,7 +2432,12 @@ class _Dropdown<T> extends StatelessWidget {
   final T? value;
   final List<T> items;
   final ValueChanged<T?> onChanged;
-  const _Dropdown({required this.label, required this.value, required this.items, required this.onChanged});
+  const _Dropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2383,7 +2458,12 @@ class _Dropdown<T> extends StatelessWidget {
             iconEnabledColor: cs.onSurfaceVariant,
             dropdownColor: Theme.of(context).scaffoldBackgroundColor,
             style: TextStyle(color: cs.onSurface, fontSize: 14),
-            items: items.map((e) => DropdownMenuItem<T>(value: e, child: Text('$e'))).toList(),
+            items:
+                items
+                    .map(
+                      (e) => DropdownMenuItem<T>(value: e, child: Text('$e')),
+                    )
+                    .toList(),
             hint: Text('Select', style: TextStyle(color: cs.onSurfaceVariant)),
             onChanged: onChanged,
           ),
@@ -2397,14 +2477,19 @@ class _DateField extends StatelessWidget {
   final String label;
   final DateTime? date;
   final VoidCallback onTap;
-  const _DateField({required this.label, required this.date, required this.onTap});
+  const _DateField({
+    required this.label,
+    required this.date,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final text = date == null
-        ? 'Select date'
-        : '${date!.day.toString().padLeft(2, '0')}/${date!.month.toString().padLeft(2, '0')}/${date!.year}';
+    final text =
+        date == null
+            ? 'Select date'
+            : '${date!.day.toString().padLeft(2, '0')}/${date!.month.toString().padLeft(2, '0')}/${date!.year}';
     return _FieldShell(
       label: label,
       child: InkWell(
@@ -2420,8 +2505,19 @@ class _DateField extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
-              Expanded(child: Text(text, style: TextStyle(color: date == null ? cs.onSurfaceVariant : cs.onSurface))),
-              Icon(Icons.calendar_today_rounded, size: 18, color: cs.onSurfaceVariant),
+              Expanded(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: date == null ? cs.onSurfaceVariant : cs.onSurface,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.calendar_today_rounded,
+                size: 18,
+                color: cs.onSurfaceVariant,
+              ),
             ],
           ),
         ),
@@ -2445,7 +2541,10 @@ class _SaveButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: Text(saving ? 'SAVING…' : 'SAVE', style: const TextStyle(fontWeight: FontWeight.w800)),
+      child: Text(
+        saving ? 'SAVING…' : 'SAVE',
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
     );
   }
 }
@@ -2475,10 +2574,20 @@ class _SubProjectsSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text('Sub Projects (optional)',
-                    style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600)),
+                child: Text(
+                  'Sub Projects (optional)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-              TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_circle_outline), label: const Text('Add Sub Project')),
+              TextButton.icon(
+                onPressed: onAdd,
+                icon: const Icon(Icons.add_circle_outline),
+                label: const Text('Add Sub Project'),
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -2489,16 +2598,24 @@ class _SubProjectsSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: cs.outlineVariant),
             ),
-            child: projects.isEmpty
-                ? Text('No sub projects added.', style: TextStyle(color: cs.onSurfaceVariant))
-                : Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (int i = 0; i < projects.length; i++)
-                        _SubProjectChip(label: projects[i], onEdit: () => onEdit(i), onRemove: () => onRemove(i)),
-                    ],
-                  ),
+            child:
+                projects.isEmpty
+                    ? Text(
+                      'No sub projects added.',
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    )
+                    : Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (int i = 0; i < projects.length; i++)
+                          _SubProjectChip(
+                            label: projects[i],
+                            onEdit: () => onEdit(i),
+                            onRemove: () => onRemove(i),
+                          ),
+                      ],
+                    ),
           ),
         ],
       ),
@@ -2510,7 +2627,11 @@ class _SubProjectChip extends StatelessWidget {
   final String label;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
-  const _SubProjectChip({required this.label, required this.onEdit, required this.onRemove});
+  const _SubProjectChip({
+    required this.label,
+    required this.onEdit,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2532,7 +2653,11 @@ class _SubProjectChip extends StatelessWidget {
             children: [
               Text(label, style: TextStyle(color: cs.onSurface)),
               const SizedBox(width: 6),
-              InkWell(onTap: onRemove, borderRadius: BorderRadius.circular(16), child: Icon(Icons.close, size: 16, color: cs.onSurfaceVariant)),
+              InkWell(
+                onTap: onRemove,
+                borderRadius: BorderRadius.circular(16),
+                child: Icon(Icons.close, size: 16, color: cs.onSurfaceVariant),
+              ),
             ],
           ),
         ),

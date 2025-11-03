@@ -10,7 +10,7 @@ import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
 import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
 import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
 import 'package:pmgt/ui/screens/users/view_users_screen.dart';
-
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 /// Public model so any page can navigate here without type pains.
 class PaItem {
@@ -48,9 +48,6 @@ class PaItem {
     this.panNo = '',
     this.paymentTerms = '',
   });
-
-  
-
 
   /// Be forgiving about key names: supports both raise-PA (_PaItem) and any map.
   factory PaItem.fromDynamic(dynamic it) {
@@ -163,19 +160,30 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
   final List<_LineItem> _rows = [];
 
   void _handleTabChange(BuildContext context, int i) {
-  late final Widget target;
-  switch (i) {
-    case 0: target = const DashboardScreen();    break; // Dashboard
-    case 1: target = const AddProjectScreen();   break; // Add Project
-    case 2: target = const AddActivityScreen();  break; // Add Activity
-    case 3: target = const AnalyticsScreen();    break; // Analytics
-    case 4: target = const ViewUsersScreen();    break; // View Users
-    default: return;
+    late final Widget target;
+    switch (i) {
+      case 0:
+        target = const DashboardScreen();
+        break; // Dashboard
+      case 1:
+        target = const AddProjectScreen();
+        break; // Add Project
+      case 2:
+        target = const AddActivityScreen();
+        break; // Add Activity
+      case 3:
+        target = const AnalyticsScreen();
+        break; // Analytics
+      case 4:
+        target = const ViewUsersScreen();
+        break; // View Users
+      default:
+        return;
+    }
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
   }
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(builder: (_) => target),
-  );
-}
 
   @override
   void initState() {
@@ -271,7 +279,7 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
       drawerMode: DrawerMode.accounts,
       // currentIndex: 0,
       // onTabChanged: (_) {},
-      currentIndex: -1,                               // this is a secondary page
+      currentIndex: -1, // this is a secondary page
       onTabChanged: (i) => _handleTabChange(context, i),
 
       safeArea: false,
@@ -297,14 +305,15 @@ class _GeneratePaScreenState extends State<GeneratePaScreen> {
               context,
             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset(
+          //     'assets/User_profile.png',
+          //     width: 36,
+          //     height: 36,
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          icon: const ProfileAvatar(size: 36),
         ),
         const SizedBox(width: 8),
       ],

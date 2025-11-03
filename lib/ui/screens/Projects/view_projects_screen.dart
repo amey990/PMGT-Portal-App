@@ -14,9 +14,7 @@
 // import '../analytics/analytics_screen.dart';
 // import '../users/view_users_screen.dart';
 
-
 // import '../modals/update_project_modal.dart';
-
 
 // class ViewProjectsScreen extends StatefulWidget {
 //   const ViewProjectsScreen({super.key});
@@ -26,7 +24,7 @@
 // }
 
 // class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
-  
+
 //   final int _selectedTab = 1;
 
 //   // Filter + sample data
@@ -56,7 +54,6 @@
 //     );
 //   });
 
-
 //   void _handleProjectUpdated(ProjectDto updated) {
 //   setState(() {
 //     // identify by projectCode; adjust if your real key is different
@@ -78,7 +75,6 @@
 //     }
 //   });
 // }
-
 
 //   List<_Project> get _filtered {
 //     return _projects.where((p) {
@@ -478,7 +474,6 @@
 //     this.subProjects = const [],
 //   });
 // }
-
 
 //p2//
 // import 'dart:convert';
@@ -1118,7 +1113,6 @@
 //   }
 // }
 
-
 //p3//
 // lib/src/pages/projects/view_projects_screen.dart
 import 'dart:convert';
@@ -1137,8 +1131,9 @@ import '../projects/add_project_screen.dart';
 import '../activities/add_activity_screen.dart';
 import '../analytics/analytics_screen.dart';
 import '../users/view_users_screen.dart';
-
-import '../modals/update_project_modal.dart' show UpdateProjectModal, ProjectDto;
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
+import '../modals/update_project_modal.dart'
+    show UpdateProjectModal, ProjectDto;
 
 // ====== API BASE (match web) =================================================
 const String kApiBase = 'https://pmgt.commedialabs.com';
@@ -1173,22 +1168,28 @@ class ProjectRow {
 
   factory ProjectRow.fromJson(Map<String, dynamic> j) {
     return ProjectRow(
-      id:           (j['id'] ?? j['project_id'] ?? '').toString(),
+      id: (j['id'] ?? j['project_id'] ?? '').toString(),
       customerName: j['customer_name'] ?? '',
-      projectCode:  j['project_code'] ?? '',
-      projectName:  j['project_name'] ?? '',
-      projectType:  j['project_type'] ?? '',
+      projectCode: j['project_code'] ?? '',
+      projectName: j['project_name'] ?? '',
+      projectType: j['project_type'] ?? '',
       projectManager: j['project_manager'] ?? '',
-      bdm:           j['bdm'] ?? '',
-      startDateIso:  (j['start_date'] ?? '') == '' ? null : j['start_date'],
-      endDateIso:    (j['end_date'] ?? '') == '' ? null : j['end_date'],
-      amcYear:       j['amc_year'] is int ? j['amc_year'] : int.tryParse('${j['amc_year'] ?? ''}'),
-      amcMonths:     j['amc_months'] is int ? j['amc_months'] : int.tryParse('${j['amc_months'] ?? ''}'),
+      bdm: j['bdm'] ?? '',
+      startDateIso: (j['start_date'] ?? '') == '' ? null : j['start_date'],
+      endDateIso: (j['end_date'] ?? '') == '' ? null : j['end_date'],
+      amcYear:
+          j['amc_year'] is int
+              ? j['amc_year']
+              : int.tryParse('${j['amc_year'] ?? ''}'),
+      amcMonths:
+          j['amc_months'] is int
+              ? j['amc_months']
+              : int.tryParse('${j['amc_months'] ?? ''}'),
     );
   }
 
   String get startDmy => _isoToDmy(startDateIso);
-  String get endDmy   => _isoToDmy(endDateIso);
+  String get endDmy => _isoToDmy(endDateIso);
 
   static String _two(int n) => n.toString().padLeft(2, '0');
   static String _isoToDmy(String? iso) {
@@ -1222,7 +1223,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   bool _loading = false;
   String _search = '';
   String _filterProjectName = ''; // by project_name
-  String _filterChild = '';       // by child name
+  String _filterChild = ''; // by child name
 
   @override
   void initState() {
@@ -1259,7 +1260,10 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       final r = await http.get(uri);
       if (r.statusCode == 200) {
         final data = jsonDecode(r.body);
-        final list = (data is List) ? data : (data['sub_projects'] ?? data['data'] ?? []);
+        final list =
+            (data is List)
+                ? data
+                : (data['sub_projects'] ?? data['data'] ?? []);
         return (list as List)
             .map((e) => (e['name'] ?? e['sub_project_name'] ?? '').toString())
             .where((s) => s.isNotEmpty)
@@ -1273,7 +1277,9 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     final futures = <Future<void>>[];
     for (final p in _rows) {
       if (_subMap.containsKey(p.id)) continue;
-      futures.add(_fetchSubNamesFor(p.id).then((names) => _subMap[p.id] = names));
+      futures.add(
+        _fetchSubNamesFor(p.id).then((names) => _subMap[p.id] = names),
+      );
     }
     await Future.wait(futures);
     if (mounted) setState(() {});
@@ -1287,24 +1293,26 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       list = list.where((r) => r.projectName == _filterProjectName).toList();
     }
     if (_filterChild.isNotEmpty) {
-      list = list.where((r) => (_subMap[r.id] ?? const []).contains(_filterChild)).toList();
+      list =
+          list
+              .where((r) => (_subMap[r.id] ?? const []).contains(_filterChild))
+              .toList();
     }
 
     final q = _search.trim().toLowerCase();
     if (q.isNotEmpty) {
-      list = list.where((r) {
-        bool c(String? s) => (s ?? '').toLowerCase().contains(q);
-        final subs = (_subMap[r.id] ?? const []);
-        return c(r.customerName) ||
-               c(r.projectCode)  ||
-               c(r.projectName)  ||
-              //  subs.any((n) => n.toLowerCase().includes(q)) ||
-              subs.any((n) => n.toLowerCase().contains(q)) ||
-
-
-               c(r.projectManager) ||
-               c(r.bdm);
-      }).toList();
+      list =
+          list.where((r) {
+            bool c(String? s) => (s ?? '').toLowerCase().contains(q);
+            final subs = (_subMap[r.id] ?? const []);
+            return c(r.customerName) ||
+                c(r.projectCode) ||
+                c(r.projectName) ||
+                //  subs.any((n) => n.toLowerCase().includes(q)) ||
+                subs.any((n) => n.toLowerCase().contains(q)) ||
+                c(r.projectManager) ||
+                c(r.bdm);
+          }).toList();
     }
     return list;
   }
@@ -1314,14 +1322,27 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     if (i == _selectedTab) return;
     late final Widget target;
     switch (i) {
-      case 0: target = const DashboardScreen(); break;
-      case 1: target = const AddProjectScreen(); break;
-      case 2: target = const AddActivityScreen(); break;
-      case 3: target = const AnalyticsScreen(); break;
-      case 4: target = const ViewUsersScreen(); break;
-      default: return;
+      case 0:
+        target = const DashboardScreen();
+        break;
+      case 1:
+        target = const AddProjectScreen();
+        break;
+      case 2:
+        target = const AddActivityScreen();
+        break;
+      case 3:
+        target = const AnalyticsScreen();
+        break;
+      case 4:
+        target = const ViewUsersScreen();
+        break;
+      default:
+        return;
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
   }
 
   // Update (PUT)
@@ -1330,15 +1351,17 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       setState(() => _loading = true);
       final uri = Uri.parse('$kApiBase/api/projects/${updated.projectCode}');
       final payload = {
-        'customer_name':   updated.customerName,
-        'project_name':    updated.projectName,
-        'project_type':    updated.type,
+        'customer_name': updated.customerName,
+        'project_name': updated.projectName,
+        'project_type': updated.type,
         'project_manager': updated.projectManager,
-        'bdm':             updated.bdm,
-        'start_date':      _toIsoFromDmy(updated.startDate),
-        'end_date':        _toIsoFromDmy(updated.endDate),
-        'amc_year':        updated.amcYear.isEmpty ? null : int.tryParse(updated.amcYear),
-        'amc_months':      updated.amcMonths.isEmpty ? null : int.tryParse(updated.amcMonths),
+        'bdm': updated.bdm,
+        'start_date': _toIsoFromDmy(updated.startDate),
+        'end_date': _toIsoFromDmy(updated.endDate),
+        'amc_year':
+            updated.amcYear.isEmpty ? null : int.tryParse(updated.amcYear),
+        'amc_months':
+            updated.amcMonths.isEmpty ? null : int.tryParse(updated.amcMonths),
       };
       final res = await http.put(
         uri,
@@ -1378,26 +1401,43 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     final pad = responsivePadding(context);
 
     // Dropdown data
-    final projectNames = ['All', ...{..._rows.map((r) => r.projectName)}];
+    final projectNames = [
+      'All',
+      ...{..._rows.map((r) => r.projectName)},
+    ];
 
     // If a project is selected, get its children (already preloaded).
     final selectedProject = _rows.firstWhere(
       (r) => r.projectName == _filterProjectName,
-      orElse: () => ProjectRow(
-        id: '', customerName: '', projectCode: '', projectName: '',
-        projectType: '', projectManager: '', bdm: '',
-        startDateIso: null, endDateIso: null, amcYear: null, amcMonths: null),
+      orElse:
+          () => ProjectRow(
+            id: '',
+            customerName: '',
+            projectCode: '',
+            projectName: '',
+            projectType: '',
+            projectManager: '',
+            bdm: '',
+            startDateIso: null,
+            endDateIso: null,
+            amcYear: null,
+            amcMonths: null,
+          ),
     );
-    final childOptions = _filterProjectName.isEmpty
-        ? const <String>[]
-        : (_subMap[selectedProject.id] ?? const <String>[]);
+    final childOptions =
+        _filterProjectName.isEmpty
+            ? const <String>[]
+            : (_subMap[selectedProject.id] ?? const <String>[]);
 
     return MainLayout(
       title: 'All Projects',
       centerTitle: true,
       actions: [
         IconButton(
-          tooltip: Theme.of(context).brightness == Brightness.dark ? 'Light mode' : 'Dark mode',
+          tooltip:
+              Theme.of(context).brightness == Brightness.dark
+                  ? 'Light mode'
+                  : 'Dark mode',
           icon: Icon(
             Theme.of(context).brightness == Brightness.dark
                 ? Icons.light_mode_outlined
@@ -1408,10 +1448,14 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
         ),
         IconButton(
           tooltip: 'Profile',
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
-          icon: ClipOval(
-            child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
-          ),
+          onPressed:
+              () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const ProfileScreen())),
+          // icon: ClipOval(
+          //   child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
+          // ),
+          icon: const ProfileAvatar(size: 36),
         ),
         const SizedBox(width: 8),
       ],
@@ -1427,19 +1471,35 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
               // Search row with Export at the end (like your latest UI)
               Row(
                 children: [
-                  Expanded(child: _SearchField(onChanged: (v) => setState(() => _search = v))),
+                  Expanded(
+                    child: _SearchField(
+                      onChanged: (v) => setState(() => _search = v),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   SizedBox(
                     height: 34,
                     child: ElevatedButton.icon(
                       onPressed: () => _snack('Export requested'),
-                      icon: const Icon(Icons.download, color: Colors.black, size: 18),
-                      label: const Text('Export', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700)),
+                      icon: const Icon(
+                        Icons.download,
+                        color: Colors.black,
+                        size: 18,
+                      ),
+                      label: const Text(
+                        'Export',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.accentColor,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
@@ -1455,7 +1515,10 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                   Expanded(
                     child: _LabeledDropdown<String>(
                       label: 'Project',
-                      value: _filterProjectName.isEmpty ? 'All' : _filterProjectName,
+                      value:
+                          _filterProjectName.isEmpty
+                              ? 'All'
+                              : _filterProjectName,
                       items: projectNames,
                       displayOf: (s) => s,
                       onChanged: (v) {
@@ -1474,8 +1537,15 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                       value: _filterChild.isEmpty ? 'All' : _filterChild,
                       items: ['All', ...childOptions],
                       displayOf: (s) => s,
-                      enabled: _filterProjectName.isNotEmpty && childOptions.isNotEmpty,
-                      onChanged: (v) => setState(() => _filterChild = (v == null || v == 'All') ? '' : v),
+                      enabled:
+                          _filterProjectName.isNotEmpty &&
+                          childOptions.isNotEmpty,
+                      onChanged:
+                          (v) => setState(
+                            () =>
+                                _filterChild =
+                                    (v == null || v == 'All') ? '' : v,
+                          ),
                     ),
                   ),
                 ],
@@ -1484,16 +1554,23 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
               const SizedBox(height: 12),
 
               // Cards
-              ..._displayed.map((r) => _ProjectCard(
-                    row: r,
-                    subNames: _subMap[r.id] ?? const [],
-                    onEdit: (dto) => _updateProject(dto),
-                  )),
+              ..._displayed.map(
+                (r) => _ProjectCard(
+                  row: r,
+                  subNames: _subMap[r.id] ?? const [],
+                  onEdit: (dto) => _updateProject(dto),
+                ),
+              ),
 
               if (_displayed.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: Text('No projects found', style: TextStyle(color: cs.onSurfaceVariant))),
+                  child: Center(
+                    child: Text(
+                      'No projects found',
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    ),
+                  ),
                 ),
               const SizedBox(height: 12),
             ],
@@ -1517,7 +1594,11 @@ class _ProjectCard extends StatelessWidget {
   final ProjectRow row;
   final List<String> subNames;
   final ValueChanged<ProjectDto> onEdit;
-  const _ProjectCard({required this.row, required this.subNames, required this.onEdit});
+  const _ProjectCard({
+    required this.row,
+    required this.subNames,
+    required this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1540,8 +1621,22 @@ class _ProjectCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(row.projectName, style: TextStyle(color: valueColor, fontWeight: FontWeight.w800, fontSize: 14)),
-              Text('Type : ${row.projectType}', style: TextStyle(color: valueColor, fontWeight: FontWeight.w700, fontSize: 14)),
+              Text(
+                row.projectName,
+                style: TextStyle(
+                  color: valueColor,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                'Type : ${row.projectType}',
+                style: TextStyle(
+                  color: valueColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -1557,8 +1652,18 @@ class _ProjectCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _infoRow('Customer Name', row.customerName, labelColor, valueColor),
-                    _infoRow('Project Code', row.projectCode, labelColor, valueColor),
+                    _infoRow(
+                      'Customer Name',
+                      row.customerName,
+                      labelColor,
+                      valueColor,
+                    ),
+                    _infoRow(
+                      'Project Code',
+                      row.projectCode,
+                      labelColor,
+                      valueColor,
+                    ),
                     if (subNames.isEmpty)
                       _infoRow('Sub Project', '—', labelColor, valueColor)
                     else
@@ -1567,27 +1672,57 @@ class _ProjectCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Sub Project:', style: TextStyle(color: labelColor, fontSize: 11)),
+                            Text(
+                              'Sub Project:',
+                              style: TextStyle(color: labelColor, fontSize: 11),
+                            ),
                             const SizedBox(height: 4),
                             Wrap(
                               spacing: 6,
                               runSpacing: 6,
-                              children: subNames
-                                  .map((s) => Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.surface,
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                              children:
+                                  subNames
+                                      .map(
+                                        (s) => Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.surface,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.outlineVariant,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            s,
+                                            style: TextStyle(
+                                              color: valueColor,
+                                              fontSize: 11,
+                                            ),
+                                          ),
                                         ),
-                                        child: Text(s, style: TextStyle(color: valueColor, fontSize: 11)),
-                                      ))
-                                  .toList(),
+                                      )
+                                      .toList(),
                             ),
                           ],
                         ),
                       ),
-                    _infoRow('Project Manager', row.projectManager, labelColor, valueColor),
+                    _infoRow(
+                      'Project Manager',
+                      row.projectManager,
+                      labelColor,
+                      valueColor,
+                    ),
                     _infoRow('BDM', row.bdm, labelColor, valueColor),
                   ],
                 ),
@@ -1598,10 +1733,25 @@ class _ProjectCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _infoRow('Start Date', row.startDmy, labelColor, valueColor),
+                    _infoRow(
+                      'Start Date',
+                      row.startDmy,
+                      labelColor,
+                      valueColor,
+                    ),
                     _infoRow('End Date', row.endDmy, labelColor, valueColor),
-                    _infoRow('AMC Year', row.amcYear?.toString() ?? '', labelColor, valueColor),
-                    _infoRow('AMC Months', row.amcMonths?.toString() ?? '', labelColor, valueColor),
+                    _infoRow(
+                      'AMC Year',
+                      row.amcYear?.toString() ?? '',
+                      labelColor,
+                      valueColor,
+                    ),
+                    _infoRow(
+                      'AMC Months',
+                      row.amcMonths?.toString() ?? '',
+                      labelColor,
+                      valueColor,
+                    ),
                   ],
                 ),
               ),
@@ -1616,33 +1766,42 @@ class _ProjectCard extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 backgroundColor: AppTheme.accentColor,
                 side: const BorderSide(color: AppTheme.accentColor),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
               ),
               onPressed: () async {
                 final result = await showModalBottomSheet<ProjectDto>(
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
-                  builder: (_) => UpdateProjectModal(
-                    project: ProjectDto(
-                      customerName: row.customerName,
-                      projectName:  row.projectName,
-                      projectCode:  row.projectCode,
-                      type:         row.projectType,
-                      projectManager: row.projectManager,
-                      bdm:            row.bdm,
-                      startDate:      row.startDmy,
-                      endDate:        row.endDmy,
-                      amcYear:        (row.amcYear ?? '').toString(),
-                      amcMonths:      (row.amcMonths ?? '').toString(),
-                      subProjects:    subNames,
-                    ),
-                  ),
+                  builder:
+                      (_) => UpdateProjectModal(
+                        project: ProjectDto(
+                          customerName: row.customerName,
+                          projectName: row.projectName,
+                          projectCode: row.projectCode,
+                          type: row.projectType,
+                          projectManager: row.projectManager,
+                          bdm: row.bdm,
+                          startDate: row.startDmy,
+                          endDate: row.endDmy,
+                          amcYear: (row.amcYear ?? '').toString(),
+                          amcMonths: (row.amcMonths ?? '').toString(),
+                          subProjects: subNames,
+                        ),
+                      ),
                 );
                 if (result != null) onEdit(result);
               },
-              child: const Text('Update', style: TextStyle(color: Colors.black, fontSize: 12)),
+              child: const Text(
+                'Update',
+                style: TextStyle(color: Colors.black, fontSize: 12),
+              ),
             ),
           ),
         ],
@@ -1650,14 +1809,24 @@ class _ProjectCard extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(String label, String value, Color labelColor, Color valueColor) {
+  Widget _infoRow(
+    String label,
+    String value,
+    Color labelColor,
+    Color valueColor,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: RichText(
         text: TextSpan(
           text: '$label: ',
           style: TextStyle(color: labelColor, fontSize: 11),
-          children: [TextSpan(text: value, style: TextStyle(color: valueColor, fontSize: 11))],
+          children: [
+            TextSpan(
+              text: value,
+              style: TextStyle(color: valueColor, fontSize: 11),
+            ),
+          ],
         ),
       ),
     );
@@ -1682,8 +1851,14 @@ class _SearchField extends StatelessWidget {
           prefixIcon: Icon(Icons.search, color: cs.onSurfaceVariant, size: 20),
           filled: true,
           fillColor: cs.surfaceContainerHighest,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
         ),
       ),
     );
@@ -1712,7 +1887,14 @@ class _LabeledDropdown<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: cs.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 6),
         Container(
           height: 34,
@@ -1727,9 +1909,21 @@ class _LabeledDropdown<T> extends StatelessWidget {
               value: value,
               isExpanded: true,
               dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-              iconEnabledColor: enabled ? cs.onSurfaceVariant : cs.outlineVariant,
-              style: TextStyle(color: enabled ? cs.onSurface : cs.onSurfaceVariant, fontSize: 12),
-              items: items.map((e) => DropdownMenuItem<T>(value: e, child: Text('${displayOf(e)}'))).toList(),
+              iconEnabledColor:
+                  enabled ? cs.onSurfaceVariant : cs.outlineVariant,
+              style: TextStyle(
+                color: enabled ? cs.onSurface : cs.onSurfaceVariant,
+                fontSize: 12,
+              ),
+              items:
+                  items
+                      .map(
+                        (e) => DropdownMenuItem<T>(
+                          value: e,
+                          child: Text('${displayOf(e)}'),
+                        ),
+                      )
+                      .toList(),
               onChanged: enabled ? onChanged : null,
             ),
           ),

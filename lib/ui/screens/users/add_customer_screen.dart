@@ -1,16 +1,431 @@
+// import 'package:flutter/material.dart';
+
+// import '../../../core/theme.dart';
+// import '../../../core/theme_controller.dart';
+// import '../../utils/responsive.dart';
+// import '../../widgets/layout/main_layout.dart';
+// import '../profile/profile_screen.dart';
+// // Bottom-nav root screens (for MainLayout routing)
+// import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
+// import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
+// import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
+// import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
+// import 'package:pmgt/ui/screens/users/view_users_screen.dart';
+// import 'package:pmgt/ui/widgets/profile_avatar.dart';
+
+// class AddCustomerScreen extends StatefulWidget {
+//   const AddCustomerScreen({super.key});
+
+//   @override
+//   State<AddCustomerScreen> createState() => _AddCustomerScreenState();
+// }
+
+// class _AddCustomerScreenState extends State<AddCustomerScreen> {
+//   // Controllers
+//   final _nameCtrl = TextEditingController();
+//   final _roleCtrl = TextEditingController(text: 'Customer'); // read-only
+//   final _emailCtrl = TextEditingController();
+//   final _passwordCtrl = TextEditingController();
+//   final _confirmCtrl = TextEditingController();
+
+//   bool _showPassword = false;
+//   bool _showConfirm = false;
+
+//   @override
+//   void dispose() {
+//     _nameCtrl.dispose();
+//     _roleCtrl.dispose();
+//     _emailCtrl.dispose();
+//     _passwordCtrl.dispose();
+//     _confirmCtrl.dispose();
+//     super.dispose();
+//   }
+
+//   void _clear() {
+//     setState(() {
+//       _nameCtrl.clear();
+//       _emailCtrl.clear();
+//       _passwordCtrl.clear();
+//       _confirmCtrl.clear();
+//       _showPassword = false;
+//       _showConfirm = false;
+//     });
+//   }
+
+//   void _create() {
+//     // TODO: wire validation + API
+//     ScaffoldMessenger.of(
+//       context,
+//     ).showSnackBar(const SnackBar(content: Text('Customer created')));
+//   }
+
+//   final int _selectedTab = 0;
+
+//   void _handleTabChange(int i) {
+//     if (i == _selectedTab) return;
+//     late final Widget target;
+//     switch (i) {
+//       case 0:
+//         target = const DashboardScreen();
+//         break;
+//       case 1:
+//         target = const AddProjectScreen();
+//         break;
+//       case 2:
+//         target = const AddActivityScreen();
+//         break;
+//       case 3:
+//         target = const AnalyticsScreen();
+//         break;
+//       case 4:
+//         target = const ViewUsersScreen();
+//         break;
+//       default:
+//         return;
+//     }
+//     Navigator.of(
+//       context,
+//     ).pushReplacement(MaterialPageRoute(builder: (_) => target));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+
+//     return MainLayout(
+//       title: 'Add Customer',
+//       centerTitle: true,
+//       // currentIndex: 0,
+//       // onTabChanged: (_) {},
+//       currentIndex: _selectedTab,
+//       onTabChanged: (i) => _handleTabChange(i),
+//       safeArea: false,
+//       reserveBottomPadding: true,
+//       actions: [
+//         IconButton(
+//           tooltip:
+//               Theme.of(context).brightness == Brightness.dark
+//                   ? 'Light mode'
+//                   : 'Dark mode',
+//           icon: Icon(
+//             Theme.of(context).brightness == Brightness.dark
+//                 ? Icons.light_mode_outlined
+//                 : Icons.dark_mode_outlined,
+//             color: cs.onSurface,
+//           ),
+//           onPressed: () => ThemeScope.of(context).toggle(),
+//         ),
+//         IconButton(
+//           tooltip: 'Profile',
+//           onPressed: () {
+//             Navigator.of(
+//               context,
+//             ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+//           },
+         
+//           icon: const ProfileAvatar(size: 36),
+
+//         ),
+//         const SizedBox(width: 8),
+//       ],
+//       body: ListView(
+//         padding: responsivePadding(context).copyWith(top: 12, bottom: 12),
+//         children: [
+//           Card(
+//             color: cs.surfaceContainerHighest,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(12),
+//             ),
+//             child: Padding(
+//               padding: const EdgeInsets.all(14),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.stretch,
+//                 children: [
+//                   // Header
+//                   Row(
+//                     children: [
+//                       Expanded(
+//                         child: Text(
+//                           'Create Customer',
+//                           style: Theme.of(
+//                             context,
+//                           ).textTheme.titleLarge?.copyWith(
+//                             color: cs.onSurface,
+//                             fontWeight: FontWeight.w800,
+//                           ),
+//                         ),
+//                       ),
+//                       TextButton(onPressed: _clear, child: const Text('Clear')),
+//                     ],
+//                   ),
+//                   Divider(color: cs.outlineVariant),
+
+//                   // Grid
+//                   LayoutBuilder(
+//                     builder: (context, c) {
+//                       final isWide = c.maxWidth >= 640;
+//                       final gap = isWide ? 12.0 : 0.0;
+
+//                       final left = [
+//                         _TextField(
+//                           label: 'Customer Name *',
+//                           controller: _nameCtrl,
+//                         ),
+//                         _TextField(
+//                           label: 'Email *',
+//                           controller: _emailCtrl,
+//                           keyboardType: TextInputType.emailAddress,
+//                         ),
+//                         _PasswordField(
+//                           label: 'Password *',
+//                           controller: _passwordCtrl,
+//                           visible: _showPassword,
+//                           onToggle:
+//                               () => setState(
+//                                 () => _showPassword = !_showPassword,
+//                               ),
+//                         ),
+//                       ];
+
+//                       final right = [
+//                         _ROText(label: 'Role', controller: _roleCtrl),
+//                         const SizedBox(height: 6), // keep grid rhythm
+//                         _PasswordField(
+//                           label: 'Confirm Password *',
+//                           controller: _confirmCtrl,
+//                           visible: _showConfirm,
+//                           onToggle:
+//                               () =>
+//                                   setState(() => _showConfirm = !_showConfirm),
+//                         ),
+//                       ];
+
+//                       if (!isWide) {
+//                         return Column(children: [...left, ...right]);
+//                       }
+//                       return Row(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Expanded(child: Column(children: left)),
+//                           SizedBox(width: gap),
+//                           Expanded(child: Column(children: right)),
+//                         ],
+//                       );
+//                     },
+//                   ),
+
+//                   const SizedBox(height: 16),
+//                   Align(
+//                     alignment: Alignment.centerRight,
+//                     child: ConstrainedBox(
+//                       constraints: const BoxConstraints(minWidth: 220),
+//                       child: ElevatedButton(
+//                         onPressed: _create,
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: AppTheme.accentColor,
+//                           foregroundColor: Colors.black,
+//                           padding: const EdgeInsets.symmetric(
+//                             horizontal: 24,
+//                             vertical: 12,
+//                           ),
+//                           shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                           ),
+//                         ),
+//                         child: const Text(
+//                           'Create',
+//                           style: TextStyle(fontWeight: FontWeight.w800),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// /// ---- Small UI helpers (consistent) ----
+
+// class _FieldShell extends StatelessWidget {
+//   final String label;
+//   final Widget child;
+//   const _FieldShell({required this.label, required this.child});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 6),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           Text(
+//             label,
+//             style: TextStyle(
+//               fontSize: 12,
+//               color: cs.onSurfaceVariant,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//           const SizedBox(height: 6),
+//           child,
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+// class _TextField extends StatelessWidget {
+//   final String label;
+//   final TextEditingController controller;
+//   final int maxLines;
+//   final TextInputType? keyboardType;
+
+//   const _TextField({
+//     required this.label,
+//     required this.controller,
+//     this.maxLines = 1,              // <-- default so it's always initialized
+//     this.keyboardType,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+//     return _FieldShell(
+//       label: label,
+//       child: TextField(
+//         controller: controller,
+//         maxLines: maxLines,
+//         keyboardType: keyboardType,
+//         style: TextStyle(color: cs.onSurface),
+//         decoration: InputDecoration(
+//           filled: true,
+//           fillColor: cs.surface,
+//           enabledBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: cs.outlineVariant),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           focusedBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: AppTheme.accentColor),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+// class _ROText extends StatelessWidget {
+//   final String label;
+//   final TextEditingController controller;
+//   const _ROText({required this.label, required this.controller});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+//     return _FieldShell(
+//       label: label,
+//       child: TextField(
+//         controller: controller,
+//         enabled: false,
+//         style: TextStyle(color: cs.onSurface),
+//         decoration: InputDecoration(
+//           filled: true,
+//           fillColor: cs.surface,
+//           disabledBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: cs.outlineVariant),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           contentPadding: const EdgeInsets.symmetric(
+//             horizontal: 12,
+//             vertical: 12,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class _PasswordField extends StatelessWidget {
+//   final String label;
+//   final TextEditingController controller;
+//   final bool visible;
+//   final VoidCallback onToggle;
+//   const _PasswordField({
+//     required this.label,
+//     required this.controller,
+//     required this.visible,
+//     required this.onToggle,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cs = Theme.of(context).colorScheme;
+//     return _FieldShell(
+//       label: label,
+//       child: TextField(
+//         controller: controller,
+//         obscureText: !visible,
+//         style: TextStyle(color: cs.onSurface),
+//         decoration: InputDecoration(
+//           filled: true,
+//           fillColor: cs.surface,
+//           suffixIcon: IconButton(
+//             onPressed: onToggle,
+//             icon: Icon(
+//               visible
+//                   ? Icons.visibility_off_outlined
+//                   : Icons.visibility_outlined,
+//               color: cs.onSurfaceVariant,
+//             ),
+//           ),
+//           enabledBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: cs.outlineVariant),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           focusedBorder: OutlineInputBorder(
+//             borderSide: BorderSide(color: AppTheme.accentColor),
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           contentPadding: const EdgeInsets.symmetric(
+//             horizontal: 12,
+//             vertical: 12,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/theme.dart';
 import '../../../core/theme_controller.dart';
+import '../../../core/api_client.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/layout/main_layout.dart';
 import '../profile/profile_screen.dart';
-// Bottom-nav root screens (for MainLayout routing)
+
+// Bottom-nav root screens
 import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
 import 'package:pmgt/ui/screens/projects/add_project_screen.dart';
 import 'package:pmgt/ui/screens/activities/add_activity_screen.dart';
 import 'package:pmgt/ui/screens/analytics/analytics_screen.dart';
 import 'package:pmgt/ui/screens/users/view_users_screen.dart';
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 class AddCustomerScreen extends StatefulWidget {
   const AddCustomerScreen({super.key});
@@ -20,6 +435,8 @@ class AddCustomerScreen extends StatefulWidget {
 }
 
 class _AddCustomerScreenState extends State<AddCustomerScreen> {
+  ApiClient get _api => context.read<ApiClient>();
+
   // Controllers
   final _nameCtrl = TextEditingController();
   final _roleCtrl = TextEditingController(text: 'Customer'); // read-only
@@ -29,6 +446,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
   bool _showPassword = false;
   bool _showConfirm = false;
+  bool _busy = false;
 
   @override
   void dispose() {
@@ -51,11 +469,67 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     });
   }
 
-  void _create() {
-    // TODO: wire validation + API
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Customer created')));
+  void _toast(String msg, {bool success = false}) {
+    final cs = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg, style: TextStyle(color: success ? Colors.white : cs.onSurface)),
+        backgroundColor: success
+            ? const Color(0xFF2E7D32)
+            : (Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF5E2A2A)
+                : const Color(0xFFFFE9E9)),
+      ),
+    );
+  }
+
+  bool get _valid {
+    final emailOk = RegExp(r'^\S+@\S+\.\S+$').hasMatch(_emailCtrl.text.trim());
+    return _nameCtrl.text.trim().isNotEmpty &&
+        emailOk &&
+        _passwordCtrl.text.isNotEmpty &&
+        _confirmCtrl.text.isNotEmpty &&
+        _passwordCtrl.text == _confirmCtrl.text;
+  }
+
+  Future<void> _create() async {
+    if (!_valid) {
+      if (_passwordCtrl.text != _confirmCtrl.text) {
+        _toast('Passwords do not match');
+      } else {
+        _toast('Please fill all required fields correctly');
+      }
+      return;
+    }
+
+    setState(() => _busy = true);
+    try {
+      final payload = {
+        'company_name': _nameCtrl.text.trim(),
+        'email': _emailCtrl.text.trim(),
+        'password': _passwordCtrl.text,
+        'role': 'Customer',
+      };
+
+      // ApiClient will include token (if present) for admin-auth like web
+      final res = await _api.post('/api/auth/signup/customer', body: payload);
+
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        _toast('Customer created successfully', success: true);
+        _clear();
+      } else {
+        String err = 'Customer signup failed';
+        try {
+          final m = jsonDecode(res.body) as Map<String, dynamic>;
+          err = (m['error'] ?? err).toString();
+        } catch (_) {}
+        _toast(err);
+      }
+    } catch (_) {
+      _toast('Customer signup failed');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   final int _selectedTab = 0;
@@ -82,9 +556,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       default:
         return;
     }
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => target));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => target));
   }
 
   @override
@@ -94,18 +566,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     return MainLayout(
       title: 'Add Customer',
       centerTitle: true,
-      // currentIndex: 0,
-      // onTabChanged: (_) {},
       currentIndex: _selectedTab,
       onTabChanged: (i) => _handleTabChange(i),
       safeArea: false,
       reserveBottomPadding: true,
       actions: [
         IconButton(
-          tooltip:
-              Theme.of(context).brightness == Brightness.dark
-                  ? 'Light mode'
-                  : 'Dark mode',
+          tooltip: Theme.of(context).brightness == Brightness.dark ? 'Light mode' : 'Dark mode',
           icon: Icon(
             Theme.of(context).brightness == Brightness.dark
                 ? Icons.light_mode_outlined
@@ -117,136 +584,118 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         IconButton(
           tooltip: 'Profile',
           onPressed: () {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
           },
-          icon: ClipOval(
-            child: Image.asset(
-              'assets/User_profile.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.cover,
-            ),
-          ),
+          icon: const ProfileAvatar(size: 36),
         ),
         const SizedBox(width: 8),
       ],
-      body: ListView(
-        padding: responsivePadding(context).copyWith(top: 12, bottom: 12),
+      body: Stack(
         children: [
-          Card(
-            color: cs.surfaceContainerHighest,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Header
-                  Row(
+          ListView(
+            padding: responsivePadding(context).copyWith(top: 12, bottom: 12),
+            children: [
+              Card(
+                color: cs.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Create Customer',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleLarge?.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.w800,
+                      // Header
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Create Customer',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: cs.onSurface,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                          ),
+                          TextButton(onPressed: _clear, child: const Text('Clear')),
+                        ],
+                      ),
+                      Divider(color: cs.outlineVariant),
+
+                      // Grid
+                      LayoutBuilder(
+                        builder: (context, c) {
+                          final isWide = c.maxWidth >= 640;
+                          final gap = isWide ? 12.0 : 0.0;
+
+                          final left = [
+                            _TextField(label: 'Customer Name *', controller: _nameCtrl),
+                            _TextField(
+                              label: 'Email *',
+                              controller: _emailCtrl,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            _PasswordField(
+                              label: 'Password *',
+                              controller: _passwordCtrl,
+                              visible: _showPassword,
+                              onToggle: () => setState(() => _showPassword = !_showPassword),
+                            ),
+                          ];
+
+                          final right = [
+                            _ROText(label: 'Role', controller: _roleCtrl),
+                            const SizedBox(height: 6),
+                            _PasswordField(
+                              label: 'Confirm Password *',
+                              controller: _confirmCtrl,
+                              visible: _showConfirm,
+                              onToggle: () => setState(() => _showConfirm = !_showConfirm),
+                            ),
+                          ];
+
+                          if (!isWide) return Column(children: [...left, ...right]);
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(child: Column(children: left)),
+                              SizedBox(width: gap),
+                              Expanded(child: Column(children: right)),
+                            ],
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 220),
+                          child: ElevatedButton(
+                            onPressed: _busy ? null : _create,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.accentColor,
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            child: Text(_busy ? 'Creating…' : 'Create',
+                                style: const TextStyle(fontWeight: FontWeight.w800)),
                           ),
                         ),
                       ),
-                      TextButton(onPressed: _clear, child: const Text('Clear')),
                     ],
                   ),
-                  Divider(color: cs.outlineVariant),
+                ),
+              ),
+            ],
+          ),
 
-                  // Grid
-                  LayoutBuilder(
-                    builder: (context, c) {
-                      final isWide = c.maxWidth >= 640;
-                      final gap = isWide ? 12.0 : 0.0;
-
-                      final left = [
-                        _TextField(
-                          label: 'Customer Name *',
-                          controller: _nameCtrl,
-                        ),
-                        _TextField(
-                          label: 'Email *',
-                          controller: _emailCtrl,
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        _PasswordField(
-                          label: 'Password *',
-                          controller: _passwordCtrl,
-                          visible: _showPassword,
-                          onToggle:
-                              () => setState(
-                                () => _showPassword = !_showPassword,
-                              ),
-                        ),
-                      ];
-
-                      final right = [
-                        _ROText(label: 'Role', controller: _roleCtrl),
-                        const SizedBox(height: 6), // keep grid rhythm
-                        _PasswordField(
-                          label: 'Confirm Password *',
-                          controller: _confirmCtrl,
-                          visible: _showConfirm,
-                          onToggle:
-                              () =>
-                                  setState(() => _showConfirm = !_showConfirm),
-                        ),
-                      ];
-
-                      if (!isWide) {
-                        return Column(children: [...left, ...right]);
-                      }
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: Column(children: left)),
-                          SizedBox(width: gap),
-                          Expanded(child: Column(children: right)),
-                        ],
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minWidth: 220),
-                      child: ElevatedButton(
-                        onPressed: _create,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accentColor,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Create',
-                          style: TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          if (_busy)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.25),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -270,11 +719,7 @@ class _FieldShell extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              color: cs.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
           child,
@@ -283,7 +728,6 @@ class _FieldShell extends StatelessWidget {
     );
   }
 }
-
 
 class _TextField extends StatelessWidget {
   final String label;
@@ -294,7 +738,7 @@ class _TextField extends StatelessWidget {
   const _TextField({
     required this.label,
     required this.controller,
-    this.maxLines = 1,              // <-- default so it's always initialized
+    this.maxLines = 1,
     this.keyboardType,
   });
 
@@ -311,23 +755,16 @@ class _TextField extends StatelessWidget {
         decoration: InputDecoration(
           filled: true,
           fillColor: cs.surface,
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: cs.outlineVariant),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppTheme.accentColor),
-            borderRadius: BorderRadius.circular(8),
-          ),
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: cs.outlineVariant), borderRadius: BorderRadius.circular(8)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accentColor), borderRadius: BorderRadius.circular(8)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );
   }
 }
-
-
-
 
 class _ROText extends StatelessWidget {
   final String label;
@@ -346,14 +783,9 @@ class _ROText extends StatelessWidget {
         decoration: InputDecoration(
           filled: true,
           fillColor: cs.surface,
-          disabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: cs.outlineVariant),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
-          ),
+          disabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: cs.outlineVariant), borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );
@@ -365,12 +797,8 @@ class _PasswordField extends StatelessWidget {
   final TextEditingController controller;
   final bool visible;
   final VoidCallback onToggle;
-  const _PasswordField({
-    required this.label,
-    required this.controller,
-    required this.visible,
-    required this.onToggle,
-  });
+  const _PasswordField(
+      {required this.label, required this.controller, required this.visible, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -386,25 +814,14 @@ class _PasswordField extends StatelessWidget {
           fillColor: cs.surface,
           suffixIcon: IconButton(
             onPressed: onToggle,
-            icon: Icon(
-              visible
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              color: cs.onSurfaceVariant,
-            ),
+            icon: Icon(visible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: cs.onSurfaceVariant),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: cs.outlineVariant),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppTheme.accentColor),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
-          ),
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: cs.outlineVariant), borderRadius: BorderRadius.circular(8)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: AppTheme.accentColor), borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
       ),
     );

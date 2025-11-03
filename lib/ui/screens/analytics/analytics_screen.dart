@@ -11,7 +11,7 @@ import '../dashboard/dashboard_screen.dart';
 import '../projects/add_project_screen.dart';
 import '../activities/add_activity_screen.dart';
 import '../users/view_users_screen.dart';
-
+import 'package:pmgt/ui/widgets/profile_avatar.dart';
 
 
 class AnalyticsScreen extends StatefulWidget {
@@ -208,9 +208,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               MaterialPageRoute(builder: (_) => const ProfileScreen()),
             );
           },
-          icon: ClipOval(
-            child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
-          ),
+          // icon: ClipOval(
+          //   child: Image.asset('assets/User_profile.png', width: 36, height: 36, fit: BoxFit.cover),
+          // ),
+          icon: const ProfileAvatar(size: 36),
+
         ),
         const SizedBox(width: 8),
       ],

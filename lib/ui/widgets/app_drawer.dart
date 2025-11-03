@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:pmgt/ui/screens/Projects/view_projects_screen.dart';
@@ -25,6 +24,10 @@ import 'package:pmgt/ui/screens/accounts/accounts_pa_list_screen.dart';
 import 'package:pmgt/ui/screens/dashboard/dashboard_screen.dart';
 import '../../core/theme.dart';
 import '../utils/responsive.dart';
+
+import 'package:provider/provider.dart';
+import 'package:pmgt/state/user_session.dart';
+import 'package:pmgt/ui/screens/auth/login_screen.dart';
 
 /// Which drawer variant to render.
 enum DrawerMode { atlas, accounts }
@@ -386,27 +389,73 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
 
               // footer
+              // Container(
+              //   decoration: BoxDecoration(
+              //     border: Border(top: BorderSide(color: cs.outlineVariant)),
+              //   ),
+              //   padding: const EdgeInsets.symmetric(vertical: 12),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       IconButton(
+              //         icon: Icon(Icons.logout, color: AppTheme.accentColor),
+              //         onPressed: () {},
+              //       ),
+              //       const SizedBox(width: 8),
+              //       Text(
+              //         'Sign Out',
+              //         style: TextStyle(
+              //           fontSize: 16,
+              //           color: cs.onSurfaceVariant,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Container(
                 decoration: BoxDecoration(
                   border: Border(top: BorderSide(color: cs.outlineVariant)),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.logout, color: AppTheme.accentColor),
-                      onPressed: () {},
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Sign Out',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: cs.onSurfaceVariant,
+                child: InkWell(
+                  onTap: () async {
+                    try {
+                      // 1) Close the drawer first
+                      Navigator.pop(context);
+
+                      // 2) Clear session (token, email, role, avatar, etc.)
+                      await context.read<UserSession>().signOut();
+
+                      // 3) Nuke the stack and go to Login
+                      // (pushAndRemoveUntil so Back won't return to the app)
+                      // Delay a tick to let the drawer close animation finish
+                      await Future.delayed(const Duration(milliseconds: 150));
+                      if (!context.mounted) return;
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (_) => false,
+                      );
+                    } catch (_) {
+                      // Optional: show a toast/snack if you want
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.logout, color: AppTheme.accentColor),
+                        onPressed: null, // tap is handled by the InkWell above
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        'Sign Out',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(
