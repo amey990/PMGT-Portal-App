@@ -50,12 +50,9 @@
 
 // lib/main.dart
 import 'package:flutter/material.dart';
-
 import 'core/theme.dart';
 import 'core/theme_controller.dart';
 import 'ui/screens/Auth/splash_screen.dart';
-
-// ⬇️ providers/bootstrap wrapper you added
 import 'app_bootstrap.dart';
 
 void main() async {

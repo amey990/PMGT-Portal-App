@@ -1952,44 +1952,22 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
           columns,
 
           const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child:
-            // OutlinedButton(
-            //   style: OutlinedButton.styleFrom(
-            //     backgroundColor: AppTheme.accentColor,
-            //     side: const BorderSide(color: AppTheme.accentColor),
-            //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-            //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            //   ),
-            //   onPressed: () {
-            //     // Wire to modals in next step
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       const SnackBar(content: Text('Update modal coming next')),
-            //     );
-            //   },
-            //   child: const Text('Update', style: TextStyle(color: Color(0xFF000000), fontSize: 12)),
-            // ),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                backgroundColor: AppTheme.accentColor,
-                side: const BorderSide(color: AppTheme.accentColor),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-              ),
-              // ⬇️ replace this handler
-              onPressed: () => _openUpdate(data),
-              child: const Text(
-                'Update',
-                style: TextStyle(color: Color(0xFF000000), fontSize: 12),
-              ),
-            ),
-          ),
+          
+         
+          if (data is! Customer)
+  Align(
+    alignment: Alignment.centerRight,
+    child: OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: AppTheme.accentColor,
+        side: const BorderSide(color: AppTheme.accentColor),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      onPressed: () => _openUpdate(data),
+      child: const Text('Update', style: TextStyle(color: Color(0xFF000000), fontSize: 12)),
+    ),
+  ),
         ],
       ),
     );
