@@ -493,7 +493,7 @@ import '../../screens/dashboard/dashboard_screen.dart';
 import '../../../services/auth_service.dart';
 import '../../../state/user_session.dart';
 import 'forgot_password_screen.dart';
-import 'signup_screen.dart';
+// import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -722,12 +722,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 30),
 
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
-                    },
-                    child: const Center(child: Text("Temp Signup link")),
-                  ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     Navigator.push(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
+                  //   },
+                  //   child: const Center(child: Text("Temp Signup link")),
+                  // ),
                 ],
               ),
             ),

@@ -1,97 +1,11 @@
-// import 'package:flutter/material.dart';
-
-// class AppTheme {
-//   // Brand colors you already had
-//   static const Color backgroundDark = Color(0xFF03020C);
-//   static const Color accentColor     = Color(0xFFFFD700);
-//   static const Color textOnDark      = Colors.white;
-
-//   // Optional explicit text styles that you can use in widgets
-//   static const TextStyle heading1 = TextStyle(
-//     fontFamily: 'Sansation',
-//     fontSize: 28,
-//     fontWeight: FontWeight.bold,
-//     color: textOnDark,
-//   );
-
-//   static const TextStyle heading2 = TextStyle(
-//     fontFamily: 'Sansation',
-//     fontSize: 22,
-//     fontWeight: FontWeight.w600,
-//     color: textOnDark,
-//   );
-
-//   static const TextStyle bodyText = TextStyle(
-//     fontFamily: 'Sansation',
-//     fontSize: 16,
-//     color: textOnDark,
-//   );
-
-//   /// ---- THEME DATA ----
-
-//   // Material 3 ColorSchemes derived from your seed color
-//   static final ColorScheme _lightScheme =
-//       ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.light);
-
-//   static final ColorScheme _darkScheme =
-//       ColorScheme.fromSeed(seedColor: accentColor, brightness: Brightness.dark);
-
-//   /// Light theme (for users who prefer light or when you toggle to light)
-//   static final ThemeData light = ThemeData(
-//     useMaterial3: true,
-//     brightness: Brightness.light,
-//     colorScheme: _lightScheme,
-//     fontFamily: 'Sansation',
-//     scaffoldBackgroundColor: _lightScheme.surface,
-//     appBarTheme: AppBarTheme(
-//       backgroundColor: _lightScheme.surface,
-//       foregroundColor: _lightScheme.onSurface,
-//       elevation: 0,
-//       titleTextStyle: const TextStyle(
-//         fontFamily: 'Sansation',
-//         fontSize: 20,
-//         fontWeight: FontWeight.w600,
-//       ).copyWith(color: _lightScheme.onSurface),
-//       iconTheme: IconThemeData(color: _lightScheme.onSurface),
-//     ),
-//     inputDecorationTheme: const InputDecorationTheme(
-//       border: OutlineInputBorder(),
-//     ),
-//     visualDensity: VisualDensity.adaptivePlatformDensity,
-//   );
-
-//   /// Dark theme (your current default look)
-//   static final ThemeData dark = ThemeData(
-//     useMaterial3: true,
-//     brightness: Brightness.dark,
-//     colorScheme: _darkScheme,
-//     fontFamily: 'Sansation',
-//     scaffoldBackgroundColor: backgroundDark, // keep your deep background
-//     appBarTheme: const AppBarTheme(
-//       backgroundColor: backgroundDark,
-//       elevation: 0,
-//       iconTheme: IconThemeData(color: textOnDark),
-//       titleTextStyle: TextStyle(
-//         fontFamily: 'Sansation',
-//         fontSize: 20,
-//         fontWeight: FontWeight.w600,
-//         color: textOnDark,
-//       ),
-//     ),
-//     inputDecorationTheme: const InputDecorationTheme(
-//       border: OutlineInputBorder(),
-//     ),
-//     visualDensity: VisualDensity.adaptivePlatformDensity,
-//   );
-// }
-
 import 'package:flutter/material.dart';
 
 class AppTheme {
   // Brand
   static const Color accentColor = Color(0xFFFFD700);
   static const Color backgroundDark = Color(0xFF03020C);
-
+  static const Color success = Color(0xFF22C55E);
+  
   // Optional text styles
   static const TextStyle heading1 = TextStyle(
     fontFamily: 'Sansation',

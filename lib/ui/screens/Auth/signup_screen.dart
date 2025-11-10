@@ -868,28 +868,52 @@ class _RoleDropdown extends StatelessWidget {
       children: [
         Text('Role', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
         const SizedBox(height: 8),
+        // DropdownButtonFormField<String>(
+        //   initialValue: value,
+        //   isExpanded: true,
+        //   decoration: InputDecoration(
+        //     filled: true,
+        //     fillColor: cs.surfaceContainerHigh,
+        //     enabledBorder: b(cs.outline),
+        //     focusedBorder: b(AppTheme.accentColor, 1.4),
+        //     border: b(cs.outline),
+        //     hintText: 'Select Role',
+        //     hintStyle: TextStyle(color: cs.onSurfaceVariant),
+        //   ),
+        //   iconEnabledColor: cs.onSurfaceVariant,
+        //   dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+        //   items: roles
+        //       .map((role) => DropdownMenuItem(
+        //             value: role,
+        //             child: Text(role, style: TextStyle(color: cs.onSurface)),
+        //           ))
+        //       .toList(),
+        //   onChanged: onChanged,
+        // ),
+
         DropdownButtonFormField<String>(
-          initialValue: value,
-          isExpanded: true,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: cs.surfaceContainerHigh,
-            enabledBorder: b(cs.outline),
-            focusedBorder: b(AppTheme.accentColor, 1.4),
-            border: b(cs.outline),
-            hintText: 'Select Role',
-            hintStyle: TextStyle(color: cs.onSurfaceVariant),
-          ),
-          iconEnabledColor: cs.onSurfaceVariant,
-          dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-          items: roles
-              .map((role) => DropdownMenuItem(
-                    value: role,
-                    child: Text(role, style: TextStyle(color: cs.onSurface)),
-                  ))
-              .toList(),
-          onChanged: onChanged,
-        ),
+  value: value, // <-- use value instead of initialValue
+  isExpanded: true,
+  decoration: InputDecoration(
+    filled: true,
+    fillColor: cs.surfaceContainerHigh,
+    enabledBorder: b(cs.outline),
+    focusedBorder: b(AppTheme.accentColor, 1.4),
+    border: b(cs.outline),
+    hintText: 'Select Role',
+    hintStyle: TextStyle(color: cs.onSurfaceVariant),
+  ),
+  iconEnabledColor: cs.onSurfaceVariant,
+  dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+  items: roles
+      .map((role) => DropdownMenuItem<String>(
+            value: role,
+            child: Text(role, style: TextStyle(color: cs.onSurface)),
+          ))
+      .toList(),
+  onChanged: onChanged,
+),
+
       ],
     );
   }
